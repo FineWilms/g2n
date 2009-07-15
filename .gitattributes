@@ -1,0 +1,10 @@
+* text=auto !eol
+/g2n.f90 -text
+/g2n.nml -text
+/grib2meta.f90 -text
+/grib2read.f90 -text
+/makefile -text
+/misc.f90 -text
+/ncwrite.f90 -text
+/readswitch.f90 -text
+/splice.f90 -text
