@@ -835,7 +835,7 @@ Implicit None
 
 Integer, dimension(0:48), intent(in) :: alist
 Character*80, dimension(1:3), intent(out) :: elemtxt
-Character*80, save :: elemerr(1:3)
+Character*80, elemerr(1:3)
 Character*80, save :: meteotemp(0:15,1:3)
 Character*80, save :: meteomoist(0:32,1:3)
 Character*80, save :: meteomoment(0:24,1:3)
@@ -905,7 +905,6 @@ logical, save :: first=.true.
 elemerr='???'
 
 if (first) then
-
 
 meteotemp(0,:) =  (/ 'TMP',       'Temperature',                            'K' /)
 meteotemp(1,:) =  (/ 'VTMP',      'Virtual temperature',                    'K' /)
@@ -2036,9 +2035,9 @@ logical, save :: first = .true.
 ! alist(47) = sec
 ! alist(48) = GRIB edition number
 
-surface='???'
-
 if (first) then
+
+surface='???'
 
 ! Define surface table
 
