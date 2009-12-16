@@ -94,9 +94,12 @@ implicit none
 Integer, intent(in) :: ain
 Character*80, dimension(1:3), intent(out) :: elemtxt
 Character*80 elemerr(1:3)
-Character*80 ncepopn(0:255,1:3)
+Character*80, save :: ncepopn(0:255,1:3)
+logical, save :: first=.true.
 
 elemerr='???'
+
+if (first) then
 
 ncepopn=""
 ncepopn(1,:)=(/ "PRES", "Pressure", "Pa" /)
@@ -354,6 +357,9 @@ ncepopn(252,:)=(/ "CD", "Drag coefficient","non-dim" /)
 ncepopn(253,:)=(/ "FRICV", "Friction velocity","m/s" /)
 ncepopn(254,:)=(/ "RI", "Richardson number","non-dim" /)
 
+first=.false.
+end if
+
 if (ain.GT.size(ncepopn,DIM=1)) Then
   elemtxt=elemerr
 else
@@ -374,9 +380,12 @@ implicit none
 Integer, intent(in) :: ain
 Character*80, dimension(1:3), intent(out) :: elemtxt
 Character*80 elemerr(1:3)
-Character*80 ecmwf128(0:255,1:3)
+Character*80, save :: ecmwf128(0:255,1:3)
+logical, save :: first=.true.
 
 elemerr='???'
+
+if (first) then
 
 ecmwf128=""
 ecmwf128(1,:)=(/ "STRF", "Stream function", "m^2/s" /)
@@ -566,6 +575,9 @@ ecmwf128(253,:)=(/ "ATZE", "Adiabatic tendency of zonal wind", "m/s" /)
 ecmwf128(254,:)=(/ "ATMW", "Adiabatic tendency of meridional wind", "m/s" /)
 ecmwf128(255,:)=(/ "var255", "missing value", "" /)
 
+first=.false.
+end if
+
 if (ain.GT.size(ecmwf128,DIM=1)) Then
   elemtxt=elemerr
 else
@@ -586,9 +598,12 @@ implicit none
 Integer, intent(in) :: ain
 Character*80, dimension(1:3), intent(out) :: elemtxt
 Character*80 elemerr(1:3)
-Character*80 ecmwf140(0:255,1:3)
+Character*80, save :: ecmwf140(0:255,1:3)
+logical, save :: first=.true.
 
 elemerr='???'
+
+if (first) then
 
 ecmwf140=""
 ecmwf140(220,:)=(/ "MP1", "Mean wave period based on first moment", "s" /)
@@ -624,6 +639,9 @@ ecmwf140(249,:)=(/ "DWI", "10 metre wind direction", "deg" /)
 ecmwf140(250,:)=(/ "2DSP", "2D wave spectra (multiple)", "m^2 s" /)
 ecmwf140(251,:)=(/ "2DFD", "2D wave spectra (single)", "m^2 s" /)
 
+first=.false.
+end if
+
 if (ain.GT.size(ecmwf140,DIM=1)) Then
   elemtxt=elemerr
 else
@@ -644,9 +662,12 @@ implicit none
 Integer, intent(in) :: ain
 Character*80, dimension(1:3), intent(out) :: elemtxt
 Character*80 elemerr(1:3)
-Character*80 ecmwf210(0:255,1:3)
+Character*80, save :: ecmwf210(0:255,1:3)
+logical, save :: first=.true.
 
 elemerr='???'
+
+if (first) then
 
 ecmwf210=""
 ecmwf210(1,:)=(/ "AERMR01", "Sea Salt Aerosol (0.03-0.5 um) Mixing Ratio", "kg/kg" /)
@@ -790,6 +811,9 @@ ecmwf210(214,:)=(/ "AOD670", "Total Aerosol Optical Depth at 670nm", "none" /)
 ecmwf210(215,:)=(/ "AOD865", "Total Aerosol Optical Depth at 865nm", "none" /)
 ecmwf210(216,:)=(/ "AOD1240", "Total Aerosol Optical Depth at 1240nm", "none" /)
 
+first=.false.
+end if
+
 if (ain.GT.size(ecmwf210,DIM=1)) Then
   elemtxt=elemerr
 else
@@ -811,47 +835,48 @@ Implicit None
 
 Integer, dimension(0:48), intent(in) :: alist
 Character*80, dimension(1:3), intent(out) :: elemtxt
-Character*80 elemerr(1:3)
-Character*80 meteotemp(0:15,1:3)
-Character*80 meteomoist(0:32,1:3)
-Character*80 meteomoment(0:24,1:3)
-Character*80 meteomass(0:14,1:3)
-Character*80 meteoshortradiate(0:6,1:3)
-Character*80 meteolongradiate(0:2,1:3)
-Character*80 meteocloud(0:13,1:3)
-Character*80 meteostability(0:9,1:3)
-Character*80 meteoaerosols(0:0,1:3)
-Character*80 meteogases(0:0,1:3)
-Character*80 meteoradar(0:8,1:3)
-Character*80 meteonuclear(0:8,1:3)
-Character*80 meteoatmos(0:16,1:3)
-Character*80 meteotext(0:0,1:3)
-Character*80 hydrobasic(0:4,1:3)
-Character*80 hydroprob(0:2,1:3)
-Character*80 landveg(0:8,1:3)
-Character*80 landsoil(0:4,1:3)
-Character*80 spaceimage(0:7,1:3)
-Character*80 spacequantitative(0:0,1:3)
-Character*80 oceanwaves(0:13,1:3)
-Character*80 oceancurrents(0:3,1:3)
-Character*80 oceanice(0:7,1:3)
-Character*80 oceansurface(0:1,1:3)
-Character*80 oceansubsurface(0:3,1:3)
-Character*80 nceplcltable000000(192:192,1:3)
-Character*80 nceplcltable000001(192:205,1:3)
-Character*80 nceplcltable000002(192:197,1:3)
-Character*80 nceplcltable000003(192:197,1:3)
-Character*80 nceplcltable000004(192:193,1:3)
-Character*80 nceplcltable000005(192:193,1:3)
-Character*80 nceplcltable000006(192:199,1:3)
-Character*80 nceplcltable000007(192:194,1:3)
-Character*80 nceplcltable000014(192:194,1:3)
-Character*80 nceplcltable000019(192:193,1:3)
-Character*80 nceplcltable000191(192:194,1:3)
-Character*80 nceplcltable001000(192:193,1:3)
-Character*80 nceplcltable002000(192:205,1:3)
-Character*80 nceplcltable002003(192:197,1:3)
-Character*80 nceplcltable003001(192:193,1:3)
+Character*80, save :: elemerr(1:3)
+Character*80, save :: meteotemp(0:15,1:3)
+Character*80, save :: meteomoist(0:32,1:3)
+Character*80, save :: meteomoment(0:24,1:3)
+Character*80, save :: meteomass(0:14,1:3)
+Character*80, save :: meteoshortradiate(0:6,1:3)
+Character*80, save :: meteolongradiate(0:2,1:3)
+Character*80, save :: meteocloud(0:13,1:3)
+Character*80, save :: meteostability(0:9,1:3)
+Character*80, save :: meteoaerosols(0:0,1:3)
+Character*80, save :: meteogases(0:0,1:3)
+Character*80, save :: meteoradar(0:8,1:3)
+Character*80, save :: meteonuclear(0:8,1:3)
+Character*80, save :: meteoatmos(0:16,1:3)
+Character*80, save :: meteotext(0:0,1:3)
+Character*80, save :: hydrobasic(0:4,1:3)
+Character*80, save :: hydroprob(0:2,1:3)
+Character*80, save :: landveg(0:8,1:3)
+Character*80, save :: landsoil(0:4,1:3)
+Character*80, save :: spaceimage(0:7,1:3)
+Character*80, save :: spacequantitative(0:0,1:3)
+Character*80, save :: oceanwaves(0:13,1:3)
+Character*80, save :: oceancurrents(0:3,1:3)
+Character*80, save :: oceanice(0:7,1:3)
+Character*80, save :: oceansurface(0:1,1:3)
+Character*80, save :: oceansubsurface(0:3,1:3)
+Character*80, save :: nceplcltable000000(192:192,1:3)
+Character*80, save :: nceplcltable000001(192:205,1:3)
+Character*80, save :: nceplcltable000002(192:197,1:3)
+Character*80, save :: nceplcltable000003(192:197,1:3)
+Character*80, save :: nceplcltable000004(192:193,1:3)
+Character*80, save :: nceplcltable000005(192:193,1:3)
+Character*80, save :: nceplcltable000006(192:199,1:3)
+Character*80, save :: nceplcltable000007(192:194,1:3)
+Character*80, save :: nceplcltable000014(192:194,1:3)
+Character*80, save :: nceplcltable000019(192:193,1:3)
+Character*80, save :: nceplcltable000191(192:194,1:3)
+Character*80, save :: nceplcltable001000(192:193,1:3)
+Character*80, save :: nceplcltable002000(192:205,1:3)
+Character*80, save :: nceplcltable002003(192:197,1:3)
+Character*80, save :: nceplcltable003001(192:193,1:3)
+logical, save :: first=.true.
 
 ! alist(0) = message number
 ! alist(1) = Centre
@@ -878,6 +903,9 @@ Character*80 nceplcltable003001(192:193,1:3)
 ! alist(48) = GRIB edition number
 
 elemerr='???'
+
+if (first) then
+
 
 meteotemp(0,:) =  (/ 'TMP',       'Temperature',                            'K' /)
 meteotemp(1,:) =  (/ 'VTMP',      'Virtual temperature',                    'K' /)
@@ -1216,6 +1244,9 @@ nceplcltable002003(197,:)=(/ 'POROS', 'Soil porosity', 'fraction' /)
 
 nceplcltable003001(192,:)=(/ 'ScatEstUWind', 'Scatterometer estimated u wind', 'unknown' /)
 nceplcltable003001(193,:)=(/ 'ScatEstVWind', 'Scatterometer estimated v wind', 'unknown' /)
+
+first=.false.
+end if
 
 
 ! Check standard meta data
@@ -1978,7 +2009,8 @@ Integer, dimension(0:48), intent(in) :: alist
 Integer, intent(out) :: indx
 Double Precision, intent(out) :: surfvalue,sndvalue
 Character*80, dimension(1:3), intent(out) :: surtxt
-Character*80, dimension(1:160,1:3) :: surface
+Character*80, dimension(1:160,1:3), save :: surface
+logical, save :: first = .true.
 
 ! alist(0) = message number
 ! alist(1) = Centre
@@ -2006,6 +2038,8 @@ Character*80, dimension(1:160,1:3) :: surface
 
 surface='???'
 
+if (first) then
+
 ! Define surface table
 
 surface(1,:) = (/   'SFC',   'Ground or water surface',       '-' /)
@@ -2031,6 +2065,9 @@ surface(109,:) = (/ 'PVL',   'Potential vorticity surface',   '(K M^2)/(kg s)' /
 surface(111,:) = (/ 'EtaL',  'Eta* level',                    '-' /)
 surface(117,:) = (/ 'unknown', 'Mixed layer depth',           'm' /)
 surface(160,:) = (/ 'DBSL',  'Depth below sea level',         'm' /)
+
+first=.false.
+end if
 
 ! Determine level data
 
@@ -2235,6 +2272,7 @@ Implicit None
 Integer, dimension(0:48), intent(in) :: alist
 Real, dimension(1:2,1:3), intent(out) :: alonlat
 Character*80, intent(out) :: gridtype
+real midval
 
 Select Case(alist(14))
   Case(0)
@@ -2244,8 +2282,10 @@ Select Case(alist(14))
     alonlat(2,2)=real(alist(20))/1000.
     alonlat(1,2)=real(alist(21))/1000.
     If (alist(19).GE.128) Then
-      alonlat(2,3)=real(alist(22))/1000.
-      alonlat(1,3)=real(alist(23))/1000.
+      alonlat(2,3)=abs(real(alist(22))/1000.)
+      if (alonlat(2,1).gt.alonlat(2,2)) alonlat(2,3)=-alonlat(2,3)
+      alonlat(1,3)=abs(real(alist(23))/1000.)
+      if (alonlat(1,1).gt.alonlat(1,2)) alonlat(1,3)=-alonlat(1,3)
     Else
       If ((alist(15).GT.1).AND.(alist(16).GT.1)) Then
         alonlat(2,3)=(alonlat(2,2)-alonlat(2,1))/real(alist(15)-1)
@@ -2257,9 +2297,13 @@ Select Case(alist(14))
     End If
 
   Case(10)
-    ! Un-supported
     gridtype="Mercator"
-    alonlat=0.
+    alonlat(2,1)=real(alist(17))/1000.
+    alonlat(1,1)=real(alist(18))/1000.
+    alonlat(2,2)=real(alist(20))/1000.
+    alonlat(1,2)=real(alist(21))/1000.
+    alonlat(2,3)=(alonlat(2,2)-alonlat(2,1))/real(alist(16)-1)
+    alonlat(1,3)=(alonlat(1,2)-alonlat(1,1))/real(alist(15)-1)
   
   Case(20)
     ! Un-supported
@@ -2270,6 +2314,25 @@ Select Case(alist(14))
     ! Un-supported
     gridtype="Lambert"
     alonlat=0.
+
+  Case(40)
+    gridtype="Gaussian"
+    alonlat(2,1)=real(alist(17))/1000.
+    alonlat(1,1)=real(alist(18))/1000.
+    alonlat(2,2)=real(alist(20))/1000.
+    alonlat(1,2)=real(alist(21))/1000.
+    If (alist(19).GE.128) Then
+      alonlat(2,3)=(alonlat(2,1)-alonlat(2,2))/real(2*alist(23)-1)
+      alonlat(2,3)=real(int(alonlat(2,3)*1000.))/1000.
+      midval=0.5*(alonlat(2,1)+alonlat(2,2))
+      alonlat(2,2)=0.5*(2.*midval-real(2*alist(23)-1)*alonlat(2,3))
+      alonlat(2,2)=real(int(alonlat(2,2)*1000.))/1000.
+      alonlat(2,1)=alonlat(2,2)+real(2*alist(23)-1)*alonlat(2,3)
+      alonlat(1,3)=real(alist(22))/1000.
+    Else
+      Write(6,*) "ERROR: Cannot determine grid spacing"
+      Stop
+    End If
   
   Case DEFAULT
     ! Un-supported
@@ -2392,6 +2455,8 @@ Integer, dimension(1:6) :: ndate
 Select Case(trng)
   case(0,1,113,114,118,123,124)
     fcstlen=tp1
+  case(2,3,4,5)
+    fcstlen=tp2
   case(10)
     fcstlen=tp1*256+tp2
   case default

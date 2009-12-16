@@ -566,23 +566,57 @@ If (foundgds) Then
   alist(14)=arr2int(dat(6),1)
   
   Select Case(alist(14))
-    Case(0,4) !Latlon
-      alist(14)=0
+    Case(0) !Latlon
       alist(15)=arr2int(dat(7:8),2)
       alist(16)=arr2int(dat(9:10),2)
       alist(17)=signarr2int(dat(11:13),3)
       alist(18)=signarr2int(dat(14:16),3)
-      If (alist(18).lt.0) alist(18)=alist(18)+360000
+      !If (alist(18).lt.0) alist(18)=alist(18)+360000
       alist(19)=arr2int(dat(17),1)
       alist(20)=signarr2int(dat(18:20),3)
       alist(21)=signarr2int(dat(21:23),3)
-      If (alist(21).lt.0) alist(21)=alist(21)+360000
+      !If (alist(21).lt.0) alist(21)=alist(21)+360000
       alist(22)=arr2int(dat(24:25),2)
       alist(23)=arr2int(dat(26:27),2)
     Case(1)
       alist(14)=10 ! for GRIB2 convention
+      alist(15)=arr2int(dat(7:8),2)
+      alist(16)=arr2int(dat(9:10),2)
+      alist(17)=signarr2int(dat(11:13),3)
+      alist(18)=signarr2int(dat(14:16),3)
+      !If (alist(18).lt.0) alist(18)=alist(18)+360000
+      alist(19)=arr2int(dat(17),1)
+      alist(20)=signarr2int(dat(18:20),3)
+      alist(21)=signarr2int(dat(21:23),3)
+      !If (alist(21).lt.0) alist(21)=alist(21)+360000
+      alist(22)=arr2int(dat(24:25),2)
+      alist(23)=arr2int(dat(26:27),2)      
     Case(3)
       alist(14)=30 ! for GRIB2 convention
+      alist(15)=arr2int(dat(7:8),2)
+      alist(16)=arr2int(dat(9:10),2)
+      alist(17)=signarr2int(dat(11:13),3)
+      alist(18)=signarr2int(dat(14:16),3)
+      !If (alist(18).lt.0) alist(18)=alist(18)+360000
+      alist(19)=arr2int(dat(17),1)
+      alist(20)=signarr2int(dat(18:20),3)
+      alist(21)=signarr2int(dat(21:23),3)
+      !If (alist(21).lt.0) alist(21)=alist(21)+360000
+      alist(22)=arr2int(dat(24:25),2)
+      alist(23)=arr2int(dat(26:27),2)      
+    Case(4) !Gaussian
+      alist(14)=40 ! for GRIB2 convention
+      alist(15)=arr2int(dat(7:8),2)
+      alist(16)=arr2int(dat(9:10),2)
+      alist(17)=signarr2int(dat(11:13),3)
+      alist(18)=signarr2int(dat(14:16),3)
+      !If (alist(18).lt.0) alist(18)=alist(18)+360000
+      alist(19)=arr2int(dat(17),1)
+      alist(20)=signarr2int(dat(18:20),3)
+      alist(21)=signarr2int(dat(21:23),3)
+      !If (alist(21).lt.0) alist(21)=alist(21)+360000
+      alist(22)=arr2int(dat(24:25),2)
+      alist(23)=arr2int(dat(26:27),2)
     Case(5)
       alist(14)=20 ! for GRIB2 convention
     Case DEFAULT
@@ -664,8 +698,10 @@ Integer*1, dimension(1:5) :: indat
 Integer*1, dimension(1:16) :: dat
 Integer*1 tmp
 Integer gribend,multigrid,packsize,ierr
-Integer i,minstart
+Integer i,minstart,oldpacksize
 Integer getmsgsize
+
+oldpacksize=0
 
 ! Rewind if we have passed the message
 If (gribpos.GE.msgnum) Then
@@ -688,17 +724,18 @@ Do While (gribpos.LT.msgnum)
   End Select
 
   ! Allocate arrays
-  If (gribpos.EQ.(msgnum-1)) then
+  if (packsize.gt.oldpacksize) then
+    if (allocated(datapack)) then
+      deallocate(datapack)
+    end if
     Allocate(datapack(1:packsize))
-    datapack=""
+    oldpacksize=packsize
+  end if
 
-    datapack(1:minstart-1)=dat(1:minstart-1)
+  datapack(1:minstart-1)=dat(1:minstart-1)
 
-    ! Read remaining packed data (assume disk cache for speed...)
-    Read(UNIT=gribunit,IOSTAT=ierr) datapack(minstart:packsize)
-  Else
-    Read(UNIT=gribunit,IOSTAT=ierr) (tmp,i=minstart,packsize)
-  End if
+  ! Read remaining packed data (assume disk cache for speed...)
+  Read(UNIT=gribunit,IOSTAT=ierr) datapack(minstart:packsize)
 
   If (ierr.NE.0) then
     Write(6,*) "ERROR: Cannot read GRIB message."
@@ -712,9 +749,9 @@ End Do
 Write(6,'(T2A,T31I6,T37A,T39I6,T45A)') "Unpacking message number:",msgnum," (",spliceskip,")"
 Select Case(dat(8))
   Case(1)
-    Call unpackgrib1(datapack,packsize,dataunpack,unpacksize) 
+    Call unpackgrib1(datapack(1:packsize),packsize,dataunpack,unpacksize) 
   Case DEFAULT !GRIB2
-    Call gf_getfld(Char(datapack),packsize,spliceskip,.TRUE.,1,gfld,ierr)
+    Call gf_getfld(Char(datapack(1:packsize)),packsize,spliceskip,.TRUE.,1,gfld,ierr)
     If (ierr.NE.0) Then
       Write(6,*) "ERROR: Error in unpack lib (",ierr,")"
       Stop

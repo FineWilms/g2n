@@ -162,8 +162,8 @@ If ((alonlat(1,3).EQ.0.).OR.(alonlat(2,3).EQ.0.)) Then
   Write(6,*) "ERROR: Lat/Lon step equals zero"
   Stop
 Else
-  dimnum(1)=Int(Abs(alonlat(1,2)-alonlat(1,1))/alonlat(1,3))+1
-  dimnum(2)=Int(Abs(alonlat(2,2)-alonlat(2,1))/alonlat(2,3))+1
+  dimnum(1)=nInt(Abs(alonlat(1,2)-alonlat(1,1))/abs(alonlat(1,3)))+1
+  dimnum(2)=nInt(Abs(alonlat(2,2)-alonlat(2,1))/abs(alonlat(2,3)))+1
   if (alonlat(1,1).eq.alonlat(1,2)) then
     dimnum(1)=int(360./alonlat(1,3))+1
   end if
@@ -293,98 +293,218 @@ End
 ! This subroutine interpolates 2D data to lat/lon grid
 !
 
-Subroutine interpolate2dgrid(rawslice,inlonlat,indimnum,rawfield,outlonlat,outdimnum,ingridnum)
+Subroutine interpolate2dgrid(rawslice,inlonlat,indimnum,rawfield,outlonlat,outdimnum,ingridnum,gridout)
 
 Implicit None
 
-Integer, intent(in) :: ingridnum
+Integer, intent(in) :: ingridnum,gridout
 Integer, dimension(1:3), intent(in) :: indimnum,outdimnum
 Real, dimension(1:indimnum(1),1:indimnum(2)), intent(in) :: rawslice
 Real, dimension(1:outdimnum(1),1:outdimnum(2)), intent(out) :: rawfield
 Real, dimension(1:2,1:3), intent(in) :: inlonlat,outlonlat
-Integer i,j,a,b,adva,advb
-Real, dimension(1:2,1:2)  :: stp
-Real x,y
+real, dimension(:), allocatable :: latarr
+Integer i,j,a,b,adva,advb,jj,nsize
+Real, dimension(1:2,1:2)  :: stp,rawdata
+Real x,y,rawsum
 Real ipol
 
-! Select coordinate systems to convert between
-Select Case(ingridnum)
+! No conversion needed
+If (All(inlonlat.EQ.outlonlat).AND.All(indimnum(1:2).EQ.outdimnum(1:2)) &
+    .and.gridout.eq.ingridnum) Then
+  rawfield=rawslice
+  Return
+End If
 
-  Case(0)
-    ! No conversion needed
-    If (All(inlonlat.EQ.outlonlat).AND.All(indimnum(1:2).EQ.outdimnum(1:2))) Then
-      rawfield=rawslice
-      Return
-    End If
+! select output grid
+select case(gridout)
 
-    ! Determine 'direction' of grid    
-    Do i=1,2
-      Do j=1,2
-        If (j.EQ.1) Then
-          If (inlonlat(i,1).GT.inlonlat(i,2)) Then
-            stp(i,j)=-Abs(inlonlat(i,3))
-          Else
-            stp(i,j)=Abs(inlonlat(i,3))
-          End If
-        Else
-          If (outlonlat(i,1).GT.outlonlat(i,2)) Then
-            stp(i,j)=-Abs(outlonlat(i,3))
-          Else
-            stp(i,j)=Abs(outlonlat(i,3))
-          End If
-        End If
-      End Do
-    End Do
+  case(0) ! reg
     
-    Do i=1,outdimnum(1)
-      Do j=1,outdimnum(2)
-      
-        x=(stp(1,2)*Real(i-1)+outlonlat(1,1)-inlonlat(1,1))/stp(1,1)+1.
-        y=(stp(2,2)*Real(j-1)+outlonlat(2,1)-inlonlat(2,1))/stp(2,1)+1.
-      
-        a=Int(x)
-        b=Int(y)
-        x=x-Real(a)
-        y=y-Real(b)
-	
-        adva=1
-        advb=1
-	
-	    If (a.GE.indimnum(1)) Then
-	      adva=0
-	      x=0.
-	    End If
-	
-	    If (b.GE.indimnum(2)) Then
-	      advb=0
-	      y=0.
-	    End If
+    ! Select coordinate systems to convert between
+    Select Case(ingridnum)
 
-        rawfield(i,j)=ipol(rawslice(a:a+adva,b:b+advb),x,y)
-	
-      End Do
-    End Do  
+      Case(0)
 
-  Case(10)
-    Write(6,*) "ERROR: Conversion from Mercator to Lat/Lon is unsupported"
+        ! Determine 'direction' of grid    
+        Do i=1,2
+          Do j=1,2
+            If (j.EQ.1) Then
+              If (inlonlat(i,1).GT.inlonlat(i,2)) Then
+                stp(i,j)=-Abs(inlonlat(i,3))
+              Else
+                stp(i,j)=Abs(inlonlat(i,3))
+              End If
+            Else
+              If (outlonlat(i,1).GT.outlonlat(i,2)) Then
+                stp(i,j)=-Abs(outlonlat(i,3))
+              Else
+                stp(i,j)=Abs(outlonlat(i,3))
+              End If
+            End If
+          End Do
+        End Do
+    
+        Do i=1,outdimnum(1)
+          Do j=1,outdimnum(2)
+      
+            x=(stp(1,2)*Real(i-1)+outlonlat(1,1)-inlonlat(1,1))/stp(1,1)+1.
+            y=(stp(2,2)*Real(j-1)+outlonlat(2,1)-inlonlat(2,1))/stp(2,1)+1.
+      
+            a=Int(x)
+            b=Int(y)
+            x=x-Real(a)
+            y=y-Real(b)
+	
+            adva=1
+            advb=1
+	
+            If (a.GE.indimnum(1)) Then
+              adva=0
+              x=0.
+            End If
+	
+            If (b.GE.indimnum(2)) Then
+              advb=0
+              y=0.
+            End If
+
+            rawdata=0.
+            rawdata(1:1+adva,1:1+advb)=rawslice(a:a+adva,b:b+advb)
+            if (any(rawdata.ne.0.)) then
+              rawsum=sum(rawdata,rawdata.ne.0.)/real(count(rawdata.ne.0.))
+              where (rawdata.eq.0.)
+                rawdata=rawsum
+              end where
+            end if
+
+            rawfield(i,j)=ipol(rawdata,x,y)
+	
+          End Do
+        End Do  
+
+      Case(10)
+        Write(6,*) "ERROR: Conversion from Mercator to Lat/Lon is unsupported"
+        Write(6,*) "       Please contact MJT and get him to fix this"
+        Stop
+      
+      Case(20)
+        Write(6,*) "ERROR: Conversion from Polar to Lat/Lon is unsupported"
+        Write(6,*) "       Please contact MJT and get him to fix this"
+        Stop
+  
+      Case(30)
+        Write(6,*) "ERROR: Conversion from Lambert to Lat/Lon is unsupported"
+        Write(6,*) "       Please contact MJT and get him to fix this"    
+        Stop
+
+      Case(40)
+        ! Calculate gaussian coordinates
+        nsize=2*nint((inlonlat(2,1)-inlonlat(2,2))/(2.*inlonlat(2,3)))
+        if (nsize.ne.indimnum(2)) then
+          write(6,*) "ERROR: Mismatch in gauss dimension"
+          write(6,*) "nsize,indim(2) ",nsize,indimnum(2)
+          stop
+        end if
+        allocate(latarr(nsize))
+        call getgauss(inlonlat,latarr,nsize)
+
+        ! Determine 'direction' of grid    
+        Do i=1,2
+          Do j=1,2
+            If (j.EQ.1) Then
+              If (inlonlat(i,1).GT.inlonlat(i,2)) Then
+                stp(i,j)=-Abs(inlonlat(i,3))
+              Else
+                stp(i,j)=Abs(inlonlat(i,3))
+              End If
+            Else
+              If (outlonlat(i,1).GT.outlonlat(i,2)) Then
+                stp(i,j)=-Abs(outlonlat(i,3))
+              Else
+                stp(i,j)=Abs(outlonlat(i,3))
+              End If
+            End If
+          End Do
+        End Do
+    
+        Do i=1,outdimnum(1)
+          Do j=1,outdimnum(2)
+      
+            x=(stp(1,2)*Real(i-1)+outlonlat(1,1)-inlonlat(1,1))/stp(1,1)+1.
+	
+            do jj=1,nsize-1
+              y=stp(2,2)*Real(j-1)+outlonlat(2,1)-latarr(jj)
+              y=y/(latarr(jj+1)-latarr(jj))
+              if (y.ge.0..and.y.le.1.) then
+                y=y+real(jj)
+                exit
+              end if
+            end do
+      
+            a=Int(x)
+            b=Int(y)
+            x=x-Real(a)
+            y=y-Real(b)
+	
+            adva=1
+            advb=1
+	
+            If (a.GE.indimnum(1)) Then
+              adva=0
+              x=0.
+            End If
+	
+            If (b.GE.indimnum(2)) Then
+              advb=0
+              y=0.
+            End If
+	
+            rawdata=0.
+            rawdata(1:1+adva,1:1+advb)=rawslice(a:a+adva,b:b+advb)
+            if (any(rawdata.ne.0.)) then
+              rawsum=sum(rawdata,rawdata.ne.0.)/real(count(rawdata.ne.0.))
+              where (rawdata.eq.0.)
+                rawdata=rawsum
+              end where
+            end if
+
+            rawfield(i,j)=ipol(rawdata,x,y)
+	
+          End Do
+        End Do
+        deallocate(latarr)
+
+      Case DEFAULT
+        Write(6,*) "ERROR: 2D coordinate conversion is unsupported"
+        Stop
+
+    End Select
+
+  case(10)
+    Write(6,*) "ERROR: Conversion to Mercator is unsupported"
     Write(6,*) "       Please contact MJT and get him to fix this"
     Stop
-      
-  Case(20)
-    Write(6,*) "ERROR: Conversion from Polar to Lat/Lon is unsupported"
+
+  case(20)
+    Write(6,*) "ERROR: Conversion to Polar is unsupported"
     Write(6,*) "       Please contact MJT and get him to fix this"
     Stop
-  
-  Case(30)
-    Write(6,*) "ERROR: Conversion from Lambert to Lat/Lon is unsupported"
-    Write(6,*) "       Please contact MJT and get him to fix this"    
+
+  case(30)
+    Write(6,*) "ERROR: Conversion to Lambert is unsupported"
+    Write(6,*) "       Please contact MJT and get him to fix this"
     Stop
-  
-  Case DEFAULT
+
+  case(40)
+    Write(6,*) "ERROR: Conversion to Gaussian is unsupported"
+    Write(6,*) "       Please contact MJT and get him to fix this"
+    Stop  
+    
+  case DEFAULT
     Write(6,*) "ERROR: 2D coordinate conversion is unsupported"
     Stop
 
-End Select
+end select
 
 Return
 End
@@ -526,18 +646,22 @@ Double Precision surfvalue,sndvalue
 Logical tsta
 
 Call getelemdesc(alist,elemtxt)
+tsta=(elemtxt(1).EQ.splicename).and.All(datelist(1:6).eq.alist(42:47))
+if (.not.tsta) then
+  validsplice=.false.
+  return
+end if
+
 Call getelemlvl(alist,indx,surfvalue,sndvalue,surtxt)
+validsplice=tsta.AND.(surtxt(1).EQ.spliceunit)
+if (validsplice) return
+
 px=len(spliceunit)
 pd=scan(spliceunit,'1234567890.')
 if (pd.gt.0) then
   pe=verify(spliceunit(pd:px),'1234567890.')+pd-2
   if (pe.lt.pd) pe=px
-end if
 
-tsta=(elemtxt(1).EQ.splicename).and.All(datelist(1:6).eq.alist(42:47))
-validsplice=tsta.AND.(surtxt(1).EQ.spliceunit)
-
-If ((.not.validsplice).and.tsta.and.(pd.gt.0)) then
   if (int(surfvalue).eq.surfvalue) then
     write(valtxt,'(I7)') nint(surfvalue)
   else
@@ -654,6 +778,150 @@ End do
 
 datenumin=min(datenumin,elemnum)
 datelist(1:datenumin,:)=worklist(1:datenumin,:)
+
+return
+end
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! This subroutine calculates the gaussian coordinates
+! based on wgrib2
+!
+
+subroutine getgauss(latlon,latarr,nlat)
+
+implicit none
+
+integer, intent(in) :: nlat
+real, dimension(2,3), intent(in) :: latlon
+real, dimension(nlat), intent(out) :: latarr
+integer nzero,i
+real, dimension(nlat) :: cosc,colat,sinc
+real, parameter :: pi = 3.1415927
+real, parameter :: xlim = 1.E-7
+real g,gm,gp,gt,delta,a,b,np1,d
+real gord
+
+np1=nlat+1
+a=real(nlat)*real(np1)/sqrt(4.*real(np1)*real(np1)-1.)
+b=real(np1)*real(nlat)/sqrt(4.*real(nlat)*real(nlat)-1.)
+
+nzero=nlat/2
+
+! The following code is based on geo.c from wgrib2
+do i=1,nzero
+  cosc(i)=sin((i-0.5)*pi/real(nlat)+pi*0.5)
+end do
+do i=1,nzero
+  g=gord(nlat,cosc(i))
+  gm=gord(nlat-1,cosc(i))
+  gp=gord(nlat+1,cosc(i))
+  gt=(cosc(i)*cosc(i)-1.)/(a*gp-b*gm)
+  delta=g*gt
+  cosc(i)=cosc(i)-delta
+  do while (abs(delta).gt.xlim)
+    g=gord(nlat,cosc(i))
+    gm=gord(nlat-1,cosc(i))
+    gp=gord(nlat+1,cosc(i))
+    gt=(cosc(i)*cosc(i)-1.)/(a*gp-b*gm)
+    delta=g*gt
+    cosc(i)=cosc(i)-delta
+  end do
+end do
+do i=1,nzero
+  colat(i)=acos(cosc(i))
+  sinc(i)=sin(colat(i))
+end do
+if (mod(nlat,2).ne.0) then
+  i=nzero+1
+  cosc(i)=0.
+  d=gord(nlat-1,cosc(i))
+  d=d*d*real(nlat)*real(nlat)
+  colat(i)=pi*0.5
+  sinc(i)=1.
+end if
+do i=nlat-nzero+1,nlat
+  cosc(i)=-cosc(nlat+1-i)
+  colat(i)=pi-colat(nlat+1-i)
+  sinc(i)=sinc(nlat+1-i)
+end do
+do i=1,nlat
+  latarr(i)=acos(sinc(i))*180./pi
+  if (i.gt.nlat/2) latarr(i)=-latarr(i)
+end do
+!latarr=-latarr
+
+!print *,"TEST latarr ",latarr
+
+return
+end
+
+real function gord(n,x)
+
+implicit none
+
+integer, intent(in) :: n
+real, intent(in) :: x
+real colat,c1,fn,ang,s1,c4,a,b,fi
+integer i
+
+colat=acos(x)
+c1=sqrt(2.)
+fn=real(n)
+ang=fn*colat
+s1=0.
+c4=1.
+a=-1.
+b=0.
+
+do i=1,n
+  fi=real(i)
+  c1=c1*sqrt(1.-1./(4.*fi*fi))
+end do
+do i=0,n,2
+  if (i.eq.n) c4=0.5*c4
+  s1=s1+c4*cos(ang)
+  a=a+2.
+  b=b+1.
+  fi=real(i)
+  ang=colat*(fn-fi-2.)
+  c4=(a*(fn-b+1.)/(b*(fn+fn-a)))*c4
+end do
+
+gord=s1*c1
+
+return
+end
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! This subroutine calculates the mercator coordinates
+! based on wgrib2
+!
+
+subroutine getmerc(latlon,latarr,nlat)
+
+implicit none
+
+integer, intent(in) :: nlat
+real, dimension(2,3), intent(in) :: latlon
+real, dimension(nlat), intent(out) :: latarr
+real, parameter :: pi = 3.1415927
+real n,s,dy,tmp
+integer j
+
+s=latlon(2,1)
+n=latlon(2,2)
+
+s=log(tan((45.+0.5*s)*pi/180.))
+n=log(tan((45.+0.5*n)*pi/180.))
+dy=(n-s)/real(nlat-1)
+
+do j=1,nlat
+  latarr(j)=(atan(exp(s+real(j-1)*dy))*180./pi-45.)*2.
+end do
+
+!print *,"latarr ",latarr
+!stop
 
 return
 end

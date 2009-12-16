@@ -17,7 +17,7 @@ Integer splicenum
 Logical levinvert
 Namelist /splice/ outputunit,splicename,spliceunit,newname,levinvert
 
-Write(6,*) "g2n - GRIB1/2 to NetCDF converter (MAY-09)"
+Write(6,*) "g2n - GRIB1/2 to NetCDF converter (DEC-09)"
 Write(6,*) "Currently a work in progress.  There may be problems..."
 
 ! Read switches
@@ -184,7 +184,7 @@ Integer, dimension(1:4,1:2) :: dimnumtmp
 Integer multidate,msgnum,elemnum,maxelemnum,gribpos
 Integer gribunit,ierr,maxlvlnum
 Integer maxdatenum,datenum
-Integer i,t
+Integer i,t,gridout
 Real, dimension(:,:,:), allocatable :: dataout
 Real, dimension(:), allocatable :: alvl,tmpalvl,tmplvl
 Real, dimension(1:2,1:3) :: alonlat
@@ -222,6 +222,7 @@ Else
 End If
 Deallocate(tempelemlist)
 
+gridout=minval(elemlist(:,14))
   
 If (typename.NE.'none') Then
   ! Determine start locations of spliced elements
@@ -263,6 +264,8 @@ If (typename.NE.'none') Then
     alvl(1:dimnum(3))=tmpalvl(1:dimnum(3))
   End if
   Deallocate(tmpalvl)
+  
+  gridout=minval(elemlist(splicelist(:,1),14),splicelist(:,1).gt.0)
 End If
 
 
@@ -290,7 +293,7 @@ End If
 Select Case(typename)
   Case('nc')
     Call nccreatefile(ncidarr,outfile,dimnum(1:3),outputunit,adate,splicename,splicelist,varid, &
-                      splicenum,datelist,datenum,elemlist,elemnum,alonlat,alvl)
+                      splicenum,datelist,datenum,elemlist,elemnum,alonlat,alvl,gridout)
   Case('none')
   Case DEFAULT
     Write(6,*) 'ERROR: Unreconised output type'
@@ -325,7 +328,7 @@ If (typename.NE.'none') Then
         ! Get spliced element data (also interpolate to lat/lon/lvl grid)
         Call unpackgribdata(gribunit,gribpos,dataout(1:dimnumtmp(1,2),1:dimnumtmp(2,2),1:dimnumtmp(3,2)), &
                             alonlat,alvl,dimnumtmp(1:3,2),datelist(t,:),elemlist,elemnum, &
-			    outputunit(2),splicename(i,:))
+			    outputunit(2),splicename(i,:),gridout)
 
         ! Write spliced element data to output file    
         Select Case(typename)
@@ -368,11 +371,11 @@ End
 !
 
 Subroutine unpackgribdata(gribunit,gribpos,dataout,alonlat,alvl,dimnum, &
-                          datelist,elemlist,elemnum,ounit,splicename)
+                          datelist,elemlist,elemnum,ounit,splicename,gridout)
 
 Implicit None
 
-Integer, intent(in) :: gribunit,gribpos,elemnum
+Integer, intent(in) :: gribunit,gribpos,elemnum,gridout
 Integer, dimension(1:elemnum,0:48), intent(in) :: elemlist
 Integer, dimension(1:3), intent(in) :: dimnum
 Integer, dimension(1:8), intent(in) :: datelist
@@ -431,10 +434,10 @@ Else
     ! Get lon,lat size
     Call getelemlonlat(elemlist(fieldlist(i),:),fieldlonlat,gridtype)
     Do j=1,2
-      If (fieldlonlat(j,3).LE.0.) then
+      If (fieldlonlat(j,3).EQ.0.) then
         fielddimnum(j)=1
       Else
-        fielddimnum(j)=Int(Abs(fieldlonlat(j,2)-fieldlonlat(j,1))/fieldlonlat(j,3))+1
+        fielddimnum(j)=nInt(Abs(fieldlonlat(j,2)-fieldlonlat(j,1))/abs(fieldlonlat(j,3)))+1
       End If
     End Do
 
@@ -471,7 +474,8 @@ Else
 
     ! Need to interpolate 2D grid so that the 3D field is self-consistant
     ! Cannot use 3D interpolation since grid may not be regulat lat/lon
-    Call interpolate2dgrid(rawslice,fieldlonlat,fielddimnum,rawfield(:,:,locpos(1)),alonlat,dimnum,elemlist(fieldlist(i),14))
+    Call interpolate2dgrid(rawslice,fieldlonlat,fielddimnum,rawfield(:,:,locpos(1)),alonlat,dimnum, &
+                           elemlist(fieldlist(i),14),gridout)
   
   End Do
 
@@ -493,13 +497,13 @@ End
 !
 
 Subroutine nccreatefile(ncidarr,outfile,dimnum,outputunit,adate,splicename,splicelist,varid, &
-                        splicenum,datelist,datenum,elemlist,elemnum,alonlat,alvl)
+                        splicenum,datelist,datenum,elemlist,elemnum,alonlat,alvl,gridout)
 
 Implicit None
 
 Include "netcdf.inc"
 
-Integer, intent(in) :: splicenum,elemnum,datenum
+Integer, intent(in) :: splicenum,elemnum,datenum,gridout
 Integer, dimension(0:4), intent(inout) :: ncidarr
 Integer, dimension(1:3), intent(in) :: dimnum
 Integer, dimension(1:6), intent(in) :: adate
@@ -511,13 +515,14 @@ Real, dimension(1:2,1:3), intent(in) :: alonlat
 Real, dimension(1:dimnum(3)), intent(in) :: alvl
 Real, dimension(1:3,1:2) :: alonlattmp
 Real, dimension(1:datenum) :: atime
+real, dimension(1:dimnum(2)) :: latarr
 Real smin,sadd
 Character(len=*), intent(in) :: outfile
 Character(len=*), dimension(1:2), intent(in) :: outputunit
 Character(len=*), dimension(1:splicenum,1:3), intent(in) :: splicename
 Integer, dimension(1:4) :: dimid,dimout
 Integer, dimension(1:6) :: sdate
-Integer i,j
+Integer i,j,nsize
 Character*80, dimension(1:3) :: elemdesc,elemtxt
 Logical test
 
@@ -525,7 +530,17 @@ Do i=1,2
   alonlattmp(:,i)=alonlat(i,:)
 End Do
 
-Call ncinit(ncidarr,outfile,dimnum,dimid,outputunit,adate)
+select case(gridout)
+  case(0)
+    Call ncinit(ncidarr,outfile,dimnum,dimid,outputunit,adate)
+  case(10,40)
+    Call ncinitgen(ncidarr,outfile,dimnum,dimid,outputunit,adate,'uneven')  
+  case DEFAULT
+    write(6,*) "ERROR: Unsupported output grid type ",gridout
+    write(6,*) "       Please contact MJT and get him to fix this"
+    stop
+end select
+  
 Do i=1,splicenum
   If (splicelist(i,1).gt.0) then
     Call getelemdesc(elemlist(splicelist(i,1),:),elemtxt)
@@ -576,7 +591,34 @@ end do
 dimout(1:3)=dimnum(1:3)
 dimout(4)=datenum
 
-Call nclonlatgen(ncidarr,dimid,alonlattmp,alvl,atime,dimout)
+select case(gridout)
+  case(0) ! Reg
+    Call nclonlatgen(ncidarr,dimid,alonlattmp,alvl,atime,dimout)
+  case(10) ! Merc
+    nsize=1+nint((alonlat(2,2)-alonlat(2,1))/(alonlat(2,3)))
+    if (nsize.ne.dimnum(2)) then
+      write(6,*) "ERROR: Mismatch in gauss dimension"
+      write(6,*) "nsize,indim(2) ",nsize,dimnum(2)
+      stop
+    end if    
+    call getmerc(alonlat,latarr,nsize)
+    call nclonlatarr(ncidarr,dimid,alonlat(1,:),latarr,alvl,atime,dimout)
+        
+  case(40) ! Gauss
+    nsize=2*nint((alonlat(2,1)-alonlat(2,2))/(2.*alonlat(2,3)))
+    if (nsize.ne.dimnum(2)) then
+      write(6,*) "ERROR: Mismatch in gauss dimension"
+      write(6,*) "nsize,indim(2) ",nsize,dimnum(2)
+      stop
+    end if    
+    call getgauss(alonlat,latarr,nsize)
+    call nclonlatarr(ncidarr,dimid,alonlat(1,:),latarr,alvl,atime,dimout)
+  
+  case DEFAULT
+    write(6,*) "ERROR: Unsupported output grid type ",gridout
+    write(6,*) "       Please contact MJT and get him to fix this"
+    stop
+end select
 
 Return
 End
