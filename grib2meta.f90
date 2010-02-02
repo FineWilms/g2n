@@ -2285,6 +2285,20 @@ Select Case(alist(14))
       if (alonlat(2,1).gt.alonlat(2,2)) alonlat(2,3)=-alonlat(2,3)
       alonlat(1,3)=abs(real(alist(23))/1000.)
       if (alonlat(1,1).gt.alonlat(1,2)) alonlat(1,3)=-alonlat(1,3)
+      if (alist(16).gt.1) then
+        if (abs((alonlat(2,2)-alonlat(2,1))/real(alist(16)-1)) &
+	    .lt.abs(0.99*alonlat(2,3))) then
+	  alonlat(2,3)=real(alist(22))/1000.	    
+	  alonlat(2,2)=alonlat(2,1)+alonlat(2,3)*real(alist(16)-1)
+	end if
+      end if
+      if (alist(15).gt.1) then
+        if (abs((alonlat(1,2)-alonlat(1,1))/real(alist(15)-1)) &
+	    .lt.abs(0.99*alonlat(1,3))) then
+          alonlat(1,3)=real(alist(23))/1000.
+	  alonlat(1,2)=alonlat(1,1)+alonlat(1,3)*real(alist(15)-1)
+	end if
+      end if
     Else
       If ((alist(15).GT.1).AND.(alist(16).GT.1)) Then
         alonlat(2,3)=(alonlat(2,2)-alonlat(2,1))/real(alist(15)-1)
