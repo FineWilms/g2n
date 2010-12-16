@@ -14,10 +14,10 @@ Character*20, dimension(:,:), allocatable :: splicestore
 Character*20, dimension(1:2) :: outputunit
 Character*80 typename,returnoption
 Integer splicenum
-Logical levinvert
-Namelist /splice/ outputunit,splicename,spliceunit,newname,levinvert
+Logical levinvert,badecmwf
+Namelist /splice/ outputunit,splicename,spliceunit,newname,levinvert,badecmwf
 
-Write(6,*) "g2n - GRIB1/2 to NetCDF converter (DEC-09)"
+Write(6,*) "g2n - GRIB1/2 to NetCDF converter (DEC-10)"
 Write(6,*) "Currently a work in progress.  There may be problems..."
 
 ! Read switches
@@ -37,6 +37,7 @@ splicename=''
 spliceunit=''
 newname=splicename
 levinvert=.TRUE.
+badecmwf=.FALSE.
 
 ! Read namelist
 
@@ -55,7 +56,7 @@ splicestore(1:splicenum,2)=spliceunit(1:splicenum)
 splicestore(1:splicenum,3)=newname(1:splicenum)
 
 ! Convert
-Call convert(options,nopts,outputunit,splicestore,splicenum,levinvert)
+Call convert(options,nopts,outputunit,splicestore,splicenum,levinvert,badecmwf)
 
 ! Clean-up
 Deallocate (options,splicestore)
@@ -92,6 +93,7 @@ Write(6,*)
 Write(6,*) "  &splice"
 Write(6,*) '    outputunit  = "pres", "hPa"'
 Write(6,*) '    levinvert   = .TRUE.'
+Write(6,*) '    badecmwf    = .FALSE.'
 Write(6,*) '    splicename  = "HGT",  "TMP",  "UGRD", "VGRD", "TMP"'
 Write(6,*) '    spliceunit  = "ISBL", "ISBL", "ISBL", "ISBL", "0.1 DBLL"'
 Write(6,*) '    newname     = "hgt",  "temp", "u",    "v",    "tgg1"'
@@ -100,6 +102,7 @@ Write(6,*)
 Write(6,*) "  where:"
 Write(6,*) "    outputunit  = name and units for levels in the output file"
 Write(6,*) "    levinvert   = order of output levels (FALSE = small to large)"
+Write(6,*) "    badecmwf    = Ignore forecast time (used for ERA-40 reanalyses)"
 Write(6,*) "    splicename  = an array of field names to be stored"
 Write(6,*) "    spliceunit  = an array of unit names for splicename"
 Write(6,*) "    newname     = an array of output names for splicename"
@@ -161,7 +164,7 @@ End
 ! to the output file
 !
 
-Subroutine convert(options,nopts,outputunit,splicename,splicenum,levinvert)
+Subroutine convert(options,nopts,outputunit,splicename,splicenum,levinvert,badecmwf)
 
 Implicit None
 
@@ -169,7 +172,7 @@ Integer, intent(in) :: nopts,splicenum
 Character(len=*), dimension(nopts,2), intent(in) :: options
 Character(len=*), dimension(1:splicenum,1:3), intent(in) :: splicename
 Character(len=*), dimension(1:2), intent(in) :: outputunit
-Logical, intent(in) :: levinvert
+Logical, intent(in) :: levinvert,badecmwf
 Character*80 infile,outfile,typename,lunit
 Character*16 dateout
 Character*80 returnoption
@@ -212,11 +215,11 @@ Write(6,*) "Reading metadata..."
 maxelemnum=999
 elemnum=maxelemnum
 Allocate(tempelemlist(1:elemnum,0:48))
-Call getgriddata(gribunit,msgnum,tempelemlist,elemnum)
+Call getgriddata(gribunit,msgnum,tempelemlist,elemnum,badecmwf)
 Allocate(elemlist(1:elemnum,0:48))
 If (elemnum.GT.maxelemnum) Then
   Write(6,*) "WARN: Metadata buffer size exceeded - Allocating more memory"
-  Call getgriddata(gribunit,msgnum,elemlist,elemnum)
+  Call getgriddata(gribunit,msgnum,elemlist,elemnum,badecmwf)
 Else
   elemlist(1:elemnum,:)=tempelemlist(1:elemnum,:)
 End If

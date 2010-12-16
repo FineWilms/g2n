@@ -7,7 +7,7 @@
 ! each grid in a GRIB file
 !
 
-Subroutine getgriddata(gribunit,msgnum,elemlist,elemnum)
+Subroutine getgriddata(gribunit,msgnum,elemlist,elemnum,badecmwf)
 
 Implicit None
 
@@ -17,6 +17,7 @@ Integer, intent(out) :: msgnum
 Integer, dimension(1:elemnum,0:48), intent(out) :: elemlist
 Integer, dimension(0:48) :: alist
 Integer gribend,multigrid,msgcount,elemcount
+Logical, intent(in) :: badecmwf
 
 ! alist(0) = message number
 ! alist(1) = Centre
@@ -51,7 +52,7 @@ elemcount=0
 Rewind(gribunit)
 Do While (gribend.EQ.0)
 
-  Call scangribhead(gribunit,gribend,multigrid,alist)
+  Call scangribhead(gribunit,gribend,multigrid,alist,badecmwf)
   If (gribend.EQ.0) Then
     If (multigrid.EQ.0) msgcount=msgcount+1
     elemcount=elemcount+1
@@ -80,7 +81,7 @@ End
 ! This subroutine scans a single grid header
 !
 
-Subroutine scangribhead(gribunit,gribend,multigrid,alist)
+Subroutine scangribhead(gribunit,gribend,multigrid,alist,badecmwf)
 
 Implicit None
 
@@ -88,12 +89,13 @@ Integer, intent(in) :: gribunit
 Integer, dimension(0:48), intent(inout) :: alist
 Integer, intent(out) :: gribend,multigrid
 Integer firstsec
+Logical, intent(in) :: badecmwf
 
 ! Check for multigrid or section 0 (i.e., next message)
 ! Note: prodtype is unchanged in a multigrid message
 
 ! Assume it is a multigrid until proven otherwise
-Call gribsec2340(gribunit,gribend,firstsec,alist,.true.)
+Call gribsec2340(gribunit,gribend,firstsec,alist,.true.,badecmwf)
 If (firstsec.GT.0) Then
   multigrid=1
 Else
@@ -104,13 +106,13 @@ End If
 If (gribend.EQ.0) Then
   Select Case(alist(48))
     Case(1)
-      Call gribsec1234(gribunit,alist)
+      Call gribsec1234(gribunit,alist,badecmwf)
     Case DEFAULT !GRIB2
       ! Note: Section 1 is unchanged in a multigrid message
       If (multigrid.EQ.0) Then
         Call gribsec1(gribunit,alist)
         ! This time get sections 2, 3 and 4
-        Call gribsec2340(gribunit,gribend,firstsec,alist,.false.)
+        Call gribsec2340(gribunit,gribend,firstsec,alist,.false.,badecmwf)
       End If
       Call gribskiphead(gribunit,5)
       Call gribskiphead(gribunit,6)
@@ -127,14 +129,14 @@ End
 ! or not.
 !
 
-Subroutine gribsec2340(gribunit,gribend,firstsec,alist,mtest)
+Subroutine gribsec2340(gribunit,gribend,firstsec,alist,mtest,badecmwf)
 
 Implicit None
 
 Integer, intent(in) :: gribunit
 Integer, dimension(0:48), intent(inout) :: alist
 Integer, intent(out) :: gribend,firstsec
-Logical, intent(in) :: mtest
+Logical, intent(in) :: mtest,badecmwf
 Character*1 txt(1:4)
 Integer*1, dimension(:), allocatable :: values
 Integer*1 dat(1:16)
@@ -315,7 +317,7 @@ If (alist(48).EQ.2) then
       tunit1=tunit2      
     end if
     Call g1date(alist(42:47),alist(7),tunit1,tp1,0,0)
-    if (alist(1).eq.98.or.mtest) then
+    if (badecmwf.or.mtest) then
       alist(42:47)=adate ! clobber fcst time in ECMWF analyses or when multigrid
     end if
       
@@ -478,7 +480,7 @@ End
 ! This subroutine reads GRIB1 PDS and GDS
 !
 
-Subroutine gribsec1234(gribunit,alist)
+Subroutine gribsec1234(gribunit,alist,badecmwf)
 
 Implicit None
 
@@ -491,6 +493,7 @@ Integer i,seclen
 Integer arr2int,signarr2int
 Integer trng,tunit,tp1,tp2
 Logical foundgds,foundbms
+Logical, intent(in) :: badecmwf
 
 Read(UNIT=gribunit) tmp(1:3)
 seclen=arr2int(tmp,3)
@@ -544,7 +547,7 @@ tp2=arr2int(dat(20),1)
 trng=arr2int(dat(21),1)
 adate=alist(42:47)
 Call g1date(alist(42:47),alist(7),tunit,tp1,tp2,trng)
-if (alist(1).eq.98) then
+if (badecmwf) then
   alist(42:47)=adate ! clobber fcst time in ECMWF analyses 
 end if
 
