@@ -14,8 +14,8 @@ Implicit None
 Integer, intent(in) :: gribunit
 Integer, intent(inout) :: elemnum
 Integer, intent(out) :: msgnum
-Integer, dimension(1:elemnum,0:48), intent(out) :: elemlist
-Integer, dimension(0:48) :: alist
+Integer, dimension(1:elemnum,0:49), intent(out) :: elemlist
+Integer, dimension(0:49) :: alist
 Integer gribend,multigrid,msgcount,elemcount
 Logical, intent(in) :: badecmwf
 
@@ -42,6 +42,7 @@ Logical, intent(in) :: badecmwf
 ! alist(46) = min
 ! alist(47) = sec
 ! alist(48) = GRIB edition number
+! alist(49) = ensemble number
 
 elemlist=0
 alist=0
@@ -86,7 +87,7 @@ Subroutine scangribhead(gribunit,gribend,multigrid,alist,badecmwf)
 Implicit None
 
 Integer, intent(in) :: gribunit
-Integer, dimension(0:48), intent(inout) :: alist
+Integer, dimension(0:49), intent(inout) :: alist
 Integer, intent(out) :: gribend,multigrid
 Integer firstsec
 Logical, intent(in) :: badecmwf
@@ -134,7 +135,7 @@ Subroutine gribsec2340(gribunit,gribend,firstsec,alist,mtest,badecmwf)
 Implicit None
 
 Integer, intent(in) :: gribunit
-Integer, dimension(0:48), intent(inout) :: alist
+Integer, dimension(0:49), intent(inout) :: alist
 Integer, intent(out) :: gribend,firstsec
 Logical, intent(in) :: mtest,badecmwf
 Character*1 txt(1:4)
@@ -320,6 +321,8 @@ If (alist(48).EQ.2) then
     if (badecmwf.or.mtest) then
       alist(42:47)=adate ! clobber fcst time in ECMWF analyses or when multigrid
     end if
+    ! ensemble (check)
+    alist(49)=arr2int(values(36),1)
       
     ! lvl info
     If ((alist(4).EQ.20).OR.(alist(4).EQ.30).OR.(alist(4).EQ.254).OR.(alist(4).EQ.1000).OR.(alist(4).EQ.1001).OR.(alist(4).EQ.1002)) Then
@@ -444,7 +447,7 @@ Subroutine gribsec1(gribunit,alist)
 Implicit None
 
 Integer, intent(in) :: gribunit
-Integer, dimension(0:48), intent(inout) :: alist
+Integer, dimension(0:49), intent(inout) :: alist
 Integer*1, dimension(1:21) :: dat
 Integer i
 Integer arr2int
@@ -485,7 +488,7 @@ Subroutine gribsec1234(gribunit,alist,badecmwf)
 Implicit None
 
 Integer, intent(in) :: gribunit
-Integer, dimension(0:48), intent(inout) :: alist
+Integer, dimension(0:49), intent(inout) :: alist
 Integer*1, dimension(:), allocatable :: dat
 Integer*1, dimension(1:3) :: tmp
 Integer, dimension(1:6) :: adate
@@ -540,6 +543,13 @@ alist(45)=arr2int(dat(16),1)
 alist(46)=arr2int(dat(17),1)
 ! Sec
 alist(47)=0
+! ensemble
+select case(alist(1))
+  case(98)     ! ECMWF
+    alist(49)=arr2int(dat(50),1) ! This should be dat(51).  However, the actual number is stored at dat(50) for some reason.
+  case default ! NCEP
+    alist(49)=arr2int(dat(43),1)
+end select
 
 tunit=arr2int(dat(18),1)
 tp1=arr2int(dat(19),1)
@@ -696,7 +706,7 @@ Integer, intent(inout) :: gribpos
 Real, dimension(1:unpacksize), intent(out) :: dataunpack
 Type (gribfield) :: gfld
 Integer*1, dimension(:), allocatable :: datapack
-Integer, dimension(0:48) :: alist
+Integer, dimension(0:49) :: alist
 Integer*1, dimension(1:5) :: indat
 Integer*1, dimension(1:16) :: dat
 Integer*1 tmp
@@ -879,7 +889,8 @@ Subroutine displaygrib(elemlist,elemnum)
 Implicit None
 
 Integer, intent(in) :: elemnum
-Integer, dimension(1:elemnum,0:48), intent(in) :: elemlist
+Integer, dimension(1:elemnum,0:49), intent(in) :: elemlist
+integer, dimension(0:49) :: duma
 Character*80 elemtxt(1:3),lvltxt(1:2)
 Character*80 gridtype
 Real alonlat(1:3,1:2)
@@ -887,12 +898,14 @@ Integer i
 
 ! Display all grids in GRIB file
 Write(6,*) "Grids located in GRIB file:"
-Write(6,*) "Msg   Element  Grd Level            Date       Comment"
+Write(6,*) "Msg   Element  Grd Level            Date       En Comment"
 Do i=1,elemnum
-  Call getelemdesc(elemlist(i,:),elemtxt)
-  Call getelemlonlat(elemlist(i,:),alonlat,gridtype)
-  Call getlvltxt(elemlist(i,:),lvltxt)
-  Write(6,'(T1I5,T8A,T17A,T21A,T38I4.4,T42I2.2,T44I2.2,T46I2.2,T49A)') elemlist(i,0),elemtxt(1)(1:8),gridtype(1:3),lvltxt(1)(1:16),elemlist(i,42),elemlist(i,43),elemlist(i,44),elemlist(i,45),elemtxt(2)(1:30)
+  duma=elemlist(i,:)
+  Call getelemdesc(duma,elemtxt)
+  Call getelemlonlat(duma,alonlat,gridtype)
+  Call getlvltxt(duma,lvltxt)
+  Write(6,'(T1I5,T8A,T17A,T21A,T38I4.4,T42I2.2,T44I2.2,T46I2.2,T49I2,T52A)') elemlist(i,0),elemtxt(1)(1:8),gridtype(1:3), &
+    lvltxt(1)(1:16),elemlist(i,42),elemlist(i,43),elemlist(i,44),elemlist(i,45),elemlist(i,49),elemtxt(2)(1:27)
 End Do
 
 Return

@@ -9,13 +9,13 @@ Implicit None
 Integer :: nopts
 Character*80, dimension(:,:), allocatable :: options
 Integer, parameter :: maxsplicenum = 100
-Character*20, dimension(1:maxsplicenum) :: splicename,spliceunit,newname
-Character*20, dimension(:,:), allocatable :: splicestore
-Character*20, dimension(1:2) :: outputunit
+Character*80, dimension(1:maxsplicenum) :: splicename,spliceunit,newname
+Character*80, dimension(:,:), allocatable :: splicestore
+Character*80, dimension(1:2) :: outputunit
 Character*80 typename,returnoption
-Integer splicenum
+Integer splicenum,ensnum
 Logical levinvert,badecmwf
-Namelist /splice/ outputunit,splicename,spliceunit,newname,levinvert,badecmwf
+Namelist /splice/ outputunit,splicename,spliceunit,newname,levinvert,badecmwf,ensnum
 
 Write(6,*) "g2n - GRIB1/2 to NetCDF converter (DEC-10)"
 Write(6,*) "Currently a work in progress.  There may be problems..."
@@ -38,6 +38,7 @@ spliceunit=''
 newname=splicename
 levinvert=.TRUE.
 badecmwf=.FALSE.
+ensnum=0
 
 ! Read namelist
 
@@ -56,7 +57,7 @@ splicestore(1:splicenum,2)=spliceunit(1:splicenum)
 splicestore(1:splicenum,3)=newname(1:splicenum)
 
 ! Convert
-Call convert(options,nopts,outputunit,splicestore,splicenum,levinvert,badecmwf)
+Call convert(options,nopts,outputunit,splicestore,splicenum,levinvert,badecmwf,ensnum)
 
 ! Clean-up
 Deallocate (options,splicestore)
@@ -94,6 +95,7 @@ Write(6,*) "  &splice"
 Write(6,*) '    outputunit  = "pres", "hPa"'
 Write(6,*) '    levinvert   = .TRUE.'
 Write(6,*) '    badecmwf    = .FALSE.'
+Write(6,*) '    ensnum      = 0'
 Write(6,*) '    splicename  = "HGT",  "TMP",  "UGRD", "VGRD", "TMP"'
 Write(6,*) '    spliceunit  = "ISBL", "ISBL", "ISBL", "ISBL", "0.1 DBLL"'
 Write(6,*) '    newname     = "hgt",  "temp", "u",    "v",    "tgg1"'
@@ -103,6 +105,7 @@ Write(6,*) "  where:"
 Write(6,*) "    outputunit  = name and units for levels in the output file"
 Write(6,*) "    levinvert   = order of output levels (FALSE = small to large)"
 Write(6,*) "    badecmwf    = Ignore forecast time (used for ERA-40 reanalyses)"
+Write(6,*) "    ensnum      = Ensemble number to extract (use 0 for no ensemble)"
 Write(6,*) "    splicename  = an array of field names to be stored"
 Write(6,*) "    spliceunit  = an array of unit names for splicename"
 Write(6,*) "    newname     = an array of output names for splicename"
@@ -164,14 +167,15 @@ End
 ! to the output file
 !
 
-Subroutine convert(options,nopts,outputunit,splicename,splicenum,levinvert,badecmwf)
+Subroutine convert(options,nopts,outputunit,splicename,splicenum,levinvert,badecmwf,ensnum)
 
 Implicit None
 
-Integer, intent(in) :: nopts,splicenum
+Integer, intent(in) :: nopts,splicenum,ensnum
 Character(len=*), dimension(nopts,2), intent(in) :: options
 Character(len=*), dimension(1:splicenum,1:3), intent(in) :: splicename
 Character(len=*), dimension(1:2), intent(in) :: outputunit
+character*80, dimension(1:3) :: dumb
 Logical, intent(in) :: levinvert,badecmwf
 Character*80 infile,outfile,typename,lunit
 Character*16 dateout
@@ -184,10 +188,11 @@ Integer, dimension(0:4) :: ncidarr
 Integer, dimension(:), allocatable :: varid,fieldlist,tempfieldlist
 Integer, dimension(1:4) :: dimnum
 Integer, dimension(1:4,1:2) :: dimnumtmp
+integer, dimension(1:8) :: duma
 Integer multidate,msgnum,elemnum,maxelemnum,gribpos
 Integer gribunit,ierr,maxlvlnum
 Integer maxdatenum,datenum
-Integer i,t,gridout
+Integer i,t,gridout,maxens
 Real, dimension(:,:,:), allocatable :: dataout
 Real, dimension(:), allocatable :: alvl,tmpalvl,tmplvl
 Real, dimension(1:2,1:3) :: alonlat
@@ -214,9 +219,9 @@ End If
 Write(6,*) "Reading metadata..."
 maxelemnum=999
 elemnum=maxelemnum
-Allocate(tempelemlist(1:elemnum,0:48))
+Allocate(tempelemlist(1:elemnum,0:49))
 Call getgriddata(gribunit,msgnum,tempelemlist,elemnum,badecmwf)
-Allocate(elemlist(1:elemnum,0:48))
+Allocate(elemlist(1:elemnum,0:49))
 If (elemnum.GT.maxelemnum) Then
   Write(6,*) "WARN: Metadata buffer size exceeded - Allocating more memory"
   Call getgriddata(gribunit,msgnum,elemlist,elemnum,badecmwf)
@@ -246,7 +251,7 @@ If (typename.NE.'none') Then
   adate(:)=datelist(1,1:6)
  
   Allocate(splicelist(1:splicenum,1:4),varid(1:splicenum))
-  Call mapsplice(splicelist,splicename,splicenum,datelist,datenum,elemlist,elemnum)
+  Call mapsplice(splicelist,splicename,splicenum,datelist,datenum,elemlist,elemnum,ensnum)
 
   ! Get date, lon, lat and lvl data
   Write(6,*) 'Calculating output dimensions...'
@@ -254,7 +259,8 @@ If (typename.NE.'none') Then
   dimnum=1
   dimnum(3)=maxlvlnum
   Allocate(tmpalvl(1:dimnum(3)))
-  Call getsplicedim(alonlat,tmpalvl,dimnum(1:3),splicelist,splicenum,datelist,datenum,elemlist,elemnum,outputunit(2),levinvert,maxlvlnum,splicename)
+  Call getsplicedim(alonlat,tmpalvl,dimnum(1:3),splicelist,splicenum,datelist,datenum,elemlist,elemnum,outputunit(2),levinvert, &
+                    maxlvlnum,splicename,ensnum)
   If (dimnum(3).EQ.0) then
     Write(6,*) "WARN: Output unit not found in GRIB file"
     dimnum(3)=1
@@ -262,7 +268,8 @@ If (typename.NE.'none') Then
   Allocate(alvl(1:dimnum(3)))
   If (dimnum(3).GT.maxlvlnum) then
     Write(6,*) "WARN: Level data buffer size exceeded - Allocating more memory"
-    Call getsplicedim(alonlat,alvl,dimnum,splicelist,splicenum,datelist,datenum,elemlist,elemnum,outputunit(2),levinvert,maxlvlnum,splicename)
+    Call getsplicedim(alonlat,alvl,dimnum,splicelist,splicenum,datelist,datenum,elemlist,elemnum,outputunit(2),levinvert, &
+                      maxlvlnum,splicename,ensnum)
   Else
     alvl(1:dimnum(3))=tmpalvl(1:dimnum(3))
   End if
@@ -281,6 +288,7 @@ End If
 Write(6,*) "General GRIB file information:"
 Write(6,*) "Number of messages              = ",msgnum
 Write(6,*) "Number of grids                 = ",elemnum
+Write(6,*) "Min/Max ensemble number         = ",minval(elemlist(:,49)),maxval(elemlist(:,49))
 If (typename.NE.'none') Then
   Write(6,*) "General splice information:"
   Write(6,'(" Start date                      = ",I4.4,"/",I2.2,"/",I2.2," ",I2.2,":",I2.2,":",I2.2)') adate
@@ -329,14 +337,16 @@ If (typename.NE.'none') Then
         End if
   
         ! Get spliced element data (also interpolate to lat/lon/lvl grid)
+        duma=datelist(t,:)
+        dumb=splicename(i,:)
         Call unpackgribdata(gribunit,gribpos,dataout(1:dimnumtmp(1,2),1:dimnumtmp(2,2),1:dimnumtmp(3,2)), &
-                            alonlat,alvl,dimnumtmp(1:3,2),datelist(t,:),elemlist,elemnum, &
-			    outputunit(2),splicename(i,:),gridout)
+                            alonlat,alvl,dimnumtmp(1:3,2),duma,elemlist,elemnum, &
+                            outputunit(2),dumb,gridout,ensnum)
 
         ! Write spliced element data to output file    
         Select Case(typename)
           Case('nc')
-            Write(6,*) "Writing ",splicename(i,3)
+            Write(6,*) "Writing ",trim(splicename(i,3))
             Call ncwritedat4(ncidarr,dataout(1:dimnumtmp(1,2),1:dimnumtmp(2,2),1:dimnumtmp(3,2)),dimnumtmp,varid(i))
           Case DEFAULT
             Write(6,*) 'ERROR: Unreconised output type'
@@ -374,12 +384,12 @@ End
 !
 
 Subroutine unpackgribdata(gribunit,gribpos,dataout,alonlat,alvl,dimnum, &
-                          datelist,elemlist,elemnum,ounit,splicename,gridout)
+                          datelist,elemlist,elemnum,ounit,splicename,gridout,ensnum)
 
 Implicit None
 
-Integer, intent(in) :: gribunit,gribpos,elemnum,gridout
-Integer, dimension(1:elemnum,0:48), intent(in) :: elemlist
+Integer, intent(in) :: gribunit,gribpos,elemnum,gridout,ensnum
+Integer, dimension(1:elemnum,0:49), intent(in) :: elemlist
 Integer, dimension(1:3), intent(in) :: dimnum
 Integer, dimension(1:8), intent(in) :: datelist
 Integer, dimension(:), allocatable :: fieldlist,tempfieldlist
@@ -391,6 +401,7 @@ Character(len=*), intent(in) :: ounit
 Character(len=*), dimension(1:3), intent(in) :: splicename
 Integer, dimension(1:3) :: fielddimnum
 Integer, dimension(1:2) :: oldfielddimnum
+integer, dimension(0:49) :: duma
 Integer locposa(1),locposb(1),locpos(1)
 Integer unpacksize,indx,skipnum
 Integer i,j,k
@@ -405,7 +416,7 @@ Character*80 gridtype,lunit
 
 fielddimnum(3)=dimnum(3)
 Allocate(tempfieldlist(1:fielddimnum(3)),tmpalvl(1:fielddimnum(3)))
-Call getfieldlvl(tmpalvl,tempfieldlist,fielddimnum(3),lunit,datelist,elemlist,elemnum,splicename)
+Call getfieldlvl(tmpalvl,tempfieldlist,fielddimnum(3),lunit,datelist,elemlist,elemnum,splicename,ensnum)
 
 If (fielddimnum(3).eq.0) then
   Write(6,*) "WARN: Missinig data"
@@ -434,8 +445,10 @@ Else
   Allocate(dataunpack(1:unpacksize),rawslice(1:oldfielddimnum(1),1:oldfielddimnum(2)))
 
   Do i=1,fielddimnum(3)
+    duma=elemlist(fieldlist(i),:)
+    
     ! Get lon,lat size
-    Call getelemlonlat(elemlist(fieldlist(i),:),fieldlonlat,gridtype)
+    Call getelemlonlat(duma,fieldlonlat,gridtype)
     Do j=1,2
       If (fieldlonlat(j,3).EQ.0.) then
         fielddimnum(j)=1
@@ -464,7 +477,7 @@ Else
     End Do
   
     ! Insert data into 2D/3D field
-    Call getelemlvl(elemlist(fieldlist(i),:),indx,surfvalue,sndvalue,surtxt)
+    Call getelemlvl(duma,indx,surfvalue,sndvalue,surtxt)
     locposa=Maxloc(tmplvl,tmplvl.LE.surfvalue)
     locposb=Minloc(tmplvl,tmplvl.GE.surfvalue)
     locposa(1)=min(fielddimnum(3),max(locposa(1),1))
@@ -483,7 +496,7 @@ Else
   End Do
 
   ! Interpolate unpacked data between levels
-  Call getelemlvl(elemlist(fieldlist(1),:),indx,surfvalue,sndvalue,surtxt)
+  Call getelemlvl(duma,indx,surfvalue,sndvalue,surtxt)
   Call interpolate3dgrid(rawfield,tmplvl,fielddimnum,dataout,alvl,dimnum,surtxt(1),ounit)
 
   Deallocate(fieldlist,tmplvl)			    
@@ -513,7 +526,8 @@ Integer, dimension(1:6), intent(in) :: adate
 Integer, dimension(1:splicenum,1:4), intent(in) :: splicelist
 Integer, dimension(1:datenum,1:8), intent(in) :: datelist
 Integer, dimension(1:splicenum), intent(out) :: varid
-Integer, dimension(1:elemnum,0:48), intent(in) :: elemlist
+Integer, dimension(1:elemnum,0:49), intent(in) :: elemlist
+integer, dimension(0:49) :: duma
 Real, dimension(1:2,1:3), intent(in) :: alonlat
 Real, dimension(1:dimnum(3)), intent(in) :: alvl
 Real, dimension(1:3,1:2) :: alonlattmp
@@ -546,7 +560,8 @@ end select
   
 Do i=1,splicenum
   If (splicelist(i,1).gt.0) then
-    Call getelemdesc(elemlist(splicelist(i,1),:),elemtxt)
+    duma=elemlist(splicelist(i,1),:)
+    Call getelemdesc(duma,elemtxt)
     elemdesc(1)=splicename(i,3)
     elemdesc(2)=elemtxt(2)
     elemdesc(3)=elemtxt(3)

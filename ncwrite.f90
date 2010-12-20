@@ -777,3 +777,19 @@ End Select
 
 Return
 End
+
+subroutine ncatt(ncidarr,desc,rval)
+
+implicit none
+
+include 'netcdf.inc'
+
+integer, dimension(0:4), intent(in) :: ncidarr
+integer ncstatus
+real, intent(in) :: rval
+character(len=*), intent(in) :: desc
+
+ncstatus=nf_put_att_real(ncidarr(0),nf_global,desc,nf_real,1,rval)
+
+return
+end

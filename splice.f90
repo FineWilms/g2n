@@ -8,18 +8,20 @@
 ! compatable units, date, lon, lat, lvls, etc.
 !
 
-Subroutine mapsplice(splicelist,splicename,splicenum,datelist,datenum,elemlist,elemnum)
+Subroutine mapsplice(splicelist,splicename,splicenum,datelist,datenum,elemlist,elemnum,ensnum)
 
 Implicit None
 
-Integer, intent(in) :: splicenum,elemnum,datenum
-Integer, dimension(1:elemnum,0:48), intent(in) :: elemlist
+Integer, intent(in) :: splicenum,elemnum,datenum,ensnum
+Integer, dimension(1:elemnum,0:49), intent(in) :: elemlist
 Integer, dimension(1:splicenum,1:4), intent(out) :: splicelist
 Integer, dimension(1:datenum,1:8), intent(in) :: datelist
 Integer, dimension(1:4) :: tempsplicelist
+integer, dimension(0:49) :: duma
+integer, dimension(1:8) :: dumb
 Integer i,j,t,pos(1),np(1)
 Character(len=*), dimension(1:splicenum,1:3), intent(inout) :: splicename
-Character*16, dimension(1:3) :: tempsplicename
+Character*80, dimension(1:3) :: tempsplicename
 Logical found,tfnd
 Logical validsplice
 
@@ -34,13 +36,15 @@ do i=1,splicenum
     found=.false.
     do while (.not.found)
       j=j+1
-      if (validsplice(elemlist(j,:),splicename(i,1),splicename(i,2),datelist(t,:))) then
+      duma=elemlist(j,:)
+      dumb=datelist(t,:)
+      if (validsplice(duma,splicename(i,1),splicename(i,2),dumb,ensnum)) then
         if (splicelist(i,1).eq.0) then
-	  splicelist(i,1)=j
-	  splicelist(i,2)=t
-	else
-	  splicelist(i,3)=1
-	end if
+          splicelist(i,1)=j
+          splicelist(i,2)=t
+        else
+          splicelist(i,3)=1
+        end if
         found=.true.
       End If
       found=found.or.(j.ge.datelist(t,8))
@@ -73,18 +77,21 @@ End
 !
 
 Subroutine getsplicedim(alonlat,alvl,dimnum,splicelist,splicenum,datelist,datenum, &
-                        elemlist,elemnum,ounit,levinvert,maxlvlnum,splicename)
+                        elemlist,elemnum,ounit,levinvert,maxlvlnum,splicename,ensnum)
 
 Implicit None
 
-Integer, intent(in) :: splicenum,elemnum,maxlvlnum,datenum
+Integer, intent(in) :: splicenum,elemnum,maxlvlnum,datenum,ensnum
 Integer, dimension(1:3), intent(inout) :: dimnum
 Integer, dimension(1:splicenum,1:4), intent(inout) :: splicelist
-Integer, dimension(1:elemnum,0:48), intent(in) :: elemlist
+Integer, dimension(1:elemnum,0:49), intent(in) :: elemlist
 Integer, dimension(1:datenum,1:8), intent(in) :: datelist
 Integer, dimension(:), allocatable :: tmpfield
+integer, dimension(1:8) :: duma
+integer, dimension(0:49) :: dumc
 Character(len=*), intent(in) :: ounit
 Character(len=*), dimension(1:splicenum,1:3), intent(in) :: splicename
+character*80, dimension(1:3) :: dumb
 Real, dimension(1:2,1:3), intent(out) :: alonlat
 Real, dimension(1:dimnum(3)), intent(out) :: alvl
 Logical, intent(in) :: levinvert
@@ -100,7 +107,7 @@ origdimnum=dimnum(3)
 dimnum(3)=0 ! Reset level number (0 = no levels found)
 alonlat=0.
 alvl=0.
-newrnglvl=-1.
+rnglvl=-1.
 
 istart=.TRUE.
 Do i=1,splicenum
@@ -110,12 +117,14 @@ Do i=1,splicenum
     ! Determine the number of levels and range of levels (max-min)
     tmplvlnum=maxlvlnum
     Allocate(tmpblvl(1:tmplvlnum),tmpfield(1:tmplvlnum))
-    Call getfieldlvl(tmpblvl,tmpfield,tmplvlnum,lunit,datelist(pos,:),elemlist,elemnum,splicename(i,:))
+    duma=datelist(pos,:)
+    dumb=splicename(i,:)
+    Call getfieldlvl(tmpblvl,tmpfield,tmplvlnum,lunit,duma,elemlist,elemnum,dumb,ensnum)
     Deallocate(tmpfield)
     Allocate(tmplvl(1:tmplvlnum),tmpfield(1:tmplvlnum))
     If (tmplvlnum.GT.maxlvlnum) then
       Write(6,*) "WARN: Level data buffer size exceeded - Allocating more memory"
-      Call getfieldlvl(tmplvl,tmpfield,tmplvlnum,lunit,datelist(pos,:),elemlist,elemnum,splicename(i,:))
+      Call getfieldlvl(tmplvl,tmpfield,tmplvlnum,lunit,duma,elemlist,elemnum,dumb,ensnum)
     Else
       tmplvl(1:tmplvlnum)=tmpblvl(1:tmplvlnum)
     End if
@@ -126,7 +135,7 @@ Do i=1,splicenum
     newrnglvl=Maxval(tmplvl)-Minval(tmplvl)
 
     ! Assign level data
-    If (newrnglvl.GT.rnglvl) then
+    If (newrnglvl.GT.rnglvl.or.tmplvlnum.gt.dimnum(3)) then
       rnglvl=newrnglvl
       dimnum(3)=tmplvlnum
 
@@ -141,7 +150,8 @@ Do i=1,splicenum
     End If
 
     ! Check lat/lon
-    Call getelemlonlat(elemlist(splicelist(i,1),:),newlonlat,gridtype)    
+    dumc=elemlist(splicelist(i,1),:)
+    Call getelemlonlat(dumc,newlonlat,gridtype)    
   
     If (istart) then
       alonlat=newlonlat
@@ -177,18 +187,19 @@ End
 ! This subroutine returns the levels of a specified field
 !
 
-Subroutine getfieldlvl(lvllist,fieldlist,lvlnum,lunit,datelist,elemlist,elemnum,splicename)
+Subroutine getfieldlvl(lvllist,fieldlist,lvlnum,lunit,datelist,elemlist,elemnum,splicename,ensnum)
 
 Implicit None
 
-Integer, intent(in) :: elemnum
+Integer, intent(in) :: elemnum,ensnum
 Integer, intent(inout) :: lvlnum
 Character*80, intent(out) :: lunit
 Character(len=*), dimension(1:3), intent(in) :: splicename
 Real, dimension(1:lvlnum), intent(out) :: lvllist
-Integer, dimension(1:elemnum,0:48), intent(in) :: elemlist
+Integer, dimension(1:elemnum,0:49), intent(in) :: elemlist
 Integer, dimension(1:8), intent(in) :: datelist
 Integer, dimension(1:lvlnum), intent(out) :: fieldlist
+integer, dimension(0:49) :: duma
 Integer minpos(1)
 Integer indx,origlvlnum
 Integer i,ta
@@ -200,15 +211,16 @@ origlvlnum=lvlnum
 lvllist=0.
 
 ! Determine number of levels
-Call getfieldlist(fieldlist,lvlnum,datelist,elemlist,elemnum,splicename)
+Call getfieldlist(fieldlist,lvlnum,datelist,elemlist,elemnum,splicename,ensnum)
 
 ! Create a list of levels
 ta=Min(lvlnum,origlvlnum)
 Do i=1,ta
-  Call getelemlvl(elemlist(fieldlist(i),:),indx,surfvalue,sndvalue,surtxt)
+  duma=elemlist(fieldlist(i),:)
+  Call getelemlvl(duma,indx,surfvalue,sndvalue,surtxt)
   lvllist(i)=surfvalue
 End Do
-  
+
 ! Sort level list
 ! (very crude.  Need to fix this)
 Do i=1,ta
@@ -217,7 +229,7 @@ Do i=1,ta
   lvllist(minpos(1)+i-1)=lvllist(i)
   lvllist(i)=tmp
 End Do
-  
+
 lunit=surtxt(1)
   
 Return
@@ -228,15 +240,16 @@ End
 ! levels of a specified element
 !
 
-Subroutine getfieldlist(fieldlist,fieldnum,datelist,elemlist,elemnum,splicename)
+Subroutine getfieldlist(fieldlist,fieldnum,datelist,elemlist,elemnum,splicename,ensnum)
 
 Implicit None
 
-Integer, intent(in) :: elemnum
+Integer, intent(in) :: elemnum,ensnum
 Integer, intent(inout) :: fieldnum
 Integer, dimension(1:fieldnum), intent(out) :: fieldlist
-Integer, dimension(1:elemnum,0:48), intent(in) :: elemlist
+Integer, dimension(1:elemnum,0:49), intent(in) :: elemlist
 Integer, dimension(1:8), intent(in) :: datelist
+integer, dimension(0:49) :: duma
 Character(len=*), dimension(1:3), intent(in) :: splicename
 Integer fieldcount
 Integer i
@@ -246,7 +259,8 @@ fieldlist=0
 fieldcount=0
 
 Do i=datelist(7),datelist(8)
-  If (validsplice(elemlist(i,:),splicename(1),splicename(2),datelist)) Then
+  duma=elemlist(i,:)
+  If (validsplice(duma,splicename(1),splicename(2),datelist,ensnum)) Then
     fieldcount=fieldcount+1
     If (fieldcount.LE.fieldnum) fieldlist(fieldcount)=i
   End If
@@ -267,7 +281,8 @@ Implicit None
 
 Integer, intent(in) :: splicenum,elemnum
 Integer, dimension(1:splicenum,1:4), intent(in) :: splicelist
-Integer, dimension(1:elemnum,0:48), intent(in) :: elemlist
+Integer, dimension(1:elemnum,0:49), intent(in) :: elemlist
+integer, dimension(0:49) :: duma
 Character*80 elemtxt(1:3),surtxt(1:3)
 Integer indx
 Integer i
@@ -278,8 +293,9 @@ Write(6,*) "Grids remaining after splice:"
 Write(6,*) "Num  Element  Unit     Level        Comment"
 Do i=1,splicenum
   If (splicelist(i,1).gt.0) then
-    Call getelemdesc(elemlist(splicelist(i,1),:),elemtxt)    
-    Call getelemlvl(elemlist(splicelist(i,1),:),indx,surfvalue,sndvalue,surtxt)
+    duma=elemlist(splicelist(i,1),:)
+    Call getelemdesc(duma,elemtxt)    
+    Call getelemlvl(duma,indx,surfvalue,sndvalue,surtxt)
     Write(6,'(T1I4,T7A,T16A,T25A,T38A)') i,elemtxt(1)(1:8),elemtxt(3)(1:8),surtxt(1)(1:16),elemtxt(2)(1:41)
   Else
     Write(6,'(T1I4,T7A)') i,"Element not found"
@@ -631,11 +647,12 @@ End
 ! This function determines if the element is part of a splice
 !
 
-Logical Function validsplice(alist,splicename,spliceunit,datelist)
+Logical Function validsplice(alist,splicename,spliceunit,datelist,ensnum)
 
 Implicit None
 
-Integer, dimension(0:48), intent(in) :: alist
+integer, intent(in) :: ensnum
+Integer, dimension(0:49), intent(in) :: alist
 Integer, dimension(1:8), intent(in) :: datelist
 Character(len=*), intent(in) :: splicename
 Character(len=*), intent(in) :: spliceunit
@@ -645,15 +662,15 @@ Integer indx,pa,pc,pd,pe,px
 Double Precision surfvalue,sndvalue
 Logical tsta
 
+validsplice=(ensnum.eq.alist(49))
+if (.not.validsplice) return
+
 Call getelemdesc(alist,elemtxt)
-tsta=(elemtxt(1).EQ.splicename).and.All(datelist(1:6).eq.alist(42:47))
-if (.not.tsta) then
-  validsplice=.false.
-  return
-end if
+validsplice=(elemtxt(1).EQ.splicename).and.All(datelist(1:6).eq.alist(42:47))
+if (.not.validsplice) return
 
 Call getelemlvl(alist,indx,surfvalue,sndvalue,surtxt)
-validsplice=tsta.AND.(surtxt(1).EQ.spliceunit)
+validsplice=(surtxt(1).EQ.spliceunit)
 if (validsplice) return
 
 px=len(spliceunit)
@@ -714,7 +731,7 @@ integer, intent(in) :: elemnum
 integer, intent(inout) :: datenum
 integer i,j,k,datenumin,pos
 integer, dimension(1:datenum,1:8), intent(out) :: datelist
-integer, dimension(1:elemnum,0:48), intent(in) :: elemlist
+integer, dimension(1:elemnum,0:49), intent(in) :: elemlist
 integer, dimension(1:elemnum,1:8) :: worklist
 integer, dimension(1:8) :: tempdatelist
 logical tflag
@@ -848,9 +865,6 @@ do i=1,nlat
   latarr(i)=acos(sinc(i))*180./pi
   if (i.gt.nlat/2) latarr(i)=-latarr(i)
 end do
-!latarr=-latarr
-
-!print *,"TEST latarr ",latarr
 
 return
 end
@@ -919,9 +933,6 @@ dy=(n-s)/real(nlat-1)
 do j=1,nlat
   latarr(j)=(atan(exp(s+real(j-1)*dy))*180./pi-45.)*2.
 end do
-
-!print *,"latarr ",latarr
-!stop
 
 return
 end

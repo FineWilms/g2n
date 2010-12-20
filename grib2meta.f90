@@ -11,7 +11,7 @@ Subroutine getelemdesc(alist,elemtxt)
 
 Implicit None
 
-Integer, dimension(0:48), intent(in) :: alist
+Integer, dimension(0:49), intent(in) :: alist
 Character*80, dimension(1:3), intent(out) :: elemtxt
 
 Select Case(alist(48))
@@ -33,7 +33,7 @@ Subroutine getelemdesc1(alist,elemtxt)
 
 Implicit None
 
-Integer, dimension(0:48), intent(in) :: alist
+Integer, dimension(0:49), intent(in) :: alist
 Character*80, dimension(1:3), intent(out) :: elemtxt
 Character*80 elemerr(1:3)
 
@@ -833,7 +833,7 @@ Subroutine getelemdesc2(alist,elemtxt)
 
 Implicit None
 
-Integer, dimension(0:48), intent(in) :: alist
+Integer, dimension(0:49), intent(in) :: alist
 Character*80, dimension(1:3), intent(out) :: elemtxt
 Character*80, elemerr(1:3)
 Character*80, save :: meteotemp(0:15,1:3)
@@ -901,6 +901,7 @@ logical, save :: first=.true.
 ! alist(46) = min
 ! alist(47) = sec
 ! alist(48) = GRIB edition number
+! alist(49) = ensemble number
 
 elemerr='???'
 
@@ -1645,7 +1646,7 @@ Subroutine getelemlvl(alist,indx,surfvalue,sndvalue,surtxt)
 
 Implicit None
 
-Integer, dimension(0:48), intent(in) :: alist
+Integer, dimension(0:49), intent(in) :: alist
 Integer, intent(out) :: indx
 Double Precision, intent(out) :: surfvalue,sndvalue
 Character*80, dimension(1:3), intent(out) :: surtxt
@@ -1669,7 +1670,7 @@ Subroutine getelemlvl1(alist,indx,surfvalue,sndvalue,surtxt)
 
 Implicit None
 
-Integer, dimension(0:48), intent(inout) :: alist
+Integer, dimension(0:49), intent(inout) :: alist
 Integer, intent(out) :: indx
 Double Precision, intent(out) :: surfvalue,sndvalue
 Double Precision ozero,o11,o12
@@ -2004,7 +2005,7 @@ Subroutine getelemlvl2(alist,indx,surfvalue,sndvalue,surtxt)
 
 Implicit None
 
-Integer, dimension(0:48), intent(in) :: alist
+Integer, dimension(0:49), intent(in) :: alist
 Integer, intent(out) :: indx
 Double Precision, intent(out) :: surfvalue,sndvalue
 Character*80, dimension(1:3), intent(out) :: surtxt
@@ -2034,6 +2035,7 @@ logical, save :: first = .true.
 ! alist(46) = min
 ! alist(47) = sec
 ! alist(48) = GRIB edition number
+! alist(49) = ensemble number
 
 if (first) then
 
@@ -2109,7 +2111,7 @@ Subroutine getlvltxt(alist,lvltxt)
 
 Implicit None
 
-Integer, dimension(0:48), intent(in) :: alist
+Integer, dimension(0:49), intent(in) :: alist
 Character*80, dimension(1:2), intent(out) :: lvltxt
 
 Select Case(alist(48))
@@ -2130,7 +2132,7 @@ Subroutine getlvltxt1(alist,lvltxt)
 
 Implicit None
 
-Integer, dimension(0:48), intent(in) :: alist
+Integer, dimension(0:49), intent(in) :: alist
 Character*80, dimension(1:2), intent(out) :: lvltxt
 Character*80, dimension(1:3) :: surtxt
 Double Precision surfvalue,sndvalue
@@ -2171,7 +2173,7 @@ Subroutine getlvltxt2(alist,lvltxt)
 
 Implicit None
 
-Integer, dimension(0:48), intent(in) :: alist
+Integer, dimension(0:49), intent(in) :: alist
 Character*80, dimension(1:2), intent(out) :: lvltxt
 Character*80, dimension(1:3) :: surtxt
 Double Precision surfvalue,sndvalue
@@ -2238,7 +2240,7 @@ Subroutine getelemlonlat(alist,alonlat,gridtype)
 
 Implicit None
 
-Integer, dimension(0:48), intent(in) :: alist
+Integer, dimension(0:49), intent(in) :: alist
 Real, dimension(1:2,1:3), intent(out) :: alonlat
 Character*80, intent(out) :: gridtype
 
@@ -2268,7 +2270,7 @@ Subroutine getelemlonlat1(alist,alonlat,gridtype)
 
 Implicit None
 
-Integer, dimension(0:48), intent(in) :: alist
+Integer, dimension(0:49), intent(in) :: alist
 Real, dimension(1:2,1:3), intent(out) :: alonlat
 Character*80, intent(out) :: gridtype
 real midval
@@ -2287,17 +2289,17 @@ Select Case(alist(14))
       if (alonlat(1,1).gt.alonlat(1,2)) alonlat(1,3)=-alonlat(1,3)
       if (alist(16).gt.1) then
         if (abs((alonlat(2,2)-alonlat(2,1))/real(alist(16)-1)) &
-	    .lt.abs(0.99*alonlat(2,3))) then
-	  alonlat(2,3)=real(alist(22))/1000.	    
-	  alonlat(2,2)=alonlat(2,1)+alonlat(2,3)*real(alist(16)-1)
-	end if
+            .lt.abs(0.99*alonlat(2,3))) then
+          alonlat(2,3)=real(alist(22))/1000.
+          alonlat(2,2)=alonlat(2,1)+alonlat(2,3)*real(alist(16)-1)
+        end if
       end if
       if (alist(15).gt.1) then
         if (abs((alonlat(1,2)-alonlat(1,1))/real(alist(15)-1)) &
-	    .lt.abs(0.99*alonlat(1,3))) then
+            .lt.abs(0.99*alonlat(1,3))) then
           alonlat(1,3)=real(alist(23))/1000.
-	  alonlat(1,2)=alonlat(1,1)+alonlat(1,3)*real(alist(15)-1)
-	end if
+          alonlat(1,2)=alonlat(1,1)+alonlat(1,3)*real(alist(15)-1)
+        end if
       end if
     Else
       If ((alist(15).GT.1).AND.(alist(16).GT.1)) Then
@@ -2365,7 +2367,7 @@ Subroutine getelemlonlat2(alist,alonlat,gridtype)
 
 Implicit None
 
-Integer, dimension(0:48), intent(in) :: alist
+Integer, dimension(0:49), intent(in) :: alist
 Real, dimension(1:2,1:3), intent(out) :: alonlat
 Character*80, intent(out) :: gridtype
 Integer resflag
@@ -2394,6 +2396,7 @@ Real unt
 ! alist(46) = min
 ! alist(47) = sec
 ! alist(48) = GRIB edition number
+! alist(49) = ensemble number
 
 Select Case(alist(14))
 
