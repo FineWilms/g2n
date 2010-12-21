@@ -135,7 +135,7 @@ Do i=1,splicenum
     newrnglvl=Maxval(tmplvl)-Minval(tmplvl)
 
     ! Assign level data
-    If (newrnglvl.GT.rnglvl.or.tmplvlnum.gt.dimnum(3)) then
+    If (newrnglvl.GT.rnglvl.or.(newrnglvl.eq.rnglvl.and.tmplvlnum.gt.dimnum(3))) then
       rnglvl=newrnglvl
       dimnum(3)=tmplvlnum
 
