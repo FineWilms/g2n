@@ -662,8 +662,10 @@ Integer indx,pa,pc,pd,pe,px
 Double Precision surfvalue,sndvalue
 Logical tsta
 
-validsplice=(ensnum.eq.alist(49))
-if (.not.validsplice) return
+if (ensnum.ne.0) then
+  validsplice=(ensnum.eq.alist(49))
+  if (.not.validsplice) return
+end if
 
 Call getelemdesc(alist,elemtxt)
 validsplice=(elemtxt(1).EQ.splicename).and.All(datelist(1:6).eq.alist(42:47))

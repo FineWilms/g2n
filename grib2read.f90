@@ -299,7 +299,7 @@ If (alist(48).EQ.2) then
     values(1:9)=dat(1:9)
 
     ! template
-    alist(4)=arr2int(dat(8:9),2)
+    alist(4)=arr2int(values(8:9),2)
     ! category
     alist(5)=arr2int(values(10),1)
     ! subcategory
@@ -321,8 +321,10 @@ If (alist(48).EQ.2) then
     if (badecmwf.or.mtest) then
       alist(42:47)=adate ! clobber fcst time in ECMWF analyses or when multigrid
     end if
-    ! ensemble (check)
+    ! ensemble
+    ! (values(12) holds the generating process=4 for ensemble)
     alist(49)=arr2int(values(36),1)
+    ! (values(37) holds the total number of ensemble members)
       
     ! lvl info
     If ((alist(4).EQ.20).OR.(alist(4).EQ.30).OR.(alist(4).EQ.254).OR.(alist(4).EQ.1000).OR.(alist(4).EQ.1001).OR.(alist(4).EQ.1002)) Then

@@ -842,7 +842,7 @@ Character*80, save :: meteomoment(0:24,1:3)
 Character*80, save :: meteomass(0:14,1:3)
 Character*80, save :: meteoshortradiate(0:6,1:3)
 Character*80, save :: meteolongradiate(0:2,1:3)
-Character*80, save :: meteocloud(0:13,1:3)
+Character*80, save :: meteocloud(0:201,1:3)
 Character*80, save :: meteostability(0:9,1:3)
 Character*80, save :: meteoaerosols(0:0,1:3)
 Character*80, save :: meteogases(0:0,1:3)
@@ -853,7 +853,7 @@ Character*80, save :: meteotext(0:0,1:3)
 Character*80, save :: hydrobasic(0:4,1:3)
 Character*80, save :: hydroprob(0:2,1:3)
 Character*80, save :: landveg(0:8,1:3)
-Character*80, save :: landsoil(0:4,1:3)
+Character*80, save :: landsoil(0:203,1:3)
 Character*80, save :: spaceimage(0:7,1:3)
 Character*80, save :: spacequantitative(0:0,1:3)
 Character*80, save :: oceanwaves(0:13,1:3)
@@ -958,31 +958,31 @@ meteomoist(30,:) = (/ '',      'Precipitable water category',     '(undefined)' 
 meteomoist(31,:) = (/ '',      'Hail',                            'm' /)
 meteomoist(32,:) = (/ '',      'Graupel (snow pellets)',          'kg/kg' /)
 
-meteomoment(0,:) =  (/ 'WDIR',  'Wind direction (from which blowing)', 'deg true' /)
-meteomoment(1,:) =  (/ 'WIND',  'Wind speed',                          'm/s' /)
-meteomoment(2,:) =  (/ 'UGRD',  'u-component of wind',                 'm/s' /)
-meteomoment(3,:) =  (/ 'VGRD',  'v-component of wind',                 'm/s' /)
-meteomoment(4,:) =  (/ 'STRM',  'Stream function',                     '(m^2)/s' /)
-meteomoment(5,:) =  (/ 'VPOT',  'Velocity potential',                  '(m^2)/s' /)
-meteomoment(6,:) =  (/ 'MNTSF', 'Montgomery stream function',          '(m^2)/(s^2)' /)
-meteomoment(7,:) =  (/ 'SGCVV', 'Sigma coordinate vertical velocity',  '1/s' /)
-meteomoment(8,:) =  (/ 'VVEL',  'Vertical velocity (pressure)',        'Pa/s' /)
-meteomoment(9,:) =  (/ 'DZDT',  'Vertical velocity (geometric)',       'm/s' /)
-meteomoment(10,:) = (/ 'ABSV',  'Absolute vorticity',                  '1/s' /)
-meteomoment(11,:) = (/ 'ABSD',  'Absolute duvergence',                 '1/s' /)
-meteomoment(12,:) = (/ 'RELV',  'Relative vorticity',                  '1/s' /)
-meteomoment(13,:) = (/ 'RELD',  'Relative divergence',                 '1/s' /)
-meteomoment(14,:) = (/ 'PVORT', 'Potential vorticity',                 'K(m^2)/(kg s)' /)
-meteomoment(15,:) = (/ 'VUCSH', 'Vertical u-component shear',          '1/s' /)
-meteomoment(16,:) = (/ 'VVCSH', 'Vertical v-component shear',          '1/s' /)
-meteomoment(17,:) = (/ 'UFLX',  'Momentum flux, u component',          'N/(m^2)' /)
-meteomoment(18,:) = (/ 'VFLX',  'Momentum flux, v component',          'N/(m^2)' /)
-meteomoment(19,:) = (/ 'WMIXE', 'Wind mixing energy',                  'J' /)
-meteomoment(20,:) = (/ 'BLYDP', 'Boundary layer dissipation',          'W/(m^2)' /)
-meteomoment(21,:) = (/ '',      'Maximum wind speed',                  'm/s' /)
-meteomoment(22,:) = (/ '',      'Wind speed (gust)',                   'm/s' /)
-meteomoment(23,:) = (/ '',      'u-component of wind (gust)',          'm/s' /)
-meteomoment(24,:) = (/ '',      'v-component of wind (gust)',          'm/s' /)
+meteomoment(0,:) =  (/ 'WDIR',    'Wind direction (from which blowing)', 'deg true' /)
+meteomoment(1,:) =  (/ 'WIND',    'Wind speed',                          'm/s' /)
+meteomoment(2,:) =  (/ 'UGRD',    'u-component of wind',                 'm/s' /)
+meteomoment(3,:) =  (/ 'VGRD',    'v-component of wind',                 'm/s' /)
+meteomoment(4,:) =  (/ 'STRM',    'Stream function',                     '(m^2)/s' /)
+meteomoment(5,:) =  (/ 'VPOT',    'Velocity potential',                  '(m^2)/s' /)
+meteomoment(6,:) =  (/ 'MNTSF',   'Montgomery stream function',          '(m^2)/(s^2)' /)
+meteomoment(7,:) =  (/ 'SGCVV',   'Sigma coordinate vertical velocity',  '1/s' /)
+meteomoment(8,:) =  (/ 'VVEL',    'Vertical velocity (pressure)',        'Pa/s' /)
+meteomoment(9,:) =  (/ 'DZDT',    'Vertical velocity (geometric)',       'm/s' /)
+meteomoment(10,:) = (/ 'ABSV',    'Absolute vorticity',                  '1/s' /)
+meteomoment(11,:) = (/ 'ABSD',    'Absolute duvergence',                 '1/s' /)
+meteomoment(12,:) = (/ 'RELV',    'Relative vorticity',                  '1/s' /)
+meteomoment(13,:) = (/ 'RELD',    'Relative divergence',                 '1/s' /)
+meteomoment(14,:) = (/ 'PVORT',   'Potential vorticity',                 'K(m^2)/(kg s)' /)
+meteomoment(15,:) = (/ 'VUCSH',   'Vertical u-component shear',          '1/s' /)
+meteomoment(16,:) = (/ 'VVCSH',   'Vertical v-component shear',          '1/s' /)
+meteomoment(17,:) = (/ 'UFLX',    'Momentum flux, u component',          'N/(m^2)' /)
+meteomoment(18,:) = (/ 'VFLX',    'Momentum flux, v component',          'N/(m^2)' /)
+meteomoment(19,:) = (/ 'WMIXE',   'Wind mixing energy',                  'J' /)
+meteomoment(20,:) = (/ 'BLYDP',   'Boundary layer dissipation',          'W/(m^2)' /)
+meteomoment(21,:) = (/ 'MAXGUST', 'Maximum wind speed',                  'm/s' /)
+meteomoment(22,:) = (/ 'GUST',    'Wind speed (gust)',                   'm/s' /)
+meteomoment(23,:) = (/ 'UGUST',   'u-component of wind (gust)',          'm/s' /)
+meteomoment(24,:) = (/ 'VGUST',   'v-component of wind (gust)',          'm/s' /)
 
 meteomass(0,:) =  (/ 'PRES',  'Pressure',                                  'Pa' /)
 meteomass(1,:) =  (/ 'PRMSL', 'Pressure reduced to MSL',                   'Pa' /)
@@ -1012,6 +1012,7 @@ meteolongradiate(0,:)=(/ 'NLWRS', 'Net long wave radiation flux (surface)', 'W/(
 meteolongradiate(1,:)=(/ 'NLWRT', 'Net long wave radiation flux (top of atmosphere)', 'W/(m^2)' /)
 meteolongradiate(2,:)=(/ 'LWAVR', 'Long wave radiation flux', 'W/(m^2)' /)
 
+meteocloud=''
 meteocloud(0,:)=(/ 'CICE', 'Cloud Ice', 'kg/(m^2)' /)
 meteocloud(1,:)=(/ 'TCDC', 'Total could cover', '%' /)
 meteocloud(2,:)=(/ 'CDCON', 'Convective cloud cover', '%' /)
@@ -1019,13 +1020,36 @@ meteocloud(3,:)=(/ 'LCDC', 'Low cloud cover', '%' /)
 meteocloud(4,:)=(/ 'MCDC', 'Medium cloud cover', '%' /)
 meteocloud(5,:)=(/ 'HCDC', 'High cloud cover', '%' /)
 meteocloud(6,:)=(/ 'CWAT', 'Could water', 'kg/(m^2)' /)
-meteocloud(7,:)=(/ '', 'Cloud amount', '%' /)
-meteocloud(8,:)=(/ '', 'Cloud type', '(0 clear, 1 Cumulonimbus, 2 Stratus, 3 Stratocumulus, 4 Cumulus, 5 Altostratus, 6 Nimbostratus, 7 Altocumulus, 8 Cirrostratus, 9 Cirrocumulus, 10 Cirrus, 11 Cumulonimbus (fog), 12 Stratus (fog), 13 Stratocumulus (fog), 14 Cumulus (fog), Altostratus (fog), 16 Nimbostratus (fog), 17 Altocumulus (fog), 18 Cirrostratus (fog), 19 Cirrocumulus (fog), 20 Cirrus (fog), 191 unknown, 255 missing)' /)
-meteocloud(9,:)=(/ '', 'Thunderstorm maximum tops', 'm' /)
-meteocloud(10,:)=(/ '', 'Thunderstorm coverage', '(0 none, 1 isolated (1%-2%), 2 few (3%-15%), 3 scattered (16%-45%), 4 numerous (>45%), 255 missing)' /)
-meteocloud(11,:)=(/ '', 'Cloud base', 'm' /)
-meteocloud(12,:)=(/ '', 'Cloud top', 'm' /)
-meteocloud(13,:)=(/ '', 'Ceiling', 'm' /)
+meteocloud(7,:)=(/ 'CDCA', 'Cloud amount', '%' /)
+meteocloud(8,:)=(/ 'CDCT', 'Cloud type', '(0 clear, 1 Cumulonimbus, 2 Stratus, 3 Stratocumulus, 4 Cumulus, 5 Altostratus, 6 Nimbostratus, 7 Altocumulus, 8 Cirrostratus, 9 Cirrocumulus, 10 Cirrus, 11 Cumulonimbus (fog), 12 Stratus (fog), 13 Stratocumulus (fog), 14 Cumulus (fog), Altostratus (fog), 16 Nimbostratus (fog), 17 Altocumulus (fog), 18 Cirrostratus (fog), 19 Cirrocumulus (fog), 20 Cirrus (fog), 191 unknown, 255 missing)' /)
+meteocloud(9,:)=(/ 'TMAXT', 'Thunderstorm maximum tops', 'm' /)
+meteocloud(10,:)=(/ 'THUNC', 'Thunderstorm coverage', '(0 none, 1 isolated (1%-2%), 2 few (3%-15%), 3 scattered (16%-45%), 4 numerous (>45%), 255 missing)' /)
+meteocloud(11,:)=(/ 'CDCB', 'Cloud base', 'm' /)
+meteocloud(12,:)=(/ 'CDCT', 'Cloud top', 'm' /)
+meteocloud(13,:)=(/ 'CEIL', 'Ceiling', 'm' /)
+meteocloud(14,:)=(/ 'CDLYR', 'Non-convective cloud cover', '%' /)
+meteocloud(15,:)=(/ 'CWORK', 'Cloud work function', 'J/kg' /)
+meteocloud(16,:)=(/ 'CUEFI', 'Convective cloud efficiency', '-' /)
+meteocloud(17,:)=(/ 'TCOND', 'Total condensate', 'kg/kg' /)
+meteocloud(18,:)=(/ 'TCOLW', 'Total column-integrated cloud water', 'kg/(m^2)' /)
+meteocloud(19,:)=(/ 'TCOLI', 'Total column-integrated cloud ice', 'kg/(m^2)' /)
+meteocloud(20,:)=(/ 'TCOLC', 'Total column-integrated cloud condensate' ,'kg/(m^2)' /)
+meteocloud(21,:)=(/ 'FICE', 'Ice fraction of total condensate', '-' /)
+meteocloud(22,:)=(/ 'CDCC', 'Cloud cover', '%' /)
+meteocloud(23,:)=(/ 'CDCIMR', 'Cloud ice mixing ratio', 'kg/kg' /)
+meteocloud(24,:)=(/ 'SUNS', 'Sunshine', '-' /)
+meteocloud(25,:)=(/ 'CBHE', 'Horizontal extent of cumulonibus', '%' /)
+meteocloud(33,:)=(/ 'SUNSD', 'Sunshine duration', 's' /)
+meteocloud(192,:)=(/ 'CDLYR', 'Non-convective cloud cover', '%' /)
+meteocloud(193,:)=(/ 'CWORK', 'Cloud work function', 'J/kg' /)
+meteocloud(194,:)=(/ 'CUEFI', 'Convective cloud efficiency', '-' /)
+meteocloud(195,:)=(/ 'TCOND', 'Total condensate', 'kg/kg' /)
+meteocloud(196,:)=(/ 'TCOLW', 'Total column-integrated cloud water', 'kg/(m^2)' /)
+meteocloud(197,:)=(/ 'TCOLI', 'Total column-integrated cloud ice', 'kg/(m^2)' /)
+meteocloud(198,:)=(/ 'TCOLC', 'Total column-integrated cloud condensate' ,'kg/(m^2)' /)
+meteocloud(199,:)=(/ 'FICE', 'Ice fraction of total condensate', '-' /)
+meteocloud(200,:)=(/ 'MFLUX', 'Convective cloud mass flux', 'Pa/s' /)
+meteocloud(201,:)=(/ 'SUNSD', 'Sunshine duration', 's' /)
 
 meteostability(0,:)=(/ 'PLI', 'Parcel lifted index (to 500 hPa)', 'K' /)
 meteostability(1,:)=(/ 'BLI', 'Best lifted index (to 500 hPa)', 'K' /)
@@ -1102,11 +1126,37 @@ landveg(6,:)=(/ '', 'Evapotranspiration', '1/(kg^2 s)' /)
 landveg(7,:)=(/ '', 'Model terrain height', 'm' /)
 landveg(8,:)=(/ '', 'Land use', '(1 Urban land, 2 agriculture, 3 range land, 4 deciduous forest, 5 coniferous forest, 6 forest/wetland, 7 water, 8 wetlands, 9 desert, 10 tundra, 11 ice, 12 tropical forest, 13 savannah' /)
 
+landsoil=''
 landsoil(0,:)=(/ 'SOTYP', 'Soil type', '(1 Sand, 2 loamy sand, 3 sandy loam, 4 silt loam, 5 orgainc (redefined), 6 sandy clay loam, 7 silt clay loam, 8 clay loam, 9 sandy clay, 10 silty clay, 11 clay)' /)
-landsoil(1,:)=(/ '', 'Upper layer soil termperature', 'K' /)
-landsoil(2,:)=(/ '', 'Upper layer soil moisture', 'kg/(m^3)' /)
-landsoil(3,:)=(/ '', 'Lower layer soil moisture', 'kg/(m^3)' /)
-landsoil(4,:)=(/ '', 'Bottom layer soil temperature', 'K' /)
+landsoil(1,:)=(/ 'UPLST', 'Upper layer soil temperature', 'K' /)
+landsoil(2,:)=(/ 'UPLSM', 'Upper layer soil moisture', 'kg/(m^3)' /)
+landsoil(3,:)=(/ 'LOWLSM', 'Lower layer soil moisture', 'kg/(m^3)' /)
+landsoil(4,:)=(/ 'BOTLST', 'Bottom layer soil temperature', 'K' /)
+landsoil(5,:)=(/ 'SOILL', 'Liquid volumetric soil moisture', '-' /)
+landsoil(6,:)=(/ 'RLYRS', 'Number of soil layers in root zone', '-' /)
+landsoil(7,:)=(/ 'SMREF', 'Transpiration stress-onset', '-' /)
+landsoil(8,:)=(/ 'SMDRY', 'Direct evaporation cease', '-' /)
+landsoil(9,:)=(/ 'POROS', 'Soil porosity' ,'-' /)
+landsoil(10,:)=(/ 'LIQVSM', 'Liquid volumetric soil moisture', 'm^3/(m^3)' /)
+landsoil(11,:)=(/ 'VOLTSO', 'Volumetric transpiration stree-onset', 'm^3/(m^3)' /)
+landsoil(12,:)=(/ 'TRANSO', 'Transpiration stree-onset', 'kg/(m^3)' /)
+landsoil(13,:)=(/ 'VOLDEC', 'Volumetric direct evaporation cease', 'm^3/(m^3)' /)
+landsoil(14,:)=(/ 'DIREC', 'Direct evaporation cease', 'kg/(m^3)' /)
+landsoil(15,:)=(/ 'SOILP', 'Soil porosity', 'm^3/(m^3)' /)
+landsoil(16,:)=(/ 'VSOSM', 'Volumetric saturation of soil moisture', 'm^3/(m^3)' /)
+landsoil(17,:)=(/ 'SATOSM', 'Saturation of soil moisture', 'kg/(m^3)' /)
+landsoil(192,:)=(/ 'SOILL', 'Liquid volumetric soil moisture', '-' /)
+landsoil(193,:)=(/ 'RLYRS', 'Number of soil layers in root zone', '-' /)
+landsoil(194,:)=(/ 'SLTYP', 'Surface slope type', '-' /)
+landsoil(195,:)=(/ 'SMREF', 'Transpiration stress-onset', '-' /)
+landsoil(196,:)=(/ 'SMDRY', 'Direct evaporation cease', '-' /)
+landsoil(197,:)=(/ 'POROS', 'Soil porosity' ,'-' /)
+landsoil(198,:)=(/ 'EVBS', 'Direct evaporation from bare soil', 'W/(m^2)' /)
+landsoil(199,:)=(/ 'LSPA', 'Land surface precipitation accumulation', 'kg/(m^2)' /)
+landsoil(200,:)=(/ 'BARET', 'Bare soil surface skin temperature', 'K' /)
+landsoil(201,:)=(/ 'AVSFT', 'Average surface skin temperature', 'K' /)
+landsoil(202,:)=(/ 'RADT', 'Effective radiative skin temperature', 'K' /)
+landsoil(203,:)=(/ 'FLDCP', 'Field capacity', '-' /)
 
 spaceimage(0,:)=(/ '', 'Scaled radiance', 'numeric' /)
 spaceimage(1,:)=(/ '', 'Scaled albedo', 'numeric' /)
@@ -1278,38 +1328,38 @@ Select Case(alist(3))
 	
       Case(3)
         If (alist(6).GT.Size(meteomass,DIM=1)) Then
-	  elemtxt=elemerr
-	Else
+          elemtxt=elemerr
+        Else
           elemtxt=meteomass(alist(6),:)
-	End If
+        End If
 
       Case(4)
         If (alist(6).GT.Size(meteoshortradiate,DIM=1)) Then
-	  elemtxt=elemerr
-	Else
+          elemtxt=elemerr
+        Else
           elemtxt=meteoshortradiate(alist(6),:)
-	End If
+        End If
 
       Case(5)
         If (alist(6).GT.Size(meteolongradiate,DIM=1)) Then
-	  elemtxt=elemerr
-	Else
+          elemtxt=elemerr
+        Else
           elemtxt=meteolongradiate(alist(6),:)
-	End If
+        End If
 
       Case(6)
         If (alist(6).GT.Size(meteocloud,DIM=1)) Then
-	  elemtxt=elemerr
-	Else
+          elemtxt=elemerr
+        Else
           elemtxt=meteocloud(alist(6),:)
-	End If
+        End If
 
       Case(7)
         If (alist(6).GT.Size(meteostability,DIM=1)) Then
-	  elemtxt=elemerr
-	Else
+          elemtxt=elemerr
+        Else
           elemtxt=meteostability(alist(6),:)
-	End If
+        End If
 
       Case(13)
         If (alist(6).GT.Size(meteoaerosols,DIM=1)) Then
@@ -2097,8 +2147,14 @@ End If
 If (alist(13).EQ.1) Then    
   sndvalue=Real(alist(12))/Real(10**alist(11))
 Else
-  sndvalue=0
+  sndvalue=0.
 End If
+
+! MSL and SFC special case
+if (indx.eq.1.or.indx.eq.101) then
+   surfvalue=0.
+   sndvalue=0.
+end if
 
 Return
 End
