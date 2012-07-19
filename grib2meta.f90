@@ -1298,7 +1298,6 @@ nceplcltable003001(193,:)=(/ 'ScatEstVWind', 'Scatterometer estimated v wind', '
 first=.false.
 end if
 
-
 ! Check standard meta data
 Select Case(alist(3))
 
@@ -1307,10 +1306,10 @@ Select Case(alist(3))
     
       Case(0)
         If (alist(6).GT.Size(meteotemp,DIM=1)) Then
-	      elemtxt=elemerr
-	    Else
+          elemtxt=elemerr
+        Else
           elemtxt=meteotemp(alist(6),:)
-	    End If
+        End If
 	
       Case(1)
         If (alist(6).GT.Size(meteomoist,DIM=1)) Then
@@ -2132,8 +2131,11 @@ If (alist(8).LT.1) Then
   Return
 End If
 
-
-surfvalue=Real(alist(10))/Real(10**alist(9))
+if (alist(9).ge.0.) then
+  surfvalue=Real(alist(10))/Real(10**alist(9))
+else
+  surfvalue=real(alist(10))*real(10**abs(alist(9)))
+end if
 
 If ((alist(8).GT.160).OR.(surface(alist(8),1).EQ.'???')) Then
   indx=191
@@ -2144,8 +2146,12 @@ Else
 End If
 
 ! snd data    
-If (alist(13).EQ.1) Then    
-  sndvalue=Real(alist(12))/Real(10**alist(11))
+If (alist(13).EQ.1) Then
+  if (alist(12).eq.-2147483646) then
+    sndvalue=0.
+  else
+    sndvalue=Real(alist(12))/Real(10**alist(11))
+  end if
 Else
   sndvalue=0.
 End If

@@ -336,14 +336,16 @@ If (alist(48).EQ.2) then
         alist(8)=arr2int(values(23),1)
         ! fstsurfactor
         alist(9)=arr2int(values(24),1)
+	if (alist(9).gt.127) alist(9)=128-alist(9)
         ! fstsurfdata
         alist(10)=arr2int(values(25:28),4)
       
         If (seclen.GE.34) Then
           ! sndsurffactor
           alist(11)=arr2int(values(30),1)
-	      ! sndsurfdata
-	      alist(12)=arr2int(values(31:34),4)
+	  if (alist(11).gt.127) alist(11)=128-alist(11)
+          ! sndsurfdata
+          alist(12)=arr2int(values(31:34),4)
           ! f_sndvalue
           alist(13)=1
         Else
