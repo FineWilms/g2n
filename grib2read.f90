@@ -166,10 +166,7 @@ If (alist(48).EQ.2) then
   If (dat(5).EQ.2) Then
     firstsec=2
   
-    Write(6,*) "  WARN: Non-trivial section 2 detected"
-    Write(6,*) "  This part of the code has not yet been implemented"
-    Write(6,*) "  Contact MJT and get him to fix it"
-    Write(6,*) "  For now we will just skip section 2"
+    Write(6,*) "  WARN: Non-trivial section 2 detected. Skipping."
     
     Allocate(values(1:seclen))
     Read(UNIT=gribunit) values(6:seclen)
@@ -201,23 +198,23 @@ If (alist(48).EQ.2) then
       Case(0)
         If (seclen.LT.71) Then
           Write(6,*) "ERROR: Missing data from section 4"
-	      Close(gribunit)
-	      Stop
+          Close(gribunit)
+          Stop
         End If
       
         Do i=1,4
-	      alist(14+i)=arr2int(values(35+i*4:38+i*4),4)
+          alist(14+i)=arr2int(values(35+i*4:38+i*4),4)
         End Do
         alist(19)=arr2int(values(55),1)
         Do i=1,4
-	      alist(19+i)=arr2int(values(52+i*4:55+i*4),4)
+          alist(19+i)=arr2int(values(52+i*4:55+i*4),4)
         End Do
     
       Case(10)
         If (seclen.LT.72) Then
           Write(6,*) "ERROR: Missing data from section 4"
-	      Close(gribunit)
-	      Stop
+          Close(gribunit)
+          Stop
         End If
     
         Do i=1,2

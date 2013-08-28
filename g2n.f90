@@ -17,7 +17,7 @@ Integer splicenum,ensnum
 Logical levinvert,badecmwf
 Namelist /splice/ outputunit,splicename,spliceunit,newname,levinvert,badecmwf,ensnum
 
-Write(6,*) "g2n - GRIB1/2 to NetCDF converter (JUL-12)"
+Write(6,*) "g2n - GRIB1/2 to NetCDF converter (AUG-13)"
 Write(6,*) "Currently a work in progress.  There may be problems..."
 
 ! Read switches
@@ -294,8 +294,8 @@ If (typename.NE.'none') Then
   Write(6,'(" Start date                      = ",I4.4,"/",I2.2,"/",I2.2," ",I2.2,":",I2.2,":",I2.2)') adate
   Write(6,*) "Number of elements in splice    = ",splicenum
   Write(6,*) "Number of time intervals        = ",datenum
-  Write(6,'(" Lon (start,end,step)            = ",F10.3,F10.3,F8.3)') alonlat(1,:)
-  Write(6,'(" Lat (start,end,step)            = ",F10.3,F10.3,F8.3)') alonlat(2,:)
+  Write(6,'(" Lon (start,end,step)            = ",F10.3,F10.3,F9.4)') alonlat(1,:)
+  Write(6,'(" Lat (start,end,step)            = ",F10.3,F10.3,F9.4)') alonlat(2,:)
   Write(6,'(" Lvl (start,end,lvlnum)          = ",F7.1,F7.1,I4)') alvl(1),alvl(dimnum(3)),dimnum(3)
 End If
 

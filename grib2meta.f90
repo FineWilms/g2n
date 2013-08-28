@@ -2481,8 +2481,8 @@ Select Case(alist(14))
       resflag=alist(19)
       alonlat(2,2)=Real(alist(20))*unt
       alonlat(1,2)=Real(alist(21))*unt
-      alonlat(2,3)=Real(alist(22))*unt
-      alonlat(1,3)=Real(alist(23))*unt
+      alonlat(2,3)=Real(alist(23))*unt
+      alonlat(1,3)=Real(alist(22))*unt
       
       If (((resflag.AND.32).EQ.32).AND.(.NOT.((resflag.AND.16).EQ.16))) Then
         alonlat(2,3)=alonlat(1,3)

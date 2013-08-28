@@ -1,7 +1,7 @@
 CMP = ifort
 XFLAGS = -O
-INC = -I /apps/jasper/1.900.1/include -I /apps/netcdf/4.1.3/include
-LIBS = -L /cs/datastore/csdar/tha051/src/g2nlib/g2lib-1.1.8 -L /apps/jasper/1.900.1/lib -L /apps/netcdf/4.1.3/lib -L /apps/hdf5/1.8.8/lib  -lg2 -lnetcdf -lnetcdff -ljasper -lpng
+INC = -I /apps/jasper/1.900.1/include -I $(NETCDF_ROOT)/include
+LIBS = -L /cs/datastore/csdar/tha051/src/g2nlib/g2lib-1.1.8 -L /apps/jasper/1.900.1/lib -L $(NETCDF_ROOT)/lib -L $(HDF5_HOME)/lib  -lg2 -lnetcdf -lnetcdff -ljasper -lpng
 
 OBJ = g2n.o readswitch.o ncwrite.o grib2read.o grib2meta.o splice.o misc.o
 
