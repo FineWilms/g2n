@@ -620,20 +620,31 @@ Else
           Case DEFAULT
             Write(6,*) "ERROR: Level unit conversions are unsupported"
             Write(6,*) "       Please contact MJT and get him to fix this"
+	    Write(6,*) "hPa option"
+	    Write(6,*) "input  ",trim(inputunit)
+	    Write(6,*) "output ",trim(ounit)
             Stop
         End Select
       Case('m','meters')
         Select Case(inputunit)
 	  Case('DBLL')
 	    ! no change
+	  Case('HTGL')
+	    ! no change
           Case DEFAULT
             Write(6,*) "ERROR: Level unit conversions are unsupported"
             Write(6,*) "       Please contact MJT and get him to fix this"
+	    Write(6,*) "m option"	    
+	    Write(6,*) "input  ",trim(inputunit)
+	    Write(6,*) "output ",trim(ounit)
             Stop
         End Select	    
       Case DEFAULT
         Write(6,*) "ERROR: Level unit conversions are unsupported"
         Write(6,*) "       Please contact MJT and get him to fix this"
+        Write(6,*) "Unknown option"
+        Write(6,*) "input  ",trim(inputunit)
+        Write(6,*) "output ",trim(ounit)
         Stop
     End Select
       
