@@ -166,7 +166,7 @@ If (alist(48).EQ.2) then
   If (dat(5).EQ.2) Then
     firstsec=2
   
-    Write(6,*) "  WARN: Non-trivial section 2 detected. Skipping."
+    Write(6,*) "  WARN: Non-trivial section 2 detected.  Skipping."
     
     Allocate(values(1:seclen))
     Read(UNIT=gribunit) values(6:seclen)
@@ -198,23 +198,23 @@ If (alist(48).EQ.2) then
       Case(0)
         If (seclen.LT.71) Then
           Write(6,*) "ERROR: Missing data from section 4"
-          Close(gribunit)
-          Stop
+	      Close(gribunit)
+	      Stop
         End If
       
         Do i=1,4
-          alist(14+i)=arr2int(values(35+i*4:38+i*4),4)
+	      alist(14+i)=arr2int(values(35+i*4:38+i*4),4)
         End Do
         alist(19)=arr2int(values(55),1)
         Do i=1,4
-          alist(19+i)=arr2int(values(52+i*4:55+i*4),4)
+	      alist(19+i)=arr2int(values(52+i*4:55+i*4),4)
         End Do
     
       Case(10)
         If (seclen.LT.72) Then
           Write(6,*) "ERROR: Missing data from section 4"
-          Close(gribunit)
-          Stop
+	      Close(gribunit)
+	      Stop
         End If
     
         Do i=1,2
@@ -324,7 +324,8 @@ If (alist(48).EQ.2) then
     ! (values(37) holds the total number of ensemble members)
       
     ! lvl info
-    If ((alist(4).EQ.20).OR.(alist(4).EQ.30).OR.(alist(4).EQ.254).OR.(alist(4).EQ.1000).OR.(alist(4).EQ.1001).OR.(alist(4).EQ.1002)) Then
+    If ((alist(4).EQ.20).OR.(alist(4).EQ.30).OR.(alist(4).EQ.254).OR.(alist(4).EQ.1000).OR.(alist(4).EQ.1001).OR. &
+        (alist(4).EQ.1002)) Then
       ! Undefined
       alist(8:13)=-1
     Else
@@ -333,14 +334,14 @@ If (alist(48).EQ.2) then
         alist(8)=arr2int(values(23),1)
         ! fstsurfactor
         alist(9)=arr2int(values(24),1)
-        if (alist(9).gt.127) alist(9)=128-alist(9)
+	if (alist(9).gt.127) alist(9)=128-alist(9)
         ! fstsurfdata
         alist(10)=arr2int(values(25:28),4)
       
         If (seclen.GE.34) Then
           ! sndsurffactor
           alist(11)=arr2int(values(30),1)
-          if (alist(11).gt.127) alist(11)=128-alist(11)
+	  if (alist(11).gt.127) alist(11)=128-alist(11)
           ! sndsurfdata
           alist(12)=arr2int(values(31:34),4)
           ! f_sndvalue
@@ -562,8 +563,8 @@ if (badecmwf) then
   alist(42:47)=adate ! clobber fcst time in ECMWF analyses 
 end if
 
-foundgds=(128.AND.dat(8)).NE.0
-foundbms=(64.AND.dat(8)).NE.0
+foundgds=iand(128,dat(8)).NE.0
+foundbms=iand(64,dat(8)).NE.0
 Deallocate(dat)
 
 ! alist(15:41) = lat/lon data
@@ -790,6 +791,7 @@ Implicit None
 
 Integer, intent(in) :: packsize,unpacksize
 Integer*1, dimension(packsize), intent(in) :: dat
+integer*1, dimension(1) :: tmp
 Real, dimension(unpacksize), intent(out) :: dataunpack
 Integer gdsstart,bdsstart,bmsstart,nbits,scale,bdsend,pos,decscale,ds,ups
 Integer i,pwr,sbits,cbits,bs
@@ -803,14 +805,14 @@ ups=unpacksize
 
 pos=9 ! start of section 1
 pos=arr2int(dat(pos:pos+2),3)+pos ! start of section 2
-If ((128.AND.dat(16)).EQ.0) then
+If (iand(128,dat(16)).EQ.0) then
   gdsstart=0
 Else
   gdsstart=pos
   pos=arr2int(dat(pos:pos+2),3)+pos  
 End If
 
-If ((64.AND.dat(16)).EQ.0) Then
+If (iand(64,dat(16)).EQ.0) Then
   bmsstart=0
 Else
   bmsstart=pos
@@ -826,7 +828,7 @@ scale=signarr2int(dat(bdsstart+4:bdsstart+5),2)
 rs=rds*2.**scale
 ref=rds*arr2flt(dat(bdsstart+6:bdsstart+9))
 
-harmonic=((dat(bdsstart+3).AND.128).NE.0)
+harmonic=(iand(dat(bdsstart+3),128).NE.0)
 If (harmonic) Then
   dataunpack=arr2flt(dat(bdsstart+11:bdsstart+14))
   ds=bdsstart+15
@@ -848,7 +850,7 @@ Do i=1,ups
     pos=8-Mod(i,8)
     If (pos.EQ.8) pos=0
     pwr=2**pos
-    udf=(dat(bs).AND.pwr).EQ.0
+    udf=iand(dat(bs),pwr).EQ.0
     If (pos.EQ.0) bs=bs+1
   End If
 
@@ -859,7 +861,8 @@ Do i=1,ups
     sbits=nbits
     Do While (cbits.LE.sbits)
       pwr=2**cbits
-      store=store*real(pwr)+real(arr2int(dat(ds).AND.(pwr-1),1))
+      tmp(1)=iand(dat(ds),pwr-1)
+      store=store*real(pwr)+real(arr2int(tmp(1:1),1))
       ds=ds+1
       sbits=sbits-cbits
       cbits=8
@@ -976,16 +979,16 @@ Integer arr2int
 pwr=1.
 low=real(arr2int(arr(2:4),3))
 
-st=abs((arr(1).and.127)-64)
+st=abs(iand(arr(1),127)-64)
 
 Do i=1,6 ! should be 6 but too large for double precision
   flg=2.**(i-1)
-  If ((st.AND.flg).NE.0) Then
+  If (iand(st,flg).NE.0) Then
     pwr=pwr*2.**(2**(i+1))
   End If
 End Do
-If ((arr(1).AND.64).EQ.0.) pwr=1./pwr
-If ((arr(1).AND.128).NE.0) pwr=-pwr
+If (iand(arr(1),64).EQ.0.) pwr=1./pwr
+If (iand(arr(1),128).NE.0) pwr=-pwr
 
 arr2flt=pwr*low/16777216.0
 

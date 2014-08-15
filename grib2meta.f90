@@ -71,7 +71,7 @@ Select Case(alist(1))
 End Select
 
 ! Check for errors
-If ((elemtxt(1).EQ.elemerr(1)).OR.(elemtxt(1).EQ.'')) Then
+If ((elemtxt(1)==elemerr(1)).OR.(elemtxt(1)=='')) Then
   elemtxt(1)='      '
   Write(elemtxt(1)(1:2),'(Z2.2)') alist(1)
   Write(elemtxt(1)(3:4),'(Z2.2)') alist(2)
@@ -93,278 +93,779 @@ implicit none
 
 Integer, intent(in) :: ain
 Character*80, dimension(1:3), intent(out) :: elemtxt
-Character*80 elemerr(1:3)
 Character*80, save :: ncepopn(0:255,1:3)
 logical, save :: first=.true.
 
-elemerr='???'
-
 if (first) then
 
-ncepopn=""
-ncepopn(1,:)=(/ "PRES", "Pressure", "Pa" /)
-ncepopn(2,:)=(/ "PRMSL", "Pressure reduced to MSL","Pa" /)
-ncepopn(3,:)=(/ "PTEND", "Pressure tendency","Pa/s" /)
-ncepopn(4,:)=(/ "PVORT", "Pot. vorticity","km^2/kg/s" /)
-ncepopn(5,:)=(/ "ICAHT", "ICAO Standard Atmosphere Reference Height","M" /)
-ncepopn(6,:)=(/ "GP", "Geopotential","m^2/s^2" /)
-ncepopn(7,:)=(/ "HGT", "Geopotential height","gpm" /)
-ncepopn(8,:)=(/ "DIST", "Geometric height","m" /)
-ncepopn(9,:)=(/ "HSTDV", "Std dev of height","m" /)
-ncepopn(10,:)=(/ "TOZNE", "Total ozone","Dobson" /)
-ncepopn(11,:)=(/ "TMP", "Temp.","K" /)
-ncepopn(12,:)=(/ "VTMP", "Virtual temp.","K" /)
-ncepopn(13,:)=(/ "POT", "Potential temp.","K" /)
-ncepopn(14,:)=(/ "EPOT", "Pseudo-adiabatic pot. temp.","K" /)
-ncepopn(15,:)=(/ "TMAX", "Max. temp.","K" /)
-ncepopn(16,:)=(/ "TMIN", "Min. temp.","K" /)
-ncepopn(17,:)=(/ "DPT", "Dew point temp.","K" /)
-ncepopn(18,:)=(/ "DEPR", "Dew point depression","K" /)
-ncepopn(19,:)=(/ "LAPR", "Lapse rate","K/m" /)
-ncepopn(20,:)=(/ "VIS", "Visibility","m" /)
-ncepopn(21,:)=(/ "RDSP1", "Radar spectra (1)","non-dim" /)
-ncepopn(22,:)=(/ "RDSP2", "Radar spectra (2)","non-dim" /)
-ncepopn(23,:)=(/ "RDSP3", "Radar spectra (3)","non-dim" /)
-ncepopn(24,:)=(/ "PLI", "Parcel lifted index (to 500 hPa)","K" /)
-ncepopn(25,:)=(/ "TMPA", "Temp. anomaly","K" /)
-ncepopn(26,:)=(/ "PRESA", "Pressure anomaly","Pa" /)
-ncepopn(27,:)=(/ "GPA", "Geopotential height anomaly","gpm" /)
-ncepopn(28,:)=(/ "WVSP1", "Wave spectra (1)","non-dim" /)
-ncepopn(29,:)=(/ "WVSP2", "Wave spectra (2)","non-dim" /)
-ncepopn(30,:)=(/ "WVSP3", "Wave spectra (3)","non-dim" /)
-ncepopn(31,:)=(/ "WDIR", "Wind direction","deg" /)
-ncepopn(32,:)=(/ "WIND", "Wind speed","m/s" /)
-ncepopn(33,:)=(/ "UGRD", "u wind","m/s" /)
-ncepopn(34,:)=(/ "VGRD", "v wind","m/s" /)
-ncepopn(35,:)=(/ "STRM", "Stream function","m^2/s" /)
-ncepopn(36,:)=(/ "VPOT", "Velocity potential","m^2/s" /)
-ncepopn(37,:)=(/ "MNTSF", "Montgomery stream function","m^2/s^2" /)
-ncepopn(38,:)=(/ "SGCVV", "Sigma coord. vertical velocity","/s" /)
-ncepopn(39,:)=(/ "VVEL", "Pressure vertical velocity","Pa/s" /)
-ncepopn(40,:)=(/ "DZDT", "Geometric vertical velocity","m/s" /)
-ncepopn(41,:)=(/ "ABSV", "Absolute vorticity ","/s" /)
-ncepopn(42,:)=(/ "ABSD", "Absolute divergence","/s" /)
-ncepopn(43,:)=(/ "RELV", "Relative vorticity","/s" /)
-ncepopn(44,:)=(/ "RELD", "Relative divergence","/s" /)
-ncepopn(45,:)=(/ "VUCSH", "Vertical u shear","/s" /)
-ncepopn(46,:)=(/ "VVCSH", "Vertical v shear","/s" /)
-ncepopn(47,:)=(/ "DIRC", "Direction of current","deg" /)
-ncepopn(48,:)=(/ "SPC", "Speed of current","m/s" /)
-ncepopn(49,:)=(/ "UOGRD", "u of current","m/s" /)
-ncepopn(50,:)=(/ "VOGRD", "v of current","m/s" /)
-ncepopn(51,:)=(/ "SPFH", "Specific humidity","kg/kg" /)
-ncepopn(52,:)=(/ "RH", "Relative humidity","%" /)
-ncepopn(53,:)=(/ "MIXR", "Humidity mixing ratio","kg/kg" /)
-ncepopn(54,:)=(/ "PWAT", "Precipitable water","kg/m^2" /)
-ncepopn(55,:)=(/ "VAPP", "Vapor pressure","Pa" /)
-ncepopn(56,:)=(/ "SATD", "Saturation deficit","Pa" /)
-ncepopn(57,:)=(/ "EVP", "Evaporation","kg/m^2" /)
-ncepopn(58,:)=(/ "CICE", "Cloud Ice","kg/m^2" /)
-ncepopn(59,:)=(/ "PRATE", "Precipitation rate","kg/m^2/s" /)
-ncepopn(60,:)=(/ "TSTM", "Thunderstorm probability","%" /)
-ncepopn(61,:)=(/ "APCP", "Total precipitation","kg/m^2" /)
-ncepopn(62,:)=(/ "NCPCP", "Large scale precipitation","kg/m^2" /)
-ncepopn(63,:)=(/ "ACPCP", "Convective precipitation","kg/m^2" /)
-ncepopn(64,:)=(/ "SRWEQ", "Snowfall rate water equiv.","kg/m^2/s" /)
-ncepopn(65,:)=(/ "WEASD", "Accum. snow","kg/m^2" /)
-ncepopn(66,:)=(/ "SNOD", "Snow depth","m" /)
-ncepopn(67,:)=(/ "MIXHT", "Mixed layer depth","m" /)
-ncepopn(68,:)=(/ "TTHDP", "Transient thermocline depth","m" /)
-ncepopn(69,:)=(/ "MTHD", "Main thermocline depth","m" /)
-ncepopn(70,:)=(/ "MTHA", "Main thermocline anomaly","m" /)
-ncepopn(71,:)=(/ "TCDC", "Total cloud cover","%" /)
-ncepopn(72,:)=(/ "CDCON", "Convective cloud cover","%" /)
-ncepopn(73,:)=(/ "LCDC", "Low level cloud cover","%" /)
-ncepopn(74,:)=(/ "MCDC", "Mid level cloud cover","%" /)
-ncepopn(75,:)=(/ "HCDC", "High level cloud cover","%" /)
-ncepopn(76,:)=(/ "CWAT", "Cloud water","kg/m^2" /)
-ncepopn(77,:)=(/ "BLI", "Best lifted index (to 500 hPa)","K" /)
-ncepopn(78,:)=(/ "SNOC", "Convective snow","kg/m^2" /)
-ncepopn(79,:)=(/ "SNOL", "Large scale snow","kg/m^2" /)
-ncepopn(80,:)=(/ "WTMP", "Water temp.","K" /)
-ncepopn(81,:)=(/ "LAND", "Land cover (land=1;sea=0)","fraction" /)
-ncepopn(82,:)=(/ "DSLM", "Deviation of sea level from mean","m" /)
-ncepopn(83,:)=(/ "SFCR", "Surface roughness","m" /)
-ncepopn(84,:)=(/ "ALBDO", "Albedo","%" /)
-ncepopn(85,:)=(/ "TSOIL", "Soil temp.","K" /)
-ncepopn(86,:)=(/ "SOILM", "Soil moisture content","kg/m^2" /)
-ncepopn(87,:)=(/ "VEG", "Vegetation","%" /)
-ncepopn(88,:)=(/ "SALTY", "Salinity","kg/kg" /)
-ncepopn(89,:)=(/ "DEN", "Density","kg/m^3" /)
-ncepopn(90,:)=(/ "WATR", "Water runoff","kg/m^2" /)
-ncepopn(91,:)=(/ "ICEC", "Ice concentration (ice=1;no ice=0)","fraction" /)
-ncepopn(92,:)=(/ "ICETK", "Ice thickness","m" /)
-ncepopn(93,:)=(/ "DICED", "Direction of ice drift","deg" /)
-ncepopn(94,:)=(/ "SICED", "Speed of ice drift","m/s" /)
-ncepopn(95,:)=(/ "UICE", "u of ice drift","m/s" /)
-ncepopn(96,:)=(/ "VICE", "v of ice drift","m/s" /)
-ncepopn(97,:)=(/ "ICEG", "Ice growth rate","m/s" /)
-ncepopn(98,:)=(/ "ICED", "Ice divergence","/s" /)
-ncepopn(99,:)=(/ "SNOM", "Snow melt","kg/m^2" /)
-ncepopn(100,:)=(/ "HTSGW", "Sig height of wind waves and swell","m" /)
-ncepopn(101,:)=(/ "WVDIR", "Direction of wind waves","deg" /)
-ncepopn(102,:)=(/ "WVHGT", "Sig height of wind waves","m" /)
-ncepopn(103,:)=(/ "WVPER", "Mean period of wind waves","s" /)
-ncepopn(104,:)=(/ "SWDIR", "Direction of swell waves","deg" /)
-ncepopn(105,:)=(/ "SWELL", "Sig height of swell waves","m" /)
-ncepopn(106,:)=(/ "SWPER", "Mean period of swell waves","s" /)
-ncepopn(107,:)=(/ "DIRPW", "Primary wave direction","deg" /)
-ncepopn(108,:)=(/ "PERPW", "Primary wave mean period","s" /)
-ncepopn(109,:)=(/ "DIRSW", "Secondary wave direction","deg" /)
-ncepopn(110,:)=(/ "PERSW", "Secondary wave mean period","s" /)
-ncepopn(111,:)=(/ "NSWRS", "Net short wave (surface)","W/m^2" /)
-ncepopn(112,:)=(/ "NLWRS", "Net long wave (surface)","W/m^2" /)
-ncepopn(113,:)=(/ "NSWRT", "Net short wave (top)","W/m^2" /)
-ncepopn(114,:)=(/ "NLWRT", "Net long wave (top)","W/m^2" /)
-ncepopn(115,:)=(/ "LWAVR", "Long wave","W/m^2" /)
-ncepopn(116,:)=(/ "SWAVR", "Short wave","W/m^2" /)
-ncepopn(117,:)=(/ "GRAD", "Global radiation","W/m^2" /)
-ncepopn(118,:)=(/ "BRTMP", "Brightness temperature","K" /)
-ncepopn(119,:)=(/ "LWRAD", "Radiance with respect to wave no.","W/m/sr" /)
-ncepopn(120,:)=(/ "SWRAD", "Radiance with respect ot wave len.","W/m^3/sr" /)
-ncepopn(121,:)=(/ "LHTFL", "Latent heat flux","W/m^2" /)
-ncepopn(122,:)=(/ "SHTFL", "Sensible heat flux","W/m^2" /)
-ncepopn(123,:)=(/ "BLYDP", "Boundary layer dissipation","W/m^2" /)
-ncepopn(124,:)=(/ "UFLX", "Zonal momentum flux","N/m^2" /)
-ncepopn(125,:)=(/ "VFLX", "Meridional momentum flux","N/m^2" /)
-ncepopn(126,:)=(/ "WMIXE", "Wind mixing energy","J" /)
-ncepopn(127,:)=(/ "IMGD", "Image data","" /)
-ncepopn(128,:)=(/ "MSLSA", "Mean sea level pressure (Std Atm)","Pa" /)
-ncepopn(129,:)=(/ "MSLMA", "Mean sea level pressure (MAPS)","Pa" /)
-ncepopn(130,:)=(/ "MSLET", "Mean sea level pressure (ETA model)","Pa" /)
-ncepopn(131,:)=(/ "LFTX", "Surface lifted index","K" /)
-ncepopn(132,:)=(/ "4LFTX", "Best (4-layer) lifted index","K" /)
-ncepopn(133,:)=(/ "KX", "K index","K" /)
-ncepopn(134,:)=(/ "SX", "Sweat index","K" /)
-ncepopn(135,:)=(/ "MCONV", "Horizontal moisture divergence","kg/kg/s" /)
-ncepopn(136,:)=(/ "VWSH", "Vertical speed shear","1/s" /)
-ncepopn(137,:)=(/ "TSLSA", "3-hr pressure tendency (Std Atmos Red)","Pa/s" /)
-ncepopn(138,:)=(/ "BVF2", "Brunt-Vaisala frequency^2","1/s^2" /)
-ncepopn(139,:)=(/ "PVMW", "Potential vorticity (mass-weighted)","1/s/m" /)
-ncepopn(140,:)=(/ "CRAIN", "Categorical rain","yes=1;no=0" /)
-ncepopn(141,:)=(/ "CFRZR", "Categorical freezing rain","yes=1;no=0" /)
-ncepopn(142,:)=(/ "CICEP", "Categorical ice pellets","yes=1;no=0" /)
-ncepopn(143,:)=(/ "CSNOW", "Categorical snow","yes=1;no=0" /)
-ncepopn(144,:)=(/ "SOILW", "Volumetric soil moisture","fraction" /)
-ncepopn(145,:)=(/ "PEVPR", "Potential evaporation rate","W/m^2" /)
-ncepopn(146,:)=(/ "CWORK", "Cloud work function","J/kg" /)
-ncepopn(147,:)=(/ "U-GWD", "Zonal gravity wave stress","N/m^2" /)
-ncepopn(148,:)=(/ "V-GWD", "Meridional gravity wave stress","N/m^2" /)
-ncepopn(149,:)=(/ "PV", "Potential vorticity","m^2/s/kg" /)
-ncepopn(150,:)=(/ "COVMZ", "Covariance between u and v","m^2/s^2" /)
-ncepopn(151,:)=(/ "COVTZ", "Covariance between u and T","K*m/s" /)
-ncepopn(152,:)=(/ "COVTM", "Covariance between v and T","K*m/s" /)
-ncepopn(153,:)=(/ "CLWMR", "Cloud water","kg/kg" /)
-ncepopn(154,:)=(/ "O3MR", "Ozone mixing ratio","kg/kg" /)
-ncepopn(155,:)=(/ "GFLUX", "Ground heat flux","W/m^2" /)
-ncepopn(156,:)=(/ "CIN", "Convective inhibition","J/kg" /)
-ncepopn(157,:)=(/ "CAPE", "Convective Avail. Pot. Energy","J/kg" /)
-ncepopn(158,:)=(/ "TKE", "Turbulent kinetic energy","J/kg" /)
-ncepopn(159,:)=(/ "CONDP", "Lifted parcel condensation pressure","Pa" /)
-ncepopn(160,:)=(/ "CSUSF", "Clear sky upward solar flux","W/m^2" /)
-ncepopn(161,:)=(/ "CSDSF", "Clear sky downward solar flux","W/m^2" /)
-ncepopn(162,:)=(/ "CSULF", "Clear sky upward long wave flux","W/m^2" /)
-ncepopn(163,:)=(/ "CSDLF", "Clear sky downward long wave flux","W/m^2" /)
-ncepopn(164,:)=(/ "CFNSF", "Cloud forcing net solar flux","W/m^2" /)
-ncepopn(165,:)=(/ "CFNLF", "Cloud forcing net long wave flux","W/m^2" /)
-ncepopn(166,:)=(/ "VBDSF", "Visible beam downward solar flux","W/m^2" /)
-ncepopn(167,:)=(/ "VDDSF", "Visible diffuse downward solar flux","W/m^2" /)
-ncepopn(168,:)=(/ "NBDSF", "Near IR beam downward solar flux","W/m^2" /)
-ncepopn(169,:)=(/ "NDDSF", "Near IR diffuse downward solar flux","W/m^2" /)
-ncepopn(170,:)=(/ "RWMR", "Rain water mixing ratio","kg/kg" /)
-ncepopn(171,:)=(/ "SNMR", "Snow mixing ratio","kg/kg" /)
-ncepopn(172,:)=(/ "MFLX", "Momentum flux","N/m^2" /)
-ncepopn(173,:)=(/ "LMH", "Mass point model surface","non-dim" /)
-ncepopn(174,:)=(/ "LMV", "Velocity point model surface","non-dim" /)
-ncepopn(175,:)=(/ "MLYNO", "Model layer number (from bottom up)","non-dim" /)
-ncepopn(176,:)=(/ "NLAT", "Latitude (-90 to +90)","deg" /)
-ncepopn(177,:)=(/ "ELON", "East longitude (0-360)","deg" /)
-ncepopn(178,:)=(/ "ICMR", "Ice mixing ratio","kg/kg" /)
-ncepopn(179,:)=(/ "GRMR", "Graupel mixing ratio","kg/kg" /)
-ncepopn(180,:)=(/ "GUST", "Surface wind gust","m/s" /)
-ncepopn(181,:)=(/ "LPSX", "x-gradient of log pressure","1/m" /)
-ncepopn(182,:)=(/ "LPSY", "y-gradient of log pressure","1/m" /)
-ncepopn(183,:)=(/ "HGTX", "x-gradient of height","m/m" /)
-ncepopn(184,:)=(/ "HGTY", "y-gradient of height","m/m" /)
-ncepopn(185,:)=(/ "TURB", "Turbulence SIGMET/AIRMET","non-dim" /)
-ncepopn(186,:)=(/ "ICNG", "Icing SIGMET/AIRMET","non-dim" /)
-ncepopn(187,:)=(/ "LTNG", "Lightning","non-dim" /)
-ncepopn(188,:)=(/ "DRIP", "Rate of water dropping from canopy to gnd","kg/m^2" /)
-ncepopn(189,:)=(/ "VPTMP", "Virtual pot. temp.","K" /)
-ncepopn(190,:)=(/ "HLCY", "Storm relative helicity","m^2/s^2" /)
-ncepopn(191,:)=(/ "PROB", "Prob. from ensemble","non-dim" /)
-ncepopn(192,:)=(/ "PROBN", "Prob. from ensemble norm. to clim. expect.","non-dim" /)
-ncepopn(193,:)=(/ "POP", "Prob. of precipitation","%" /)
-ncepopn(194,:)=(/ "CPOFP", "Prob. of frozen precipitation","%" /)
-ncepopn(195,:)=(/ "CPOZP", "Prob. of freezing precipitation","%" /)
-ncepopn(196,:)=(/ "USTM", "u-component of storm motion","m/s" /)
-ncepopn(197,:)=(/ "VSTM", "v-component of storm motion","m/s" /)
-ncepopn(198,:)=(/ "NCIP", "No. concen. ice particles","" /)
-ncepopn(199,:)=(/ "EVBS", "Direct evaporation from bare soil","W/m^2" /)
-ncepopn(200,:)=(/ "EVCW", "Canopy water evaporation","W/m^2" /)
-ncepopn(201,:)=(/ "ICWAT", "Ice-free water surface","%" /)
-ncepopn(202,:)=(/ "CWDI", "Convective weather detection index","" /)
-ncepopn(203,:)=(/ "VAFTAD", "VAFTAD??","??" /)
-ncepopn(204,:)=(/ "DSWRF", "Downward short wave flux","W/m^2" /)
-ncepopn(205,:)=(/ "DLWRF", "Downward long wave flux","W/m^2" /)
-ncepopn(206,:)=(/ "UVI", "Ultra violet index (1 hour centered at solar noon)","J/m^2" /)
-ncepopn(207,:)=(/ "MSTAV", "Moisture availability","%" /)
-ncepopn(208,:)=(/ "SFEXC", "Exchange coefficient","(kg/m^3)(m/s)" /)
-ncepopn(209,:)=(/ "MIXLY", "No. of mixed layers next to surface","integer" /)
-ncepopn(210,:)=(/ "TRANS", "Transpiration","W/m^2" /)
-ncepopn(211,:)=(/ "USWRF", "Upward short wave flux","W/m^2" /)
-ncepopn(212,:)=(/ "ULWRF", "Upward long wave flux","W/m^2" /)
-ncepopn(213,:)=(/ "CDLYR", "Non-convective cloud","%" /)
-ncepopn(214,:)=(/ "CPRAT", "Convective precip. rate","kg/m^2/s" /)
-ncepopn(215,:)=(/ "TTDIA", "Temp. tendency by all physics","K/s" /)
-ncepopn(216,:)=(/ "TTRAD", "Temp. tendency by all radiation","K/s" /)
-ncepopn(217,:)=(/ "TTPHY", "Temp. tendency by non-radiation physics","K/s" /)
-ncepopn(218,:)=(/ "PREIX", "Precip index (0.0-1.00)","fraction" /)
-ncepopn(219,:)=(/ "TSD1D", "Std. dev. of IR T over 1x1 deg area","K" /)
-ncepopn(220,:)=(/ "NLGSP", "Natural log of surface pressure","ln(kPa)" /)
-ncepopn(221,:)=(/ "HPBL", "Planetary boundary layer height","m" /)
-ncepopn(222,:)=(/ "5WAVH", "5-wave geopotential height","gpm" /)
-ncepopn(223,:)=(/ "CNWAT", "Plant canopy surface water","kg/m^2" /)
-ncepopn(224,:)=(/ "SOTYP", "Soil type (Zobler)","0..9" /)
-ncepopn(225,:)=(/ "VGTYP", "Vegetation type (as in SiB)","0..13" /)
-ncepopn(226,:)=(/ "BMIXL", "Blackadar's mixing length scale","m" /)
-ncepopn(227,:)=(/ "AMIXL", "Asymptotic mixing length scale","m" /)
-ncepopn(228,:)=(/ "PEVAP", "Pot. evaporation","kg/m^2" /)
-ncepopn(229,:)=(/ "SNOHF", "Snow phase-change heat flux","W/m^2" /)
-ncepopn(230,:)=(/ "5WAVA", "5-wave geopot. height anomaly","gpm" /)
-ncepopn(231,:)=(/ "MFLUX", "Convective cloud mass flux","Pa/s" /)
-ncepopn(232,:)=(/ "DTRF", "Downward total radiation flux","W/m^2" /)
-ncepopn(233,:)=(/ "UTRF", "Upward total radiation flux","W/m^2" /)
-ncepopn(234,:)=(/ "BGRUN", "Baseflow-groundwater runoff","kg/m^2" /)
-ncepopn(235,:)=(/ "SSRUN", "Storm surface runoff","kg/m^2" /)
-ncepopn(236,:)=(/ "SIPD", "Supercooled large droplet (SLD) icing pot. diagn.","" /)
-ncepopn(237,:)=(/ "O3TOT", "Total ozone","kg/m^2" /)
-ncepopn(238,:)=(/ "SNOWC", "Snow cover","%" /)
-ncepopn(239,:)=(/ "SNOT", "Snow temp.","K" /)
-ncepopn(240,:)=(/ "COVTW", "Covariance T and w","K*m/s" /)
-ncepopn(241,:)=(/ "LRGHR", "Large scale condensation heating","K/s" /)
-ncepopn(242,:)=(/ "CNVHR", "Deep convective heating","K/s" /)
-ncepopn(243,:)=(/ "CNVMR", "Deep convective moistening","kg/kg/s" /)
-ncepopn(244,:)=(/ "SHAHR", "Shallow convective heating","K/s" /)
-ncepopn(245,:)=(/ "SHAMR", "Shallow convective moistening","kg/kg/s" /)
-ncepopn(246,:)=(/ "VDFHR", "Vertical diffusion heating","K/s" /)
-ncepopn(247,:)=(/ "VDFUA", "Vertical diffusion zonal accel","m/s^2" /)
-ncepopn(248,:)=(/ "VDFVA", "Vertical diffusion meridional accel","m/s^2" /)
-ncepopn(249,:)=(/ "VDFMR", "Vertical diffusion moistening","kg/kg/s" /)
-ncepopn(250,:)=(/ "SWHR", "Solar radiative heating","K/s" /)
-ncepopn(251,:)=(/ "LWHR", "Longwave radiative heating","K/s" /)
-ncepopn(252,:)=(/ "CD", "Drag coefficient","non-dim" /)
-ncepopn(253,:)=(/ "FRICV", "Friction velocity","m/s" /)
-ncepopn(254,:)=(/ "RI", "Richardson number","non-dim" /)
+  ncepopn=""
+  ncepopn(1,1)="PRES"
+  ncepopn(1,2)="Pressure"
+  ncepopn(1,3)="Pa"
+  ncepopn(2,1)="PRMSL"
+  ncepopn(2,2)="Pressure reduced to MSL"
+  ncepopn(2,3)="Pa"
+  ncepopn(3,1)="PTEND"
+  ncepopn(3,2)="Pressure tendency"
+  ncepopn(3,3)="Pa/s"
+  ncepopn(4,1)="PVORT"
+  ncepopn(4,2)="Pot. vorticity"
+  ncepopn(4,3)="km^2/kg/s"
+  ncepopn(5,1)="ICAHT"
+  ncepopn(5,2)="ICAO Standard Atmosphere Reference Height"
+  ncepopn(5,3)="M"
+  ncepopn(6,1)="GP"
+  ncepopn(6,2)="Geopotential"
+  ncepopn(6,3)="m^2/s^2"
+  ncepopn(7,1)="HGT"
+  ncepopn(7,2)="Geopotential height"
+  ncepopn(7,3)="gpm"
+  ncepopn(8,1)="DIST"
+  ncepopn(8,2)="Geometric height"
+  ncepopn(8,3)="m"
+  ncepopn(9,1)="HSTDV"
+  ncepopn(9,2)="Std dev of height"
+  ncepopn(9,3)="m"
+  ncepopn(10,1)="TOZNE"
+  ncepopn(10,2)="Total ozone"
+  ncepopn(10,3)="Dobson"
+  ncepopn(11,1)="TMP"
+  ncepopn(11,2)="Temp."
+  ncepopn(11,3)="K"
+  ncepopn(12,1)="VTMP"
+  ncepopn(12,2)="Virtual temp."
+  ncepopn(12,3)="K"
+  ncepopn(13,1)="POT"
+  ncepopn(13,2)="Potential temp."
+  ncepopn(13,3)="K"
+  ncepopn(14,1)="EPOT"
+  ncepopn(14,2)="Pseudo-adiabatic pot. temp."
+  ncepopn(14,3)="K"
+  ncepopn(15,1)="TMAX"
+  ncepopn(15,2)="Max. temp."
+  ncepopn(15,3)="K"
+  ncepopn(16,1)="TMIN"
+  ncepopn(16,2)="Min. temp."
+  ncepopn(16,3)="K"
+  ncepopn(17,1)="DPT"
+  ncepopn(17,2)="Dew point temp."
+  ncepopn(17,3)="K"
+  ncepopn(18,1)="DEPR"
+  ncepopn(18,2)="Dew point depression"
+  ncepopn(18,3)="K"
+  ncepopn(19,1)="LAPR"
+  ncepopn(19,2)="Lapse rate"
+  ncepopn(19,3)="K/m"
+  ncepopn(20,1)="VIS"
+  ncepopn(20,2)="Visibility"
+  ncepopn(20,3)="m"
+  ncepopn(21,1)="RDSP1"
+  ncepopn(21,2)="Radar spectra (1)"
+  ncepopn(21,3)="non-dim"
+  ncepopn(22,1)="RDSP2"
+  ncepopn(22,2)="Radar spectra (2)"
+  ncepopn(22,3)="non-dim"
+  ncepopn(23,1)="RDSP3"
+  ncepopn(23,2)="Radar spectra (3)"
+  ncepopn(23,3)="non-dim"
+  ncepopn(24,1)="PLI"
+  ncepopn(24,2)="Parcel lifted index (to 500 hPa)"
+  ncepopn(24,3)="K"
+  ncepopn(25,1)="TMPA"
+  ncepopn(25,2)="Temp. anomaly"
+  ncepopn(25,3)="K"
+  ncepopn(26,1)="PRESA"
+  ncepopn(26,2)="Pressure anomaly"
+  ncepopn(26,3)="Pa"
+  ncepopn(27,1)="GPA"
+  ncepopn(27,2)="Geopotential height anomaly"
+  ncepopn(27,3)="gpm"
+  ncepopn(28,1)="WVSP1"
+  ncepopn(28,2)="Wave spectra (1)"
+  ncepopn(28,3)="non-dim"
+  ncepopn(29,1)="WVSP2"
+  ncepopn(29,2)="Wave spectra (2)"
+  ncepopn(29,3)="non-dim"
+  ncepopn(30,1)="WVSP3"
+  ncepopn(30,2)="Wave spectra (3)"
+  ncepopn(30,3)="non-dim"
+  ncepopn(31,1)="WDIR"
+  ncepopn(31,2)="Wind direction"
+  ncepopn(31,3)="deg"
+  ncepopn(32,1)="WIND"
+  ncepopn(32,2)="Wind speed"
+  ncepopn(32,3)="m/s"
+  ncepopn(33,1)="UGRD"
+  ncepopn(33,2)="u wind"
+  ncepopn(33,3)="m/s"
+  ncepopn(34,1)="VGRD"
+  ncepopn(34,2)="v wind"
+  ncepopn(34,3)="m/s"
+  ncepopn(35,1)="STRM"
+  ncepopn(35,2)="Stream function"
+  ncepopn(35,3)="m^2/s"
+  ncepopn(36,1)="VPOT"
+  ncepopn(36,2)="Velocity potential"
+  ncepopn(36,3)="m^2/s"
+  ncepopn(37,1)="MNTSF"
+  ncepopn(37,2)="Montgomery stream function"
+  ncepopn(37,3)="m^2/s^2"
+  ncepopn(38,1)="SGCVV"
+  ncepopn(38,2)="Sigma coord. vertical velocity"
+  ncepopn(38,3)="/s"
+  ncepopn(39,1)="VVEL"
+  ncepopn(39,2)="Pressure vertical velocity"
+  ncepopn(39,3)="Pa/s"
+  ncepopn(40,1)="DZDT"
+  ncepopn(40,2)="Geometric vertical velocity"
+  ncepopn(40,3)="m/s"
+  ncepopn(41,1)="ABSV"
+  ncepopn(41,2)="Absolute vorticity "
+  ncepopn(41,3)="/s"
+  ncepopn(42,1)="ABSD"
+  ncepopn(42,2)="Absolute divergence"
+  ncepopn(42,3)="/s"
+  ncepopn(43,1)="RELV"
+  ncepopn(43,2)="Relative vorticity"
+  ncepopn(43,3)="/s"
+  ncepopn(44,1)="RELD"
+  ncepopn(44,2)="Relative divergence"
+  ncepopn(44,3)="/s"
+  ncepopn(45,1)="VUCSH"
+  ncepopn(45,2)="Vertical u shear"
+  ncepopn(45,3)="/s"
+  ncepopn(46,1)="VVCSH"
+  ncepopn(46,2)="Vertical v shear"
+  ncepopn(46,3)="/s"
+  ncepopn(47,1)="DIRC"
+  ncepopn(47,2)="Direction of current"
+  ncepopn(47,3)="deg"
+  ncepopn(48,1)="SPC"
+  ncepopn(48,2)="Speed of current"
+  ncepopn(48,3)="m/s"
+  ncepopn(49,1)="UOGRD"
+  ncepopn(49,2)="u of current"
+  ncepopn(49,3)="m/s"
+  ncepopn(50,1)="VOGRD"
+  ncepopn(50,2)="v of current"
+  ncepopn(50,3)="m/s"
+  ncepopn(51,1)="SPFH"
+  ncepopn(51,2)="Specific humidity"
+  ncepopn(51,3)="kg/kg"
+  ncepopn(52,1)="RH"
+  ncepopn(52,2)="Relative humidity"
+  ncepopn(52,3)="%"
+  ncepopn(53,1)="MIXR"
+  ncepopn(53,2)="Humidity mixing ratio"
+  ncepopn(53,3)="kg/kg"
+  ncepopn(54,1)="PWAT"
+  ncepopn(54,2)="Precipitable water"
+  ncepopn(54,3)="kg/m^2"
+  ncepopn(55,1)="VAPP"
+  ncepopn(55,2)="Vapor pressure"
+  ncepopn(55,3)="Pa"
+  ncepopn(56,1)="SATD"
+  ncepopn(56,2)="Saturation deficit"
+  ncepopn(56,3)="Pa"
+  ncepopn(57,1)="EVP"
+  ncepopn(57,2)="Evaporation"
+  ncepopn(57,3)="kg/m^2"
+  ncepopn(58,1)="CICE"
+  ncepopn(58,2)="Cloud Ice"
+  ncepopn(58,3)="kg/m^2"
+  ncepopn(59,1)="PRATE"
+  ncepopn(59,2)="Precipitation rate"
+  ncepopn(59,3)="kg/m^2/s"
+  ncepopn(60,1)="TSTM"
+  ncepopn(60,2)="Thunderstorm probability"
+  ncepopn(60,3)="%"
+  ncepopn(61,1)="APCP"
+  ncepopn(61,2)="Total precipitation"
+  ncepopn(61,3)="kg/m^2"
+  ncepopn(62,1)="NCPCP"
+  ncepopn(62,2)="Large scale precipitation"
+  ncepopn(62,3)="kg/m^2"
+  ncepopn(63,1)="ACPCP"
+  ncepopn(63,2)="Convective precipitation"
+  ncepopn(63,3)="kg/m^2"
+  ncepopn(64,1)="SRWEQ"
+  ncepopn(64,2)="Snowfall rate water equiv."
+  ncepopn(64,3)="kg/m^2/s"
+  ncepopn(65,1)="WEASD"
+  ncepopn(65,2)="Accum. snow"
+  ncepopn(65,3)="kg/m^2"
+  ncepopn(66,1)="SNOD"
+  ncepopn(66,2)="Snow depth"
+  ncepopn(66,3)="m"
+  ncepopn(67,1)="MIXHT"
+  ncepopn(67,2)="Mixed layer depth"
+  ncepopn(67,3)="m"
+  ncepopn(68,1)="TTHDP"
+  ncepopn(68,2)="Transient thermocline depth"
+  ncepopn(68,3)="m"
+  ncepopn(69,1)="MTHD"
+  ncepopn(69,2)="Main thermocline depth"
+  ncepopn(69,3)="m"
+  ncepopn(70,1)="MTHA"
+  ncepopn(70,2)="Main thermocline anomaly"
+  ncepopn(70,3)="m"
+  ncepopn(71,1)="TCDC"
+  ncepopn(71,2)="Total cloud cover"
+  ncepopn(71,3)="%"
+  ncepopn(72,1)="CDCON"
+  ncepopn(72,2)="Convective cloud cover"
+  ncepopn(72,3)="%"
+  ncepopn(73,1)="LCDC"
+  ncepopn(73,2)="Low level cloud cover"
+  ncepopn(73,3)="%"
+  ncepopn(74,1)="MCDC"
+  ncepopn(74,2)="Mid level cloud cover"
+  ncepopn(74,3)="%"
+  ncepopn(75,1)="HCDC"
+  ncepopn(75,2)="High level cloud cover"
+  ncepopn(75,3)="%"
+  ncepopn(76,1)="CWAT"
+  ncepopn(76,2)="Cloud water"
+  ncepopn(76,3)="kg/m^2"
+  ncepopn(77,1)="BLI"
+  ncepopn(77,2)="Best lifted index (to 500 hPa)"
+  ncepopn(77,3)="K"
+  ncepopn(78,1)="SNOC"
+  ncepopn(78,2)="Convective snow"
+  ncepopn(78,3)="kg/m^2"
+  ncepopn(79,1)="SNOL"
+  ncepopn(79,2)="Large scale snow"
+  ncepopn(79,3)="kg/m^2"
+  ncepopn(80,1)="WTMP"
+  ncepopn(80,2)="Water temp."
+  ncepopn(80,3)="K"
+  ncepopn(81,1)="LAND"
+  ncepopn(81,2)="Land cover (land=1;sea=0)"
+  ncepopn(81,3)="fraction"
+  ncepopn(82,1)="DSLM"
+  ncepopn(82,2)="Deviation of sea level from mean"
+  ncepopn(82,3)="m"
+  ncepopn(83,1)="SFCR"
+  ncepopn(83,2)="Surface roughness"
+  ncepopn(83,3)="m"
+  ncepopn(84,1)="ALBDO"
+  ncepopn(84,2)="Albedo"
+  ncepopn(84,3)="%"
+  ncepopn(85,1)="TSOIL"
+  ncepopn(85,2)="Soil temp."
+  ncepopn(85,3)="K"
+  ncepopn(86,1)="SOILM"
+  ncepopn(86,2)="Soil moisture content"
+  ncepopn(86,3)="kg/m^2"
+  ncepopn(87,1)="VEG"
+  ncepopn(87,2)="Vegetation"
+  ncepopn(87,3)="%"
+  ncepopn(88,1)="SALTY"
+  ncepopn(88,2)="Salinity"
+  ncepopn(88,3)="kg/kg"
+  ncepopn(89,1)="DEN"
+  ncepopn(89,2)="Density"
+  ncepopn(89,3)="kg/m^3"
+  ncepopn(90,1)="WATR"
+  ncepopn(90,2)="Water runoff"
+  ncepopn(90,3)="kg/m^2"
+  ncepopn(91,1)="ICEC"
+  ncepopn(91,2)="Ice concentration (ice=1;no ice=0)"
+  ncepopn(91,3)="fraction"
+  ncepopn(92,1)="ICETK"
+  ncepopn(92,2)="Ice thickness"
+  ncepopn(92,3)="m"
+  ncepopn(93,1)="DICED"
+  ncepopn(93,2)="Direction of ice drift"
+  ncepopn(93,3)="deg"
+  ncepopn(94,1)="SICED"
+  ncepopn(94,2)="Speed of ice drift"
+  ncepopn(94,3)="m/s"
+  ncepopn(95,1)="UICE"
+  ncepopn(95,2)="u of ice drift"
+  ncepopn(95,3)="m/s"
+  ncepopn(96,1)="VICE"
+  ncepopn(96,2)="v of ice drift"
+  ncepopn(96,3)="m/s"
+  ncepopn(97,1)="ICEG"
+  ncepopn(97,2)="Ice growth rate"
+  ncepopn(97,3)="m/s"
+  ncepopn(98,1)="ICED"
+  ncepopn(98,2)="Ice divergence"
+  ncepopn(98,3)="/s"
+  ncepopn(99,1)="SNOM"
+  ncepopn(99,2)="Snow melt"
+  ncepopn(99,3)="kg/m^2"
+  ncepopn(100,1)="HTSGW"
+  ncepopn(100,2)="Sig height of wind waves and swell"
+  ncepopn(100,3)="m"
+  ncepopn(101,1)="WVDIR"
+  ncepopn(101,2)="Direction of wind waves"
+  ncepopn(101,3)="deg"
+  ncepopn(102,1)="WVHGT"
+  ncepopn(102,2)="Sig height of wind waves"
+  ncepopn(102,3)="m"
+  ncepopn(103,1)="WVPER"
+  ncepopn(103,2)="Mean period of wind waves"
+  ncepopn(103,3)="s"
+  ncepopn(104,1)="SWDIR"
+  ncepopn(104,2)="Direction of swell waves"
+  ncepopn(104,3)="deg"
+  ncepopn(105,1)="SWELL"
+  ncepopn(105,2)="Sig height of swell waves"
+  ncepopn(105,3)="m"
+  ncepopn(106,1)="SWPER"
+  ncepopn(106,2)="Mean period of swell waves"
+  ncepopn(106,3)="s"
+  ncepopn(107,1)="DIRPW"
+  ncepopn(107,2)="Primary wave direction"
+  ncepopn(107,3)="deg"
+  ncepopn(108,1)="PERPW"
+  ncepopn(108,2)="Primary wave mean period"
+  ncepopn(108,3)="s"
+  ncepopn(109,1)="DIRSW"
+  ncepopn(109,2)="Secondary wave direction"
+  ncepopn(109,3)="deg"
+  ncepopn(110,1)="PERSW"
+  ncepopn(110,2)="Secondary wave mean period"
+  ncepopn(110,3)="s"
+  ncepopn(111,1)="NSWRS"
+  ncepopn(111,2)="Net short wave (surface)"
+  ncepopn(111,3)="W/m^2"
+  ncepopn(112,1)="NLWRS"
+  ncepopn(112,2)="Net long wave (surface)"
+  ncepopn(112,3)="W/m^2"
+  ncepopn(113,1)="NSWRT"
+  ncepopn(113,2)="Net short wave (top)"
+  ncepopn(113,3)="W/m^2"
+  ncepopn(114,1)="NLWRT"
+  ncepopn(114,2)="Net long wave (top)"
+  ncepopn(114,3)="W/m^2"
+  ncepopn(115,1)="LWAVR"
+  ncepopn(115,2)="Long wave"
+  ncepopn(115,3)="W/m^2"
+  ncepopn(116,1)="SWAVR"
+  ncepopn(116,2)="Short wave"
+  ncepopn(116,3)="W/m^2"
+  ncepopn(117,1)="GRAD"
+  ncepopn(117,2)="Global radiation"
+  ncepopn(117,3)="W/m^2"
+  ncepopn(118,1)="BRTMP"
+  ncepopn(118,2)="Brightness temperature"
+  ncepopn(118,3)="K"
+  ncepopn(119,1)="LWRAD"
+  ncepopn(119,2)="Radiance with respect to wave no."
+  ncepopn(119,3)="W/m/sr"
+  ncepopn(120,1)="SWRAD"
+  ncepopn(120,2)="Radiance with respect ot wave len."
+  ncepopn(120,3)="W/m^3/sr"
+  ncepopn(121,1)="LHTFL"
+  ncepopn(121,2)="Latent heat flux"
+  ncepopn(121,3)="W/m^2"
+  ncepopn(122,1)="SHTFL"
+  ncepopn(122,2)="Sensible heat flux"
+  ncepopn(122,3)="W/m^2"
+  ncepopn(123,1)="BLYDP"
+  ncepopn(123,2)="Boundary layer dissipation"
+  ncepopn(123,3)="W/m^2"
+  ncepopn(124,1)="UFLX"
+  ncepopn(124,2)="Zonal momentum flux"
+  ncepopn(124,3)="N/m^2"
+  ncepopn(125,1)="VFLX"
+  ncepopn(125,2)="Meridional momentum flux"
+  ncepopn(125,3)="N/m^2"
+  ncepopn(126,1)="WMIXE"
+  ncepopn(126,2)="Wind mixing energy"
+  ncepopn(126,3)="J"
+  ncepopn(127,1)="IMGD"
+  ncepopn(127,2)="Image data"
+  ncepopn(127,3)=""
+  ncepopn(128,1)="MSLSA"
+  ncepopn(128,2)="Mean sea level pressure (Std Atm)"
+  ncepopn(128,3)="Pa"
+  ncepopn(129,1)="MSLMA"
+  ncepopn(129,2)="Mean sea level pressure (MAPS)"
+  ncepopn(129,3)="Pa"
+  ncepopn(130,1)="MSLET"
+  ncepopn(130,2)="Mean sea level pressure (ETA model)"
+  ncepopn(130,3)="Pa"
+  ncepopn(131,1)="LFTX"
+  ncepopn(131,2)="Surface lifted index"
+  ncepopn(131,3)="K"
+  ncepopn(132,1)="4LFTX"
+  ncepopn(132,2)="Best (4-layer) lifted index"
+  ncepopn(132,3)="K"
+  ncepopn(133,1)="KX"
+  ncepopn(133,2)="K index"
+  ncepopn(133,3)="K"
+  ncepopn(134,1)="SX"
+  ncepopn(134,2)="Sweat index"
+  ncepopn(134,3)="K"
+  ncepopn(135,1)="MCONV"
+  ncepopn(135,2)="Horizontal moisture divergence"
+  ncepopn(135,3)="kg/kg/s"
+  ncepopn(136,1)="VWSH"
+  ncepopn(136,2)="Vertical speed shear"
+  ncepopn(136,3)="1/s"
+  ncepopn(137,1)="TSLSA"
+  ncepopn(137,2)="3-hr pressure tendency (Std Atmos Red)"
+  ncepopn(137,3)="Pa/s"
+  ncepopn(138,1)="BVF2"
+  ncepopn(138,2)="Brunt-Vaisala frequency^2"
+  ncepopn(138,3)="1/s^2"
+  ncepopn(139,1)="PVMW"
+  ncepopn(139,2)="Potential vorticity (mass-weighted)"
+  ncepopn(139,3)="1/s/m"
+  ncepopn(140,1)="CRAIN"
+  ncepopn(140,2)="Categorical rain"
+  ncepopn(140,3)="yes=1;no=0"
+  ncepopn(141,1)="CFRZR"
+  ncepopn(141,2)="Categorical freezing rain"
+  ncepopn(141,3)="yes=1;no=0"
+  ncepopn(142,1)="CICEP"
+  ncepopn(142,2)="Categorical ice pellets"
+  ncepopn(142,3)="yes=1;no=0"
+  ncepopn(143,1)="CSNOW"
+  ncepopn(143,2)="Categorical snow"
+  ncepopn(143,3)="yes=1;no=0"
+  ncepopn(144,1)="SOILW"
+  ncepopn(144,2)="Volumetric soil moisture"
+  ncepopn(144,3)="fraction"
+  ncepopn(145,1)="PEVPR"
+  ncepopn(145,2)="Potential evaporation rate"
+  ncepopn(145,3)="W/m^2"
+  ncepopn(146,1)="CWORK"
+  ncepopn(146,2)="Cloud work function"
+  ncepopn(146,3)="J/kg"
+  ncepopn(147,1)="U-GWD"
+  ncepopn(147,2)="Zonal gravity wave stress"
+  ncepopn(147,3)="N/m^2"
+  ncepopn(148,1)="V-GWD"
+  ncepopn(148,2)="Meridional gravity wave stress"
+  ncepopn(148,3)="N/m^2"
+  ncepopn(149,1)="PV"
+  ncepopn(149,2)="Potential vorticity"
+  ncepopn(149,3)="m^2/s/kg"
+  ncepopn(150,1)="COVMZ"
+  ncepopn(150,2)="Covariance between u and v"
+  ncepopn(150,3)="m^2/s^2"
+  ncepopn(151,1)="COVTZ"
+  ncepopn(151,2)="Covariance between u and T"
+  ncepopn(151,3)="K*m/s"
+  ncepopn(152,1)="COVTM"
+  ncepopn(152,2)="Covariance between v and T"
+  ncepopn(152,3)="K*m/s"
+  ncepopn(153,1)="CLWMR"
+  ncepopn(153,2)="Cloud water"
+  ncepopn(153,3)="kg/kg"
+  ncepopn(154,1)="O3MR"
+  ncepopn(154,2)="Ozone mixing ratio"
+  ncepopn(154,3)="kg/kg"
+  ncepopn(155,1)="GFLUX"
+  ncepopn(155,2)="Ground heat flux"
+  ncepopn(155,3)="W/m^2"
+  ncepopn(156,1)="CIN"
+  ncepopn(156,2)="Convective inhibition"
+  ncepopn(156,3)="J/kg"
+  ncepopn(157,1)="CAPE"
+  ncepopn(157,2)="Convective Avail. Pot. Energy"
+  ncepopn(157,3)="J/kg"
+  ncepopn(158,1)="TKE"
+  ncepopn(158,2)="Turbulent kinetic energy"
+  ncepopn(158,3)="J/kg"
+  ncepopn(159,1)="CONDP"
+  ncepopn(159,2)="Lifted parcel condensation pressure"
+  ncepopn(159,3)="Pa"
+  ncepopn(160,1)="CSUSF"
+  ncepopn(160,2)="Clear sky upward solar flux"
+  ncepopn(160,3)="W/m^2"
+  ncepopn(161,1)="CSDSF"
+  ncepopn(161,2)="Clear sky downward solar flux"
+  ncepopn(161,3)="W/m^2"
+  ncepopn(162,1)="CSULF"
+  ncepopn(162,2)="Clear sky upward long wave flux"
+  ncepopn(162,3)="W/m^2"
+  ncepopn(163,1)="CSDLF"
+  ncepopn(163,2)="Clear sky downward long wave flux"
+  ncepopn(163,3)="W/m^2"
+  ncepopn(164,1)="CFNSF"
+  ncepopn(164,2)="Cloud forcing net solar flux"
+  ncepopn(164,3)="W/m^2"
+  ncepopn(165,1)="CFNLF"
+  ncepopn(165,2)="Cloud forcing net long wave flux"
+  ncepopn(165,3)="W/m^2"
+  ncepopn(166,1)="VBDSF"
+  ncepopn(166,2)="Visible beam downward solar flux"
+  ncepopn(166,3)="W/m^2"
+  ncepopn(167,1)="VDDSF"
+  ncepopn(167,2)="Visible diffuse downward solar flux"
+  ncepopn(167,3)="W/m^2"
+  ncepopn(168,1)="NBDSF"
+  ncepopn(168,2)="Near IR beam downward solar flux"
+  ncepopn(168,3)="W/m^2"
+  ncepopn(169,1)="NDDSF"
+  ncepopn(169,2)="Near IR diffuse downward solar flux"
+  ncepopn(169,3)="W/m^2"
+  ncepopn(170,1)="RWMR"
+  ncepopn(170,2)="Rain water mixing ratio"
+  ncepopn(170,3)="kg/kg" 
+  ncepopn(171,1)="SNMR"
+  ncepopn(171,2)="Snow mixing ratio"
+  ncepopn(171,3)="kg/kg"
+  ncepopn(172,1)="MFLX"
+  ncepopn(172,2)="Momentum flux"
+  ncepopn(172,3)="N/m^2"
+  ncepopn(173,1)="LMH"
+  ncepopn(173,2)="Mass point model surface"
+  ncepopn(173,3)="non-dim"
+  ncepopn(174,1)="LMV"
+  ncepopn(174,2)="Velocity point model surface"
+  ncepopn(174,3)="non-dim"
+  ncepopn(175,1)="MLYNO"
+  ncepopn(175,2)="Model layer number (from bottom up)"
+  ncepopn(175,3)="non-dim"
+  ncepopn(176,1)="NLAT"
+  ncepopn(176,2)="Latitude (-90 to +90)"
+  ncepopn(176,3)="deg"
+  ncepopn(177,1)="ELON"
+  ncepopn(177,2)="East longitude (0-360)"
+  ncepopn(177,3)="deg"
+  ncepopn(178,1)="ICMR"
+  ncepopn(178,2)="Ice mixing ratio"
+  ncepopn(178,3)="kg/kg"
+  ncepopn(179,1)="GRMR"
+  ncepopn(179,2)="Graupel mixing ratio"
+  ncepopn(179,3)="kg/kg"
+  ncepopn(180,1)="GUST"
+  ncepopn(180,2)="Surface wind gust"
+  ncepopn(180,3)="m/s"
+  ncepopn(181,1)="LPSX"
+  ncepopn(181,2)="x-gradient of log pressure"
+  ncepopn(181,3)="1/m"
+  ncepopn(182,1)="LPSY"
+  ncepopn(182,2)="y-gradient of log pressure"
+  ncepopn(182,3)="1/m"
+  ncepopn(183,1)="HGTX"
+  ncepopn(183,2)="x-gradient of height"
+  ncepopn(183,3)="m/m"
+  ncepopn(184,1)="HGTY"
+  ncepopn(184,2)="y-gradient of height"
+  ncepopn(184,3)="m/m"
+  ncepopn(185,1)="TURB"
+  ncepopn(185,2)="Turbulence SIGMET/AIRMET"
+  ncepopn(185,3)="non-dim"
+  ncepopn(186,1)="ICNG"
+  ncepopn(186,2)="Icing SIGMET/AIRMET"
+  ncepopn(186,3)="non-dim"
+  ncepopn(187,1)="LTNG"
+  ncepopn(187,2)="Lightning"
+  ncepopn(187,3)="non-dim"
+  ncepopn(188,1)="DRIP"
+  ncepopn(188,2)="Rate of water dropping from canopy to gnd"
+  ncepopn(188,3)="kg/m^2"
+  ncepopn(189,1)="VPTMP"
+  ncepopn(189,2)="Virtual pot. temp."
+  ncepopn(189,3)="K"
+  ncepopn(190,1)="HLCY"
+  ncepopn(190,2)="Storm relative helicity"
+  ncepopn(190,3)="m^2/s^2"
+  ncepopn(191,1)="PROB"
+  ncepopn(191,2)="Prob. from ensemble"
+  ncepopn(191,3)="non-dim"
+  ncepopn(192,1)="PROBN"
+  ncepopn(192,2)="Prob. from ensemble norm. to clim. expect."
+  ncepopn(192,3)="non-dim"
+  ncepopn(193,1)="POP"
+  ncepopn(193,2)="Prob. of precipitation"
+  ncepopn(193,3)="%"
+  ncepopn(194,1)="CPOFP"
+  ncepopn(194,2)="Prob. of frozen precipitation"
+  ncepopn(194,3)="%"
+  ncepopn(195,1)="CPOZP"
+  ncepopn(195,2)="Prob. of freezing precipitation"
+  ncepopn(195,3)="%"
+  ncepopn(196,1)="USTM"
+  ncepopn(196,2)="u-component of storm motion"
+  ncepopn(196,3)="m/s"
+  ncepopn(197,1)="VSTM"
+  ncepopn(197,2)="v-component of storm motion"
+  ncepopn(197,3)="m/s"
+  ncepopn(198,1)="NCIP"
+  ncepopn(198,2)="No. concen. ice particles"
+  ncepopn(198,3)=""
+  ncepopn(199,1)="EVBS"
+  ncepopn(199,2)="Direct evaporation from bare soil"
+  ncepopn(199,3)="W/m^2"
+  ncepopn(200,1)="EVCW"
+  ncepopn(200,2)="Canopy water evaporation"
+  ncepopn(200,3)="W/m^2"
+  ncepopn(201,1)="ICWAT"
+  ncepopn(201,2)="Ice-free water surface"
+  ncepopn(201,3)="%"
+  ncepopn(202,1)="CWDI"
+  ncepopn(202,2)="Convective weather detection index"
+  ncepopn(202,3)=""
+  ncepopn(203,1)="VAFTAD"
+  ncepopn(203,2)="VAFTAD??"
+  ncepopn(203,3)="??"
+  ncepopn(204,1)="DSWRF"
+  ncepopn(204,2)="Downward short wave flux"
+  ncepopn(204,3)="W/m^2"
+  ncepopn(205,1)="DLWRF"
+  ncepopn(205,2)="Downward long wave flux"
+  ncepopn(205,3)="W/m^2"
+  ncepopn(206,1)="UVI"
+  ncepopn(206,2)="Ultra violet index (1 hour centered at solar noon)"
+  ncepopn(206,3)="J/m^2"
+  ncepopn(207,1)="MSTAV"
+  ncepopn(207,2)="Moisture availability"
+  ncepopn(207,3)="%"
+  ncepopn(208,1)="SFEXC"
+  ncepopn(208,2)="Exchange coefficient"
+  ncepopn(208,3)="(kg/m^3)(m/s)"
+  ncepopn(209,1)="MIXLY"
+  ncepopn(209,2)="No. of mixed layers next to surface"
+  ncepopn(209,3)="integer"
+  ncepopn(210,1)="TRANS"
+  ncepopn(210,2)="Transpiration"
+  ncepopn(210,3)="W/m^2"
+  ncepopn(211,1)="USWRF"
+  ncepopn(211,2)="Upward short wave flux"
+  ncepopn(211,3)="W/m^2"
+  ncepopn(212,1)="ULWRF"
+  ncepopn(212,2)="Upward long wave flux"
+  ncepopn(212,3)="W/m^2"
+  ncepopn(213,1)="CDLYR"
+  ncepopn(213,2)="Non-convective cloud"
+  ncepopn(213,3)="%"
+  ncepopn(214,1)="CPRAT"
+  ncepopn(214,2)="Convective precip. rate"
+  ncepopn(214,3)="kg/m^2/s"
+  ncepopn(215,1)="TTDIA"
+  ncepopn(215,2)="Temp. tendency by all physics"
+  ncepopn(215,3)="K/s"
+  ncepopn(216,1)="TTRAD"
+  ncepopn(216,2)="Temp. tendency by all radiation"
+  ncepopn(216,3)="K/s"
+  ncepopn(217,1)="TTPHY"
+  ncepopn(217,2)="Temp. tendency by non-radiation physics"
+  ncepopn(217,3)="K/s"
+  ncepopn(218,1)="PREIX"
+  ncepopn(218,2)="Precip index (0.0-1.00)"
+  ncepopn(218,3)="fraction"
+  ncepopn(219,1)="TSD1D"
+  ncepopn(219,2)="Std. dev. of IR T over 1x1 deg area"
+  ncepopn(219,3)="K"
+  ncepopn(220,1)="NLGSP"
+  ncepopn(220,2)="Natural log of surface pressure"
+  ncepopn(220,3)="ln(kPa)"
+  ncepopn(221,1)="HPBL"
+  ncepopn(221,2)="Planetary boundary layer height"
+  ncepopn(221,3)="m"
+  ncepopn(222,1)="5WAVH"
+  ncepopn(222,2)="5-wave geopotential height"
+  ncepopn(222,3)="gpm"
+  ncepopn(223,1)="CNWAT"
+  ncepopn(223,2)="Plant canopy surface water"
+  ncepopn(223,3)="kg/m^2"
+  ncepopn(224,1)="SOTYP"
+  ncepopn(224,2)="Soil type (Zobler)"
+  ncepopn(224,3)="0..9"
+  ncepopn(225,1)="VGTYP"
+  ncepopn(225,2)="Vegetation type (as in SiB)"
+  ncepopn(225,3)="0..13"
+  ncepopn(226,1)="BMIXL"
+  ncepopn(226,2)="Blackadar's mixing length scale"
+  ncepopn(226,3)="m"
+  ncepopn(227,1)="AMIXL"
+  ncepopn(227,2)="Asymptotic mixing length scale"
+  ncepopn(227,3)="m"
+  ncepopn(228,1)="PEVAP"
+  ncepopn(228,2)="Pot. evaporation"
+  ncepopn(228,3)="kg/m^2"
+  ncepopn(229,1)="SNOHF"
+  ncepopn(229,2)="Snow phase-change heat flux"
+  ncepopn(229,3)="W/m^2"
+  ncepopn(230,1)="5WAVA"
+  ncepopn(230,2)="5-wave geopot. height anomaly"
+  ncepopn(230,3)="gpm"
+  ncepopn(231,1)="MFLUX"
+  ncepopn(231,2)="Convective cloud mass flux"
+  ncepopn(231,3)="Pa/s"
+  ncepopn(232,1)="DTRF"
+  ncepopn(232,2)="Downward total radiation flux"
+  ncepopn(232,3)="W/m^2"
+  ncepopn(233,1)="UTRF"
+  ncepopn(233,2)="Upward total radiation flux"
+  ncepopn(233,3)="W/m^2"
+  ncepopn(234,1)="BGRUN"
+  ncepopn(234,2)="Baseflow-groundwater runoff"
+  ncepopn(234,3)="kg/m^2"
+  ncepopn(235,1)="SSRUN"
+  ncepopn(235,2)="Storm surface runoff"
+  ncepopn(235,3)="kg/m^2"
+  ncepopn(236,1)="SIPD"
+  ncepopn(236,2)="Supercooled large droplet (SLD) icing pot. diagn."
+  ncepopn(236,3)=""
+  ncepopn(237,1)="O3TOT"
+  ncepopn(237,2)="Total ozone"
+  ncepopn(237,3)="kg/m^2"
+  ncepopn(238,1)="SNOWC"
+  ncepopn(238,2)="Snow cover"
+  ncepopn(238,3)="%"
+  ncepopn(239,1)="SNOT"
+  ncepopn(239,2)="Snow temp."
+  ncepopn(239,3)="K"
+  ncepopn(240,1)="COVTW"
+  ncepopn(240,2)="Covariance T and w"
+  ncepopn(240,3)="K*m/s"
+  ncepopn(241,1)="LRGHR"
+  ncepopn(241,2)="Large scale condensation heating"
+  ncepopn(241,3)="K/s"
+  ncepopn(242,1)="CNVHR"
+  ncepopn(242,2)="Deep convective heating"
+  ncepopn(242,3)="K/s"
+  ncepopn(243,1)="CNVMR"
+  ncepopn(243,2)="Deep convective moistening"
+  ncepopn(243,3)="kg/kg/s"
+  ncepopn(244,1)="SHAHR"
+  ncepopn(244,2)="Shallow convective heating"
+  ncepopn(244,3)="K/s"
+  ncepopn(245,1)="SHAMR"
+  ncepopn(245,2)="Shallow convective moistening"
+  ncepopn(245,3)="kg/kg/s"
+  ncepopn(246,1)="VDFHR"
+  ncepopn(246,2)="Vertical diffusion heating"
+  ncepopn(246,3)="K/s"
+  ncepopn(247,1)="VDFUA"
+  ncepopn(247,2)="Vertical diffusion zonal accel"
+  ncepopn(247,3)="m/s^2"
+  ncepopn(248,1)="VDFVA"
+  ncepopn(248,2)="Vertical diffusion meridional accel"
+  ncepopn(248,3)="m/s^2"
+  ncepopn(249,1)="VDFMR"
+  ncepopn(249,2)="Vertical diffusion moistening"
+  ncepopn(249,3)="kg/kg/s"
+  ncepopn(250,1)="SWHR"
+  ncepopn(250,2)="Solar radiative heating"
+  ncepopn(250,3)="K/s"
+  ncepopn(251,1)="LWHR"
+  ncepopn(251,2)="Longwave radiative heating"
+  ncepopn(251,3)="K/s"
+  ncepopn(252,1)="CD"
+  ncepopn(252,2)="Drag coefficient"
+  ncepopn(252,3)="non-dim"
+  ncepopn(253,1)="FRICV"
+  ncepopn(253,2)="Friction velocity"
+  ncepopn(253,3)="m/s"
+  ncepopn(254,1)="RI"
+  ncepopn(254,2)="Richardson number"
+  ncepopn(254,3)="non-dim"
 
-first=.false.
+  first=.false.
 end if
 
-if (ain.GT.size(ncepopn,DIM=1)) Then
-  elemtxt=elemerr
-else
-  elemtxt=ncepopn(ain,:)
-end If
+elemtxt=ncepopn(ain,:)
 
 return
 end
@@ -379,210 +880,575 @@ implicit none
 
 Integer, intent(in) :: ain
 Character*80, dimension(1:3), intent(out) :: elemtxt
-Character*80 elemerr(1:3)
 Character*80, save :: ecmwf128(0:255,1:3)
 logical, save :: first=.true.
 
-elemerr='???'
-
 if (first) then
 
-ecmwf128=""
-ecmwf128(1,:)=(/ "STRF", "Stream function", "m^2/s" /)
-ecmwf128(2,:)=(/ "VPOT", "Velocity potential", "m^2/s" /)
-ecmwf128(3,:)=(/ "PT", "Potential temperature", "K" /)
-ecmwf128(4,:)=(/ "EQPT", "Equivalent potential temperature", "K" /)
-ecmwf128(5,:)=(/ "SEPT", "Saturated equivalent potential temperature", "K" /)
-ecmwf128(6,:)=(/ "var6", "reserved", "" /)
-ecmwf128(7,:)=(/ "var7", "reserved", "" /)
-ecmwf128(8,:)=(/ "var8", "reserved", "" /)
-ecmwf128(9,:)=(/ "var9", "reserved", "" /)
-ecmwf128(10,:)=(/ "var10", "reserved", "" /)
-ecmwf128(11,:)=(/ "UDVW", "U component of divergent wind", "m/s" /)
-ecmwf128(12,:)=(/ "VDVW", "V component of divergent wind", "m/s" /)
-ecmwf128(13,:)=(/ "URTW", "U component of rotational wind", "m/s" /)
-ecmwf128(14,:)=(/ "VRTW", "V component of rotational wind", "m/s" /)
-ecmwf128(15,:)=(/ "var15", "reserved", "" /)
-ecmwf128(16,:)=(/ "var16", "reserved", "" /)
-ecmwf128(17,:)=(/ "var17", "reserved", "" /)
-ecmwf128(18,:)=(/ "var18", "reserved", "" /)
-ecmwf128(19,:)=(/ "var19", "reserved", "" /)
-ecmwf128(20,:)=(/ "var20", "reserved", "" /)
-ecmwf128(21,:)=(/ "UCTP", "Unbalanced component of temperature", "K" /)
-ecmwf128(22,:)=(/ "UCLN", "Unbalanced component of logarithm of surface pressure", "" /)
-ecmwf128(23,:)=(/ "UCDV", "Unbalanced component of divergence", "1/s" /)
-ecmwf128(24,:)=(/ "var24", "reserved", "" /)
-ecmwf128(25,:)=(/ "var25", "reserved", "" /)
-ecmwf128(26,:)=(/ "CL", "Lake cover", "%" /)
-ecmwf128(27,:)=(/ "CVL", "Low vegetation cover", "%" /)
-ecmwf128(28,:)=(/ "CVH", "High vegetation cover", "%" /)
-ecmwf128(29,:)=(/ "TVL", "Type of low vegetation", "" /)
-ecmwf128(30,:)=(/ "TVH", "Type of high vegetation", "" /)
-ecmwf128(31,:)=(/ "CI", "Sea-ice cover", "%" /)
-ecmwf128(32,:)=(/ "ASN", "Snow albedo", "%" /)
-ecmwf128(33,:)=(/ "RSN", "Snow density", "kg/m^3" /)
-ecmwf128(34,:)=(/ "SSTK", "Sea surface temperature", "K" /)
-ecmwf128(35,:)=(/ "ISTL1", "Ice surface temperature layer 1", "K" /)
-ecmwf128(36,:)=(/ "ISTL2", "Ice surface temperature layer 2", "K" /)
-ecmwf128(37,:)=(/ "ISTL3", "Ice surface temperature layer 3", "K" /)
-ecmwf128(38,:)=(/ "ISTL4", "Ice surface temperature layer 4", "K" /)
-ecmwf128(39,:)=(/ "SWVL1", "Volumetric soil water layer 1", "m^3/m^3" /)
-ecmwf128(40,:)=(/ "SWVL2", "Volumetric soil water layer 2", "m^3/m^3" /)
-ecmwf128(41,:)=(/ "SWVL3", "Volumetric soil water layer 3", "m^3/m^3" /)
-ecmwf128(42,:)=(/ "SWVL4", "Volumetric soil water layer 4", "m^3/m^3" /)
-ecmwf128(43,:)=(/ "SLT", "Soil type", "" /)
-ecmwf128(44,:)=(/ "ES", "Snow evaporation", "m of water" /)
-ecmwf128(45,:)=(/ "SMLT", "Snowmelt", "m of water" /)
-ecmwf128(46,:)=(/ "SDUR", "Solar duration", "s" /)
-ecmwf128(47,:)=(/ "DSRP", "Direct solar radiation", "W/m^2" /)
-ecmwf128(48,:)=(/ "MAGSS", "Magnitude of surface stress", "N s/m^2" /)
-ecmwf128(49,:)=(/ "10FG", "Wind gust at 10 metres", "m/s" /)
-ecmwf128(50,:)=(/ "LSPF", "Large-scale precipitation fraction", "s" /)
-ecmwf128(51,:)=(/ "MX2T24", "Maximum 2 metre temperature", "K" /)
-ecmwf128(52,:)=(/ "MN2T24", "Minimum 2 metre temperature", "K" /)
-ecmwf128(53,:)=(/ "MONT", "Montgomery potential", "m^2/s^2" /)
-ecmwf128(54,:)=(/ "PRES", "Pressure", "Pa" /)
-ecmwf128(57,:)=(/ "UVB", "Downward UV radiation at the surface (Ultra-violet band B)", "W/m^2" /)
-ecmwf128(58,:)=(/ "PAR", "Photosynthetically active radiation at the surface", "W/m^2" /)
-ecmwf128(59,:)=(/ "CAPE", "Convective available potential energy", "J/kg" /)
-ecmwf128(60,:)=(/ "PV", "Potential vorticity", "K m^2 / (kg s)" /)
-ecmwf128(127,:)=(/ "AT", "Atmospheric tide", "" /)
-ecmwf128(128,:)=(/ "BV", "Budget values", "" /)
-ecmwf128(129,:)=(/ "Z", "Geopotential", "m^2/s^2" /)
-ecmwf128(130,:)=(/ "T", "Temperature", "K" /)
-ecmwf128(131,:)=(/ "U", "U velocity", "m/s" /)
-ecmwf128(132,:)=(/ "V", "V velocity", "m/s" /)
-ecmwf128(133,:)=(/ "Q", "Specific humidity", "kg/kg" /)
-ecmwf128(134,:)=(/ "SP", "Surface pressure", "Pa" /)
-ecmwf128(135,:)=(/ "W", "Vertical velocity", "Pa/s" /)
-ecmwf128(136,:)=(/ "TCW", "Total column water", "kg/m^2" /)
-ecmwf128(137,:)=(/ "TCWV", "Total column water vapour", "kg/m^2" /)
-ecmwf128(138,:)=(/ "VO", "Vorticity (relative)", "1/s" /)
-ecmwf128(139,:)=(/ "STL1", "Soil temperature level 1", "K" /)
-ecmwf128(140,:)=(/ "SWL1", "Soil wetness level 1", "m of water" /)
-ecmwf128(141,:)=(/ "SD", "Snow depth", "m of water" /)
-ecmwf128(142,:)=(/ "LSP", "Stratiform precipitation", "m" /)
-ecmwf128(143,:)=(/ "CP", "Convective precipitation", "m" /)
-ecmwf128(144,:)=(/ "SF", "Snowfall (convective + stratiform)", "m of water" /)
-ecmwf128(145,:)=(/ "BLD", "Boundary layer dissipation", "W s/m^2" /)
-ecmwf128(146,:)=(/ "SSHF", "Surface sensible heat flux", "W s/m^2" /)
-ecmwf128(147,:)=(/ "SLHF", "Surface latent heat flux", "W s/m^2" /)
-ecmwf128(148,:)=(/ "CHNK", "Charnock", "" /)
-ecmwf128(149,:)=(/ "SNR", "Surface net radiation", "W s/m^2" /)
-ecmwf128(150,:)=(/ "TNR", "Top net radiation", "" /)
-ecmwf128(151,:)=(/ "MSL", "Mean sea-level pressure", "Pa" /)
-ecmwf128(152,:)=(/ "LNSP", "Logarithm of surface pressure", "" /)
-ecmwf128(153,:)=(/ "SWHR", "Short-wave heating rate", "K" /)
-ecmwf128(154,:)=(/ "LWHR", "Long-wave heating rate", "K" /)
-ecmwf128(155,:)=(/ "D", "Divergence", "1/s" /)
-ecmwf128(156,:)=(/ "GH", "Height", "m" /)
-ecmwf128(157,:)=(/ "R", "Relative humidity", "%" /)
-ecmwf128(158,:)=(/ "TSP", "Tendency of surface pressure", "Pa/s" /)
-ecmwf128(159,:)=(/ "BLH", "Boundary layer height", "m" /)
-ecmwf128(160,:)=(/ "SDOR", "Standard deviation of orography", "" /)
-ecmwf128(161,:)=(/ "ISOR", "Anisotropy of sub-gridscale orography", "" /)
-ecmwf128(162,:)=(/ "ANOR", "Angle of sub-gridscale orography", "rad" /)
-ecmwf128(163,:)=(/ "SLOR", "Slope of sub-gridscale orography", "" /)
-ecmwf128(164,:)=(/ "TCC", "Total cloud cover", "%" /)
-ecmwf128(165,:)=(/ "10U", "10 metre U wind component", "m/s" /)
-ecmwf128(166,:)=(/ "10V", "10 metre V wind component", "m/s" /)
-ecmwf128(167,:)=(/ "2T", "2 metre temperature", "K" /)
-ecmwf128(168,:)=(/ "2D", "2 metre dewpoint temperature", "K" /)
-ecmwf128(169,:)=(/ "SSRD", "Surface solar radiation downwards", "W s/m^2" /)
-ecmwf128(170,:)=(/ "STL2", "Soil temperature level 2", "K" /)
-ecmwf128(171,:)=(/ "SWL2", "Soil wetness level 2", "m of water" /)
-ecmwf128(172,:)=(/ "LSM", "Land/sea mask", "%" /)
-ecmwf128(173,:)=(/ "SR", "Surface roughness", "m" /)
-ecmwf128(174,:)=(/ "AL", "Albedo", "%" /)
-ecmwf128(175,:)=(/ "STRD", "Surface thermal radiation downwards", "W s/m^2" /)
-ecmwf128(176,:)=(/ "SSR", "Surface solar radiation", "W s/m^2" /)
-ecmwf128(177,:)=(/ "STR", "Surface thermal radiation", "W s/m^2" /)
-ecmwf128(178,:)=(/ "TSR", "Top solar radiation", "W s/m^2" /)
-ecmwf128(179,:)=(/ "TTR", "Top thermal radiation", "W s/m^2" /)
-ecmwf128(180,:)=(/ "EWSS", "East/West surface stress", "N s/m^2" /)
-ecmwf128(181,:)=(/ "NSSS", "North/South surface stress", "N s/m^2" /)
-ecmwf128(182,:)=(/ "E", "Evaporation", "m of water" /)
-ecmwf128(183,:)=(/ "STL3", "Soil temperature level 3", "K" /)
-ecmwf128(184,:)=(/ "SWL3", "Soil wetness level 3", "m of water" /)
-ecmwf128(185,:)=(/ "CCC", "Convective cloud cover", "%" /)
-ecmwf128(186,:)=(/ "LCC", "Low cloud cover", "%" /)
-ecmwf128(187,:)=(/ "MCC", "Medium cloud cover", "%" /)
-ecmwf128(188,:)=(/ "HCC", "High cloud cover", "%" /)
-ecmwf128(189,:)=(/ "SUND", "Sunshine duration", "s" /)
-ecmwf128(190,:)=(/ "EWOV", "EW component of subgrid orographic variance", "m^2" /)
-ecmwf128(191,:)=(/ "NSOV", "NS component of subgrid orographic variance", "m^2" /)
-ecmwf128(192,:)=(/ "NWOV", "NWSE component of subgrid orographic variance", "m^2" /)
-ecmwf128(193,:)=(/ "NEOV", "NESW component of subgrid orographic variance", "m^2" /)
-ecmwf128(194,:)=(/ "BTMP", "Brightness temperature", "K" /)
-ecmwf128(195,:)=(/ "LGWS", "Lat. component of gravity wave stress", "N s/m^2" /)
-ecmwf128(196,:)=(/ "MGWS", "Meridional component of gravity wave stress", "N s/m^2" /)
-ecmwf128(197,:)=(/ "GWD", "Gravity wave dissipation", "W s/m^2" /)
-ecmwf128(198,:)=(/ "SRC", "Skin reservoir content", "m of water" /)
-ecmwf128(199,:)=(/ "VEG", "Vegetation fraction", "%" /)
-ecmwf128(200,:)=(/ "VSO", "Variance of sub-gridscale orography", "m^2" /)
-ecmwf128(201,:)=(/ "MX2T", "Maximum 2 metre temperature since previous post-processing", "K" /)
-ecmwf128(202,:)=(/ "MN2T", "Minimum 2 metre temperature since previous post-processing", "K" /)
-ecmwf128(203,:)=(/ "O3", "Ozone mass mixing ratio", "kg/kg" /)
-ecmwf128(204,:)=(/ "PAW", "Precipiation analysis weights", "" /)
-ecmwf128(205,:)=(/ "RO", "Runoff", "m" /)
-ecmwf128(206,:)=(/ "TCO3", "Total column ozone", "Dobson" /)
-ecmwf128(207,:)=(/ "10SI", "10 meter windspeed", "m/s" /)
-ecmwf128(208,:)=(/ "TSRC", "Top net solar radiation, clear sky", "W/m^2" /)
-ecmwf128(209,:)=(/ "TTRC", "Top net thermal radiation, clear sky", "W/m^2" /)
-ecmwf128(210,:)=(/ "SSRC", "Surface net solar radiation, clear sky", "W/m^2" /)
-ecmwf128(211,:)=(/ "STRC", "Surface net thermal radiation, clear sky", "W/m^2" /)
-ecmwf128(212,:)=(/ "SI", "Solar insolation", "W/m^2" /)
-ecmwf128(214,:)=(/ "DHR", "Diabatic heating by radiation", "K" /)
-ecmwf128(215,:)=(/ "DHVD", "Diabatic heating by vertical diffusion", "K" /)
-ecmwf128(216,:)=(/ "DHCC", "Diabatic heating by cumulus convection", "K" /)
-ecmwf128(217,:)=(/ "DHLC", "Diabatic heating large-scale condensation", "K" /)
-ecmwf128(218,:)=(/ "VDZW", "Vertical diffusion of zonal wind", "m/s" /)
-ecmwf128(219,:)=(/ "VDMW", "Vertical diffusion of meridional wind", "m/s" /)
-ecmwf128(220,:)=(/ "EWGD", "EW gravity wave drag tendency", "m/s" /)
-ecmwf128(221,:)=(/ "NSGD", "NS gravity wave drag tendency", "m/s" /)
-ecmwf128(222,:)=(/ "CTZW", "Convective tendency of zonal wind", "m/s" /)
-ecmwf128(223,:)=(/ "CTMW", "Convective tendency of meridional wind", "m/s" /)
-ecmwf128(224,:)=(/ "VDH", "Vertical diffusion of humidity", "kg/kg" /)
-ecmwf128(225,:)=(/ "HTCC", "Humidity tendency by cumulus convection", "kg/kg" /)
-ecmwf128(226,:)=(/ "HTLC", "Humidity tendency large-scale condensation", "kg/kg" /)
-ecmwf128(227,:)=(/ "CRNH", "Change from removing negative humidity", "kg/kg" /)
-ecmwf128(228,:)=(/ "TP", "Total precipitation", "m" /)
-ecmwf128(229,:)=(/ "IEWS", "Instantaneous X surface stress", "N/m^2" /)
-ecmwf128(230,:)=(/ "INSS", "Instantaneous Y surface stress", "N/m^2" /)
-ecmwf128(231,:)=(/ "ISHF", "Instantaneous surface heat flux", "W/m^2" /)
-ecmwf128(232,:)=(/ "IE", "Instantaneous moisture flux", "kg s/m^2" /)
-ecmwf128(233,:)=(/ "ASQ", "Apparent surface humidity", "kg/kg" /)
-ecmwf128(234,:)=(/ "LSRH", "Logarithm of surface roughness length for heat", "" /)
-ecmwf128(235,:)=(/ "SKT", "Skin temperature", "K" /)
-ecmwf128(236,:)=(/ "STL4", "Soil temperature level 4", "K" /)
-ecmwf128(237,:)=(/ "SWL4", "Soil wetness level 4", "m" /)
-ecmwf128(238,:)=(/ "TSN", "Temperature of snow layer", "K" /)
-ecmwf128(239,:)=(/ "CSF", "Convective snowfall", "m of water" /)
-ecmwf128(240,:)=(/ "LSF", "Large-scale snowfall", "m of water" /)
-ecmwf128(241,:)=(/ "ACF", "Accumulated cloud fraction tendency", "-1 to 1" /)
-ecmwf128(242,:)=(/ "ALW", "Accumulated liquid water tendency", "-1 to 1" /)
-ecmwf128(243,:)=(/ "FAL", "Forecast albedo", "%" /)
-ecmwf128(244,:)=(/ "FSR", "Forecast surface roughness", "m" /)
-ecmwf128(245,:)=(/ "FLSR", "Forecast log of surface roughness for heat", "" /)
-ecmwf128(246,:)=(/ "CLWC", "Cloud liquid water content", "kg/kg" /)
-ecmwf128(247,:)=(/ "CIWC", "Cloud ice water content", "kg/kg" /)
-ecmwf128(248,:)=(/ "CC", "Cloud cover", "%" /)
-ecmwf128(249,:)=(/ "AIW", "Accumulated ice water tendency", "-1 to 1" /)
-ecmwf128(250,:)=(/ "ICE", "Ice age", "[1,0]" /)
-ecmwf128(251,:)=(/ "ATTE", "Adiabatic tendency of temperature", "K" /)
-ecmwf128(252,:)=(/ "ATHE", "Adiabatic tendency of humidity", "kg/kg" /)
-ecmwf128(253,:)=(/ "ATZE", "Adiabatic tendency of zonal wind", "m/s" /)
-ecmwf128(254,:)=(/ "ATMW", "Adiabatic tendency of meridional wind", "m/s" /)
-ecmwf128(255,:)=(/ "var255", "missing value", "" /)
+  ecmwf128=""
+  ecmwf128(1,1)="STRF"
+  ecmwf128(1,2)="Stream function"
+  ecmwf128(1,3)="m^2/s"
+  ecmwf128(2,1)="VPOT"
+  ecmwf128(2,2)="Velocity potential"
+  ecmwf128(2,3)="m^2/s"
+  ecmwf128(3,1)="PT"
+  ecmwf128(3,2)="Potential temperature"
+  ecmwf128(3,3)="K"
+  ecmwf128(4,1)="EQPT"
+  ecmwf128(4,2)="Equivalent potential temperature"
+  ecmwf128(4,3)="K"
+  ecmwf128(5,1)="SEPT"
+  ecmwf128(5,2)="Saturated equivalent potential temperature"
+  ecmwf128(5,3)="K"
+  ecmwf128(6,1)="var6"
+  ecmwf128(6,2)="reserved"
+  ecmwf128(6,3)=""
+  ecmwf128(7,1)="var7"
+  ecmwf128(7,2)="reserved"
+  ecmwf128(7,3)=""
+  ecmwf128(8,1)="var8"
+  ecmwf128(8,2)="reserved"
+  ecmwf128(8,3)=""
+  ecmwf128(9,1)="var9"
+  ecmwf128(9,2)="reserved"
+  ecmwf128(9,3)=""
+  ecmwf128(10,1)="var10"
+  ecmwf128(10,2)="reserved"
+  ecmwf128(10,3)=""
+  ecmwf128(11,1)="UDVW"
+  ecmwf128(11,2)="U component of divergent wind"
+  ecmwf128(11,3)="m/s"
+  ecmwf128(12,1)="VDVW"
+  ecmwf128(12,2)="V component of divergent wind"
+  ecmwf128(12,3)="m/s"
+  ecmwf128(13,1)="URTW"
+  ecmwf128(13,2)="U component of rotational wind"
+  ecmwf128(13,3)="m/s"
+  ecmwf128(14,1)="VRTW"
+  ecmwf128(14,2)="V component of rotational wind"
+  ecmwf128(14,3)="m/s"
+  ecmwf128(15,1)="var15"
+  ecmwf128(15,2)="reserved"
+  ecmwf128(15,3)=""
+  ecmwf128(16,1)="var16"
+  ecmwf128(16,2)="reserved"
+  ecmwf128(16,3)=""
+  ecmwf128(17,1)="var17"
+  ecmwf128(17,2)="reserved"
+  ecmwf128(17,3)=""
+  ecmwf128(18,1)="var18"
+  ecmwf128(18,2)="reserved"
+  ecmwf128(18,3)=""
+  ecmwf128(19,1)="var19"
+  ecmwf128(19,2)="reserved"
+  ecmwf128(19,3)=""
+  ecmwf128(20,1)="var20"
+  ecmwf128(20,2)="reserved"
+  ecmwf128(20,3)=""
+  ecmwf128(21,1)="UCTP"
+  ecmwf128(21,2)="Unbalanced component of temperature"
+  ecmwf128(21,3)="K"
+  ecmwf128(22,1)="UCLN"
+  ecmwf128(22,2)="Unbalanced component of logarithm of surface pressure"
+  ecmwf128(22,3)=""
+  ecmwf128(23,1)="UCDV"
+  ecmwf128(23,2)="Unbalanced component of divergence"
+  ecmwf128(23,3)="1/s"
+  ecmwf128(24,1)="var24"
+  ecmwf128(24,2)="reserved"
+  ecmwf128(24,3)=""
+  ecmwf128(25,1)="var25"
+  ecmwf128(25,2)="reserved"
+  ecmwf128(25,3)=""
+  ecmwf128(26,1)="CL"
+  ecmwf128(26,2)="Lake cover"
+  ecmwf128(26,3)="%"
+  ecmwf128(27,1)="CVL"
+  ecmwf128(27,2)="Low vegetation cover"
+  ecmwf128(27,3)="%"
+  ecmwf128(28,1)="CVH"
+  ecmwf128(28,2)="High vegetation cover"
+  ecmwf128(28,3)="%"
+  ecmwf128(29,1)="TVL"
+  ecmwf128(29,2)="Type of low vegetation"
+  ecmwf128(29,3)=""
+  ecmwf128(30,1)="TVH"
+  ecmwf128(30,2)="Type of high vegetation"
+  ecmwf128(30,3)=""
+  ecmwf128(31,1)="CI"
+  ecmwf128(31,2)="Sea-ice cover"
+  ecmwf128(31,3)="%"
+  ecmwf128(32,1)="ASN"
+  ecmwf128(32,2)="Snow albedo"
+  ecmwf128(32,3)="%"
+  ecmwf128(33,1)="RSN"
+  ecmwf128(33,2)="Snow density"
+  ecmwf128(33,3)="kg/m^3"
+  ecmwf128(34,1)="SSTK"
+  ecmwf128(34,2)="Sea surface temperature"
+  ecmwf128(34,3)="K"
+  ecmwf128(35,1)="ISTL1"
+  ecmwf128(35,2)="Ice surface temperature layer 1"
+  ecmwf128(35,3)="K"
+  ecmwf128(36,1)="ISTL2"
+  ecmwf128(36,2)="Ice surface temperature layer 2"
+  ecmwf128(36,3)="K"
+  ecmwf128(37,1)="ISTL3"
+  ecmwf128(37,2)="Ice surface temperature layer 3"
+  ecmwf128(37,3)="K"
+  ecmwf128(38,1)="ISTL4"
+  ecmwf128(38,2)="Ice surface temperature layer 4"
+  ecmwf128(38,3)="K"
+  ecmwf128(39,1)="SWVL1"
+  ecmwf128(39,2)="Volumetric soil water layer 1"
+  ecmwf128(39,3)="m^3/m^3"
+  ecmwf128(40,1)="SWVL2"
+  ecmwf128(40,2)="Volumetric soil water layer 2"
+  ecmwf128(40,3)="m^3/m^3"
+  ecmwf128(41,1)="SWVL3"
+  ecmwf128(41,2)="Volumetric soil water layer 3"
+  ecmwf128(41,3)="m^3/m^3"
+  ecmwf128(42,1)="SWVL4"
+  ecmwf128(42,2)="Volumetric soil water layer 4"
+  ecmwf128(42,3)="m^3/m^3"
+  ecmwf128(43,1)="SLT"
+  ecmwf128(43,2)="Soil type"
+  ecmwf128(43,3)=""
+  ecmwf128(44,1)="ES"
+  ecmwf128(44,2)="Snow evaporation"
+  ecmwf128(44,3)="m of water"
+  ecmwf128(45,1)="SMLT"
+  ecmwf128(45,2)="Snowmelt"
+  ecmwf128(45,3)="m of water"
+  ecmwf128(46,1)="SDUR"
+  ecmwf128(46,2)="Solar duration"
+  ecmwf128(46,3)="s"
+  ecmwf128(47,1)="DSRP"
+  ecmwf128(47,2)="Direct solar radiation"
+  ecmwf128(47,3)="W/m^2"
+  ecmwf128(48,1)="MAGSS"
+  ecmwf128(48,2)="Magnitude of surface stress"
+  ecmwf128(48,3)="N s/m^2"
+  ecmwf128(49,1)="10FG"
+  ecmwf128(49,2)="Wind gust at 10 metres"
+  ecmwf128(49,3)="m/s"
+  ecmwf128(50,1)="LSPF"
+  ecmwf128(50,2)="Large-scale precipitation fraction"
+  ecmwf128(50,3)="s"
+  ecmwf128(51,1)="MX2T24"
+  ecmwf128(51,2)="Maximum 2 metre temperature"
+  ecmwf128(51,3)="K"
+  ecmwf128(52,1)="MN2T24"
+  ecmwf128(52,2)="Minimum 2 metre temperature"
+  ecmwf128(52,3)="K"
+  ecmwf128(53,1)="MONT"
+  ecmwf128(53,2)="Montgomery potential"
+  ecmwf128(53,3)="m^2/s^2"
+  ecmwf128(54,1)="PRES"
+  ecmwf128(54,2)="Pressure"
+  ecmwf128(54,3)="Pa"
+  ecmwf128(57,1)="UVB"
+  ecmwf128(57,2)="Downward UV radiation at the surface (Ultra-violet band B)"
+  ecmwf128(57,3)="W/m^2"
+  ecmwf128(58,1)="PAR"
+  ecmwf128(58,2)="Photosynthetically active radiation at the surface"
+  ecmwf128(58,3)="W/m^2"
+  ecmwf128(59,1)="CAPE"
+  ecmwf128(59,2)="Convective available potential energy"
+  ecmwf128(59,3)="J/kg"
+  ecmwf128(60,1)="PV"
+  ecmwf128(60,2)="Potential vorticity"
+  ecmwf128(60,3)="K m^2 / (kg s)"
+  ecmwf128(127,1)="AT"
+  ecmwf128(127,2)="Atmospheric tide"
+  ecmwf128(127,3)=""
+  ecmwf128(128,1)="BV"
+  ecmwf128(128,2)="Budget values"
+  ecmwf128(128,3)=""
+  ecmwf128(129,1)="Z"
+  ecmwf128(129,2)="Geopotential"
+  ecmwf128(129,3)="m^2/s^2"
+  ecmwf128(130,1)="T"
+  ecmwf128(130,2)="Temperature"
+  ecmwf128(130,3)="K"
+  ecmwf128(131,1)="U"
+  ecmwf128(131,2)="U velocity"
+  ecmwf128(131,3)="m/s"
+  ecmwf128(132,1)="V"
+  ecmwf128(132,2)="V velocity"
+  ecmwf128(132,3)="m/s"
+  ecmwf128(133,1)="Q"
+  ecmwf128(133,2)="Specific humidity"
+  ecmwf128(133,3)="kg/kg"
+  ecmwf128(134,1)="SP"
+  ecmwf128(134,2)="Surface pressure"
+  ecmwf128(134,3)="Pa"
+  ecmwf128(135,1)="W"
+  ecmwf128(135,2)="Vertical velocity"
+  ecmwf128(135,3)="Pa/s"
+  ecmwf128(136,1)="TCW"
+  ecmwf128(136,2)="Total column water"
+  ecmwf128(136,3)="kg/m^2"
+  ecmwf128(137,1)="TCWV"
+  ecmwf128(137,2)="Total column water vapour"
+  ecmwf128(137,3)="kg/m^2"
+  ecmwf128(138,1)="VO"
+  ecmwf128(138,2)="Vorticity (relative)"
+  ecmwf128(138,3)="1/s"
+  ecmwf128(139,1)="STL1"
+  ecmwf128(139,2)="Soil temperature level 1"
+  ecmwf128(139,3)="K"
+  ecmwf128(140,1)="SWL1"
+  ecmwf128(140,2)="Soil wetness level 1"
+  ecmwf128(140,3)="m of water"
+  ecmwf128(141,1)="SD"
+  ecmwf128(141,2)="Snow depth"
+  ecmwf128(141,3)="m of water"
+  ecmwf128(142,1)="LSP"
+  ecmwf128(142,2)="Stratiform precipitation"
+  ecmwf128(142,3)="m"
+  ecmwf128(143,1)="CP"
+  ecmwf128(143,2)="Convective precipitation"
+  ecmwf128(143,3)="m"
+  ecmwf128(144,1)="SF"
+  ecmwf128(144,2)="Snowfall (convective + stratiform)"
+  ecmwf128(144,3)="m of water"
+  ecmwf128(145,1)="BLD"
+  ecmwf128(145,2)="Boundary layer dissipation"
+  ecmwf128(145,3)="W s/m^2"
+  ecmwf128(146,1)="SSHF"
+  ecmwf128(146,2)="Surface sensible heat flux"
+  ecmwf128(146,3)="W s/m^2"
+  ecmwf128(147,1)="SLHF"
+  ecmwf128(147,2)="Surface latent heat flux"
+  ecmwf128(147,3)="W s/m^2"
+  ecmwf128(148,1)="CHNK"
+  ecmwf128(148,2)="Charnock"
+  ecmwf128(148,3)=""
+  ecmwf128(149,1)="SNR"
+  ecmwf128(149,2)="Surface net radiation"
+  ecmwf128(149,3)="W s/m^2"
+  ecmwf128(150,1)="TNR"
+  ecmwf128(150,2)="Top net radiation"
+  ecmwf128(150,3)=""
+  ecmwf128(151,1)="MSL"
+  ecmwf128(151,2)="Mean sea-level pressure"
+  ecmwf128(151,3)="Pa"
+  ecmwf128(152,1)="LNSP"
+  ecmwf128(152,2)="Logarithm of surface pressure"
+  ecmwf128(152,3)=""
+  ecmwf128(153,1)="SWHR"
+  ecmwf128(153,2)="Short-wave heating rate"
+  ecmwf128(153,3)="K"
+  ecmwf128(154,1)="LWHR"
+  ecmwf128(154,2)="Long-wave heating rate"
+  ecmwf128(154,3)="K"
+  ecmwf128(155,1)="D"
+  ecmwf128(155,2)="Divergence"
+  ecmwf128(155,3)="1/s"
+  ecmwf128(156,1)="GH"
+  ecmwf128(156,2)="Height"
+  ecmwf128(156,3)="m"
+  ecmwf128(157,1)="R"
+  ecmwf128(157,2)="Relative humidity"
+  ecmwf128(157,3)="%"
+  ecmwf128(158,1)="TSP"
+  ecmwf128(158,2)="Tendency of surface pressure"
+  ecmwf128(158,3)="Pa/s"
+  ecmwf128(159,1)="BLH"
+  ecmwf128(159,2)="Boundary layer height"
+  ecmwf128(159,3)="m"
+  ecmwf128(160,1)="SDOR"
+  ecmwf128(160,2)="Standard deviation of orography"
+  ecmwf128(160,3)=""
+  ecmwf128(161,1)="ISOR"
+  ecmwf128(161,2)="Anisotropy of sub-gridscale orography"
+  ecmwf128(161,3)=""
+  ecmwf128(162,1)="ANOR"
+  ecmwf128(162,2)="Angle of sub-gridscale orography"
+  ecmwf128(162,3)="rad"
+  ecmwf128(163,1)="SLOR"
+  ecmwf128(163,2)="Slope of sub-gridscale orography"
+  ecmwf128(163,3)=""
+  ecmwf128(164,1)="TCC"
+  ecmwf128(164,2)="Total cloud cover"
+  ecmwf128(164,3)="%"
+  ecmwf128(165,1)="10U"
+  ecmwf128(165,2)="10 metre U wind component"
+  ecmwf128(165,3)="m/s"
+  ecmwf128(166,1)="10V"
+  ecmwf128(166,2)="10 metre V wind component"
+  ecmwf128(166,3)="m/s"
+  ecmwf128(167,1)="2T"
+  ecmwf128(167,2)="2 metre temperature"
+  ecmwf128(167,3)="K"
+  ecmwf128(168,1)="2D"
+  ecmwf128(168,2)="2 metre dewpoint temperature"
+  ecmwf128(168,3)="K"
+  ecmwf128(169,1)="SSRD"
+  ecmwf128(169,2)="Surface solar radiation downwards"
+  ecmwf128(169,3)="W s/m^2"
+  ecmwf128(170,1)="STL2"
+  ecmwf128(170,2)="Soil temperature level 2"
+  ecmwf128(170,3)="K"
+  ecmwf128(171,1)="SWL2"
+  ecmwf128(171,2)="Soil wetness level 2"
+  ecmwf128(171,3)="m of water"
+  ecmwf128(172,1)="LSM"
+  ecmwf128(172,2)="Land/sea mask"
+  ecmwf128(172,3)="%"
+  ecmwf128(173,1)="SR"
+  ecmwf128(173,2)="Surface roughness"
+  ecmwf128(173,3)="m"
+  ecmwf128(174,1)="AL"
+  ecmwf128(174,2)="Albedo"
+  ecmwf128(174,3)="%"
+  ecmwf128(175,1)="STRD"
+  ecmwf128(175,2)="Surface thermal radiation downwards"
+  ecmwf128(175,3)="W s/m^2"
+  ecmwf128(176,1)="SSR"
+  ecmwf128(176,2)="Surface solar radiation"
+  ecmwf128(176,3)="W s/m^2"
+  ecmwf128(177,1)="STR"
+  ecmwf128(177,2)="Surface thermal radiation"
+  ecmwf128(177,3)="W s/m^2"
+  ecmwf128(178,1)="TSR"
+  ecmwf128(178,2)="Top solar radiation"
+  ecmwf128(178,3)="W s/m^2"
+  ecmwf128(179,1)="TTR"
+  ecmwf128(179,2)="Top thermal radiation"
+  ecmwf128(179,3)="W s/m^2"
+  ecmwf128(180,1)="EWSS"
+  ecmwf128(180,2)="East/West surface stress"
+  ecmwf128(180,3)="N s/m^2"
+  ecmwf128(181,1)="NSSS"
+  ecmwf128(181,2)="North/South surface stress"
+  ecmwf128(181,3)="N s/m^2"
+  ecmwf128(182,1)="E"
+  ecmwf128(182,2)="Evaporation"
+  ecmwf128(182,3)="m of water"
+  ecmwf128(183,1)="STL3"
+  ecmwf128(183,2)="Soil temperature level 3"
+  ecmwf128(183,3)="K"
+  ecmwf128(184,1)="SWL3"
+  ecmwf128(184,2)="Soil wetness level 3"
+  ecmwf128(184,3)="m of water"
+  ecmwf128(185,1)="CCC"
+  ecmwf128(185,2)="Convective cloud cover"
+  ecmwf128(185,3)="%"
+  ecmwf128(186,1)="LCC"
+  ecmwf128(186,2)="Low cloud cover"
+  ecmwf128(186,3)="%"
+  ecmwf128(187,1)="MCC"
+  ecmwf128(187,2)="Medium cloud cover"
+  ecmwf128(187,3)="%"
+  ecmwf128(188,1)="HCC"
+  ecmwf128(188,2)="High cloud cover"
+  ecmwf128(188,3)="%"
+  ecmwf128(189,1)="SUND"
+  ecmwf128(189,2)="Sunshine duration"
+  ecmwf128(189,3)="s"
+  ecmwf128(190,1)="EWOV"
+  ecmwf128(190,2)="EW component of subgrid orographic variance"
+  ecmwf128(190,3)="m^2"
+  ecmwf128(191,1)="NSOV"
+  ecmwf128(191,2)="NS component of subgrid orographic variance"
+  ecmwf128(191,3)="m^2"
+  ecmwf128(192,1)="NWOV"
+  ecmwf128(192,2)="NWSE component of subgrid orographic variance"
+  ecmwf128(192,3)="m^2"
+  ecmwf128(193,1)="NEOV"
+  ecmwf128(193,2)="NESW component of subgrid orographic variance"
+  ecmwf128(193,3)="m^2"
+  ecmwf128(194,1)="BTMP"
+  ecmwf128(194,2)="Brightness temperature"
+  ecmwf128(194,3)="K"
+  ecmwf128(195,1)="LGWS"
+  ecmwf128(195,2)="Lat. component of gravity wave stress"
+  ecmwf128(195,3)="N s/m^2"
+  ecmwf128(196,1)="MGWS"
+  ecmwf128(196,2)="Meridional component of gravity wave stress"
+  ecmwf128(196,3)="N s/m^2"
+  ecmwf128(197,1)="GWD"
+  ecmwf128(197,2)="Gravity wave dissipation"
+  ecmwf128(197,3)="W s/m^2"
+  ecmwf128(198,1)="SRC"
+  ecmwf128(198,2)="Skin reservoir content"
+  ecmwf128(198,3)="m of water"
+  ecmwf128(199,1)="VEG"
+  ecmwf128(199,2)="Vegetation fraction"
+  ecmwf128(199,3)="%"
+  ecmwf128(200,1)="VSO"
+  ecmwf128(200,2)="Variance of sub-gridscale orography"
+  ecmwf128(200,3)="m^2"
+  ecmwf128(201,1)="MX2T"
+  ecmwf128(201,2)="Maximum 2 metre temperature since previous post-processing"
+  ecmwf128(201,3)="K"
+  ecmwf128(202,1)="MN2T"
+  ecmwf128(202,2)="Minimum 2 metre temperature since previous post-processing"
+  ecmwf128(202,3)="K"
+  ecmwf128(203,1)="O3"
+  ecmwf128(203,2)="Ozone mass mixing ratio"
+  ecmwf128(203,3)="kg/kg"
+  ecmwf128(204,1)="PAW"
+  ecmwf128(204,2)="Precipiation analysis weights"
+  ecmwf128(204,3)=""
+  ecmwf128(205,1)="RO"
+  ecmwf128(205,2)="Runoff"
+  ecmwf128(205,3)="m"
+  ecmwf128(206,1)="TCO3"
+  ecmwf128(206,2)="Total column ozone"
+  ecmwf128(206,3)="Dobson"
+  ecmwf128(207,1)="10SI"
+  ecmwf128(207,2)="10 meter windspeed"
+  ecmwf128(207,3)="m/s"
+  ecmwf128(208,1)="TSRC"
+  ecmwf128(208,2)="Top net solar radiation, clear sky"
+  ecmwf128(208,3)="W/m^2"
+  ecmwf128(209,1)="TTRC"
+  ecmwf128(209,2)="Top net thermal radiation, clear sky"
+  ecmwf128(209,3)="W/m^2"
+  ecmwf128(210,1)="SSRC"
+  ecmwf128(210,2)="Surface net solar radiation, clear sky"
+  ecmwf128(210,3)="W/m^2"
+  ecmwf128(211,1)="STRC"
+  ecmwf128(211,2)="Surface net thermal radiation, clear sky"
+  ecmwf128(211,3)="W/m^2"
+  ecmwf128(212,1)="SI"
+  ecmwf128(212,2)="Solar insolation"
+  ecmwf128(212,3)="W/m^2"
+  ecmwf128(214,1)="DHR"
+  ecmwf128(214,2)="Diabatic heating by radiation"
+  ecmwf128(214,3)="K"
+  ecmwf128(215,1)="DHVD"
+  ecmwf128(215,2)="Diabatic heating by vertical diffusion"
+  ecmwf128(215,3)="K"
+  ecmwf128(216,1)="DHCC"
+  ecmwf128(216,2)="Diabatic heating by cumulus convection"
+  ecmwf128(216,3)="K"
+  ecmwf128(217,1)="DHLC"
+  ecmwf128(217,2)="Diabatic heating large-scale condensation"
+  ecmwf128(217,3)="K"
+  ecmwf128(218,1)="VDZW"
+  ecmwf128(218,2)="Vertical diffusion of zonal wind"
+  ecmwf128(218,3)="m/s"
+  ecmwf128(219,1)="VDMW"
+  ecmwf128(219,2)="Vertical diffusion of meridional wind"
+  ecmwf128(219,3)="m/s"
+  ecmwf128(220,1)="EWGD"
+  ecmwf128(220,2)="EW gravity wave drag tendency"
+  ecmwf128(220,3)="m/s"
+  ecmwf128(221,1)="NSGD"
+  ecmwf128(221,2)="NS gravity wave drag tendency"
+  ecmwf128(221,3)="m/s"
+  ecmwf128(222,1)="CTZW"
+  ecmwf128(222,2)="Convective tendency of zonal wind"
+  ecmwf128(222,3)="m/s"
+  ecmwf128(223,1)="CTMW"
+  ecmwf128(223,2)="Convective tendency of meridional wind"
+  ecmwf128(223,3)="m/s"
+  ecmwf128(224,1)="VDH"
+  ecmwf128(224,2)="Vertical diffusion of humidity"
+  ecmwf128(224,3)="kg/kg"
+  ecmwf128(225,1)="HTCC"
+  ecmwf128(225,2)="Humidity tendency by cumulus convection"
+  ecmwf128(225,3)="kg/kg"
+  ecmwf128(226,1)="HTLC"
+  ecmwf128(226,2)="Humidity tendency large-scale condensation"
+  ecmwf128(226,3)="kg/kg"
+  ecmwf128(227,1)="CRNH"
+  ecmwf128(227,2)="Change from removing negative humidity"
+  ecmwf128(227,3)="kg/kg"
+  ecmwf128(228,1)="TP"
+  ecmwf128(228,2)="Total precipitation"
+  ecmwf128(228,3)="m"
+  ecmwf128(229,1)="IEWS"
+  ecmwf128(229,2)="Instantaneous X surface stress"
+  ecmwf128(229,3)="N/m^2"
+  ecmwf128(230,1)="INSS"
+  ecmwf128(230,2)="Instantaneous Y surface stress"
+  ecmwf128(230,3)="N/m^2"
+  ecmwf128(231,1)="ISHF"
+  ecmwf128(231,2)="Instantaneous surface heat flux"
+  ecmwf128(231,3)="W/m^2"
+  ecmwf128(232,1)="IE"
+  ecmwf128(232,2)="Instantaneous moisture flux"
+  ecmwf128(232,3)="kg s/m^2"
+  ecmwf128(233,1)="ASQ"
+  ecmwf128(233,2)="Apparent surface humidity"
+  ecmwf128(233,3)="kg/kg"
+  ecmwf128(234,1)="LSRH"
+  ecmwf128(234,2)="Logarithm of surface roughness length for heat"
+  ecmwf128(234,3)=""
+  ecmwf128(235,1)="SKT"
+  ecmwf128(235,2)="Skin temperature"
+  ecmwf128(235,3)="K"
+  ecmwf128(236,1)="STL4"
+  ecmwf128(236,2)="Soil temperature level 4"
+  ecmwf128(236,3)="K"
+  ecmwf128(237,1)="SWL4"
+  ecmwf128(237,2)="Soil wetness level 4"
+  ecmwf128(237,3)="m"
+  ecmwf128(238,1)="TSN"
+  ecmwf128(238,2)="Temperature of snow layer"
+  ecmwf128(238,3)="K"
+  ecmwf128(239,1)="CSF"
+  ecmwf128(239,2)="Convective snowfall"
+  ecmwf128(239,3)="m of water"
+  ecmwf128(240,1)="LSF"
+  ecmwf128(240,2)="Large-scale snowfall"
+  ecmwf128(240,3)="m of water"
+  ecmwf128(241,1)="ACF"
+  ecmwf128(241,2)="Accumulated cloud fraction tendency"
+  ecmwf128(241,3)="-1 to 1"
+  ecmwf128(242,1)="ALW"
+  ecmwf128(242,2)="Accumulated liquid water tendency"
+  ecmwf128(242,3)="-1 to 1"
+  ecmwf128(243,1)="FAL"
+  ecmwf128(243,2)="Forecast albedo"
+  ecmwf128(243,3)="%"
+  ecmwf128(244,1)="FSR"
+  ecmwf128(244,2)="Forecast surface roughness"
+  ecmwf128(244,3)="m"
+  ecmwf128(245,1)="FLSR"
+  ecmwf128(245,2)="Forecast log of surface roughness for heat"
+  ecmwf128(245,3)=""
+  ecmwf128(246,1)="CLWC"
+  ecmwf128(246,2)="Cloud liquid water content"
+  ecmwf128(246,3)="kg/kg"
+  ecmwf128(247,1)="CIWC"
+  ecmwf128(247,2)="Cloud ice water content"
+  ecmwf128(247,3)="kg/kg"
+  ecmwf128(248,1)="CC"
+  ecmwf128(248,2)="Cloud cover"
+  ecmwf128(248,3)="%"
+  ecmwf128(249,1)="AIW"
+  ecmwf128(249,2)="Accumulated ice water tendency"
+  ecmwf128(249,3)="-1 to 1"
+  ecmwf128(250,1)="ICE"
+  ecmwf128(250,2)="Ice age"
+  ecmwf128(250,3)="[1,0]"
+  ecmwf128(251,1)="ATTE"
+  ecmwf128(251,2)="Adiabatic tendency of temperature"
+  ecmwf128(251,3)="K"
+  ecmwf128(252,1)="ATHE"
+  ecmwf128(252,2)="Adiabatic tendency of humidity"
+  ecmwf128(252,3)="kg/kg"
+  ecmwf128(253,1)="ATZE"
+  ecmwf128(253,2)="Adiabatic tendency of zonal wind"
+  ecmwf128(253,3)="m/s"
+  ecmwf128(254,1)="ATMW"
+  ecmwf128(254,2)="Adiabatic tendency of meridional wind"
+  ecmwf128(254,3)="m/s"
+  ecmwf128(255,1)="var255"
+  ecmwf128(255,2)="missing value"
+  ecmwf128(255,3)=""
 
-first=.false.
+  first=.false.
 end if
 
-if (ain.GT.size(ecmwf128,DIM=1)) Then
-  elemtxt=elemerr
-else
-  elemtxt=ecmwf128(ain,:)
-end If
+elemtxt=ecmwf128(ain,:)
 
 return
 end
@@ -597,56 +1463,113 @@ implicit none
 
 Integer, intent(in) :: ain
 Character*80, dimension(1:3), intent(out) :: elemtxt
-Character*80 elemerr(1:3)
 Character*80, save :: ecmwf140(0:255,1:3)
 logical, save :: first=.true.
 
-elemerr='???'
-
 if (first) then
 
-ecmwf140=""
-ecmwf140(220,:)=(/ "MP1", "Mean wave period based on first moment", "s" /)
-ecmwf140(221,:)=(/ "MP2", "Mean wave period based on second moment", "s" /)
-ecmwf140(222,:)=(/ "WDW", "Wave spectral directional width", "" /)
-ecmwf140(223,:)=(/ "P1WW", "Mean wave period based on first moment for wind waves", "s" /)
-ecmwf140(224,:)=(/ "P2WW", "Mean wave period based on second moment for wind waves", "s" /)
-ecmwf140(225,:)=(/ "DWWW", "Wave spectral directional width for wind waves", "" /)
-ecmwf140(226,:)=(/ "P1PS", "Mean wave period based on first moment for swell", "s" /)
-ecmwf140(227,:)=(/ "P2PS", "Mean wave period based on second moment for swell", "s" /)
-ecmwf140(228,:)=(/ "DWPS", "Wave spectral directional width for swell", "" /)
-ecmwf140(229,:)=(/ "SWH", "Significant wave height", "m" /)
-ecmwf140(230,:)=(/ "MWD", "Mean wave direction", "deg" /)
-ecmwf140(231,:)=(/ "PP1D", "Peak period of 1D spectra", "s" /)
-ecmwf140(232,:)=(/ "MWP", "Mean wave period", "s" /)
-ecmwf140(233,:)=(/ "CDWW", "Coefficient of drag with waves", "" /)
-ecmwf140(234,:)=(/ "SHWW", "Significant height of wind waves", "m" /)
-ecmwf140(235,:)=(/ "MDWW", "Mean direction of wind waves", "deg" /)
-ecmwf140(236,:)=(/ "MPWW", "Mean period of wind waves", "s" /)
-ecmwf140(237,:)=(/ "SHPS", "Significant height of primary swell", "m" /)
-ecmwf140(238,:)=(/ "MDPS", "Mean direction of primary swell", "deg" /)
-ecmwf140(239,:)=(/ "MPPS", "Mean period of primary swell", "s" /)
-ecmwf140(240,:)=(/ "SDHS", "Standard deviation wave height", "m" /)
-ecmwf140(241,:)=(/ "MU10", "Mean of 10 metre windspeed", "m/s" /)
-ecmwf140(242,:)=(/ "MDWI", "Mean wind direction", "deg" /)
-ecmwf140(243,:)=(/ "SDU", "Standard deviation of 10 metre wind speed", "m/s" /)
-ecmwf140(244,:)=(/ "MSQS", "Mean square slope of waves", "none" /)
-ecmwf140(245,:)=(/ "WIND", "10 metre wind speed", "m/s" /)
-ecmwf140(246,:)=(/ "AWH", "Altimeter wave height", "m" /)
-ecmwf140(247,:)=(/ "ACWH", "Altimeter corrected wave height", "m" /)
-ecmwf140(248,:)=(/ "ARRC", "Altimeter range relative correction", "" /)
-ecmwf140(249,:)=(/ "DWI", "10 metre wind direction", "deg" /)
-ecmwf140(250,:)=(/ "2DSP", "2D wave spectra (multiple)", "m^2 s" /)
-ecmwf140(251,:)=(/ "2DFD", "2D wave spectra (single)", "m^2 s" /)
+  ecmwf140=""
+  ecmwf140(220,1)="MP1"
+  ecmwf140(220,2)="Mean wave period based on first moment"
+  ecmwf140(220,3)="s"
+  ecmwf140(221,1)="MP2"
+  ecmwf140(221,2)="Mean wave period based on second moment"
+  ecmwf140(221,3)="s"
+  ecmwf140(222,1)="WDW"
+  ecmwf140(222,2)="Wave spectral directional width"
+  ecmwf140(222,3)=""
+  ecmwf140(223,1)="P1WW"
+  ecmwf140(223,2)="Mean wave period based on first moment for wind waves"
+  ecmwf140(223,3)="s"
+  ecmwf140(224,1)="P2WW"
+  ecmwf140(224,2)="Mean wave period based on second moment for wind waves"
+  ecmwf140(224,3)="s"
+  ecmwf140(225,1)="DWWW"
+  ecmwf140(225,2)="Wave spectral directional width for wind waves"
+  ecmwf140(225,3)=""
+  ecmwf140(226,1)="P1PS"
+  ecmwf140(226,2)="Mean wave period based on first moment for swell"
+  ecmwf140(226,3)="s"
+  ecmwf140(227,1)="P2PS"
+  ecmwf140(227,2)="Mean wave period based on second moment for swell"
+  ecmwf140(227,3)="s"
+  ecmwf140(228,1)="DWPS"
+  ecmwf140(228,2)="Wave spectral directional width for swell"
+  ecmwf140(228,3)=""
+  ecmwf140(229,1)="SWH"
+  ecmwf140(229,2)="Significant wave height"
+  ecmwf140(229,3)="m"
+  ecmwf140(230,1)="MWD"
+  ecmwf140(230,2)="Mean wave direction"
+  ecmwf140(230,3)="deg"
+  ecmwf140(231,1)="PP1D"
+  ecmwf140(231,2)="Peak period of 1D spectra"
+  ecmwf140(231,3)="s"
+  ecmwf140(232,1)="MWP"
+  ecmwf140(232,2)="Mean wave period"
+  ecmwf140(232,3)="s"
+  ecmwf140(233,1)="CDWW"
+  ecmwf140(233,2)="Coefficient of drag with waves"
+  ecmwf140(233,3)=""
+  ecmwf140(234,1)="SHWW"
+  ecmwf140(234,2)="Significant height of wind waves"
+  ecmwf140(234,3)="m"
+  ecmwf140(235,1)="MDWW"
+  ecmwf140(235,2)="Mean direction of wind waves"
+  ecmwf140(235,3)="deg"
+  ecmwf140(236,1)="MPWW"
+  ecmwf140(236,2)="Mean period of wind waves"
+  ecmwf140(236,3)="s"
+  ecmwf140(237,1)="SHPS"
+  ecmwf140(237,2)="Significant height of primary swell"
+  ecmwf140(237,3)="m"
+  ecmwf140(238,1)="MDPS"
+  ecmwf140(238,2)="Mean direction of primary swell"
+  ecmwf140(238,3)="deg"
+  ecmwf140(239,1)="MPPS"
+  ecmwf140(239,2)="Mean period of primary swell"
+  ecmwf140(239,3)="s"
+  ecmwf140(240,1)="SDHS"
+  ecmwf140(240,2)="Standard deviation wave height"
+  ecmwf140(240,3)="m"
+  ecmwf140(241,1)="MU10"
+  ecmwf140(241,2)="Mean of 10 metre windspeed"
+  ecmwf140(241,3)="m/s"
+  ecmwf140(242,1)="MDWI"
+  ecmwf140(242,2)="Mean wind direction"
+  ecmwf140(242,3)="deg"
+  ecmwf140(243,1)="SDU"
+  ecmwf140(243,2)="Standard deviation of 10 metre wind speed"
+  ecmwf140(243,3)="m/s"
+  ecmwf140(244,1)="MSQS"
+  ecmwf140(244,2)="Mean square slope of waves"
+  ecmwf140(244,3)="none"
+  ecmwf140(245,1)="WIND"
+  ecmwf140(245,2)="10 metre wind speed"
+  ecmwf140(245,3)="m/s"
+  ecmwf140(246,1)="AWH"
+  ecmwf140(246,2)="Altimeter wave height"
+  ecmwf140(246,3)="m"
+  ecmwf140(247,1)="ACWH"
+  ecmwf140(247,2)="Altimeter corrected wave height"
+  ecmwf140(247,3)="m"
+  ecmwf140(248,1)="ARRC"
+  ecmwf140(248,2)="Altimeter range relative correction"
+  ecmwf140(248,3)=""
+  ecmwf140(249,1)="DWI"
+  ecmwf140(249,2)="10 metre wind direction"
+  ecmwf140(249,3)="deg"
+  ecmwf140(250,1)="2DSP"
+  ecmwf140(250,2)="2D wave spectra (multiple)"
+  ecmwf140(250,3)="m^2 s"
+  ecmwf140(251,1)="2DFD"
+  ecmwf140(251,2)="2D wave spectra (single)"
+  ecmwf140(251,3)="m^2 s"
 
-first=.false.
+  first=.false.
 end if
 
-if (ain.GT.size(ecmwf140,DIM=1)) Then
-  elemtxt=elemerr
-else
-  elemtxt=ecmwf140(ain,:)
-end If
+elemtxt=ecmwf140(ain,:)
 
 return
 end
@@ -661,164 +1584,437 @@ implicit none
 
 Integer, intent(in) :: ain
 Character*80, dimension(1:3), intent(out) :: elemtxt
-Character*80 elemerr(1:3)
 Character*80, save :: ecmwf210(0:255,1:3)
 logical, save :: first=.true.
 
-elemerr='???'
-
 if (first) then
 
-ecmwf210=""
-ecmwf210(1,:)=(/ "AERMR01", "Sea Salt Aerosol (0.03-0.5 um) Mixing Ratio", "kg/kg" /)
-ecmwf210(2,:)=(/ "AERMR02", "Sea Salt Aerosol (0.5-5 um) Mixing Ratio", "kg/kg" /)
-ecmwf210(3,:)=(/ "AERMR03", "Sea Salt Aerosol (5-20 um) Mixing Ratio", "kg/kg" /)
-ecmwf210(4,:)=(/ "AERMR04", "Dust Aerosol (0.03-0.55 um) Mixing Ratio", "kg/kg" /)
-ecmwf210(5,:)=(/ "AERMR05", "Dust Aerosol (0.55-0.9 um) Mixing Ratio", "kg/kg" /)
-ecmwf210(6,:)=(/ "AERMR06", "Dust Aerosol (0.9-20 um) Mixing Ratio", "kg/kg" /)
-ecmwf210(7,:)=(/ "AERMR07", "Hydrophobic Organic Matter Aerosol Mixing Ratio", "kg/kg" /)
-ecmwf210(8,:)=(/ "AERMR08", "Hydrophilic Organic Matter Aerosol Mixing Ratio", "kg/kg" /)
-ecmwf210(9,:)=(/ "AERMR09", "Hydrophobic Black Carbon Aerosol Mixing Ratio", "kg/kg" /)
-ecmwf210(10,:)=(/ "AERMR10", "Hydrophilic Black Carbon Aerosol Mixing Ratio", "kg/kg" /)
-ecmwf210(11,:)=(/ "AERMR11", "Sulphate Aerosol Mixing Ratio", "kg/kg" /)
-ecmwf210(12,:)=(/ "AERMR12", "Aerosol Type 12 Mixing Ratio", "kg/kg" /)
-ecmwf210(16,:)=(/ "AERGN01", "Aerosol type 1 source/gain accumulated", "kg/m^2" /)
-ecmwf210(17,:)=(/ "AERGN02", "Aerosol type 2 source/gain accumulated", "kg/m^2" /)
-ecmwf210(18,:)=(/ "AERGN03", "Aerosol type 3 source/gain accumulated", "kg/m^2" /)
-ecmwf210(19,:)=(/ "AERGN04", "Aerosol type 4 source/gain accumulated", "kg/m^2" /)
-ecmwf210(20,:)=(/ "AERGN05", "Aerosol type 5 source/gain accumulated", "kg/m^2" /)
-ecmwf210(21,:)=(/ "AERGN06", "Aerosol type 6 source/gain accumulated", "kg/m^2" /)
-ecmwf210(22,:)=(/ "AERGN07", "Aerosol type 7 source/gain accumulated", "kg/m^2" /)
-ecmwf210(23,:)=(/ "AERGN08", "Aerosol type 8 source/gain accumulated", "kg/m^2" /)
-ecmwf210(24,:)=(/ "AERGN09", "Aerosol type 9 source/gain accumulated", "kg/m^2" /)
-ecmwf210(25,:)=(/ "AERGN10", "Aerosol type 10 source/gain accumulated", "kg/m^2" /)
-ecmwf210(26,:)=(/ "AERGN11", "Aerosol type 11 source/gain accumulated", "kg/m^2" /)
-ecmwf210(27,:)=(/ "AERGN12", "Aerosol type 12 source/gain accumulated", "kg/m^2" /)
-ecmwf210(31,:)=(/ "AERLS01", "Aerosol type 1 sink/loss accumulated", "kg/m^2" /)
-ecmwf210(32,:)=(/ "AERLS02", "Aerosol type 2 sink/loss accumulated", "kg/m^2" /)
-ecmwf210(33,:)=(/ "AERLS03", "Aerosol type 3 sink/loss accumulated", "kg/m^2" /)
-ecmwf210(34,:)=(/ "AERLS04", "Aerosol type 4 sink/loss accumulated", "kg/m^2" /)
-ecmwf210(35,:)=(/ "AERLS05", "Aerosol type 5 sink/loss accumulated", "kg/m^2" /)
-ecmwf210(36,:)=(/ "AERLS06", "Aerosol type 6 sink/loss accumulated", "kg/m^2" /)
-ecmwf210(37,:)=(/ "AERLS07", "Aerosol type 7 sink/loss accumulated", "kg/m^2" /)
-ecmwf210(38,:)=(/ "AERLS08", "Aerosol type 8 sink/loss accumulated", "kg/m^2" /)
-ecmwf210(39,:)=(/ "AERLS09", "Aerosol type 9 sink/loss accumulated", "kg/m^2" /)
-ecmwf210(40,:)=(/ "AERLS10", "Aerosol type 10 sink/loss accumulated", "kg/m^2" /)
-ecmwf210(41,:)=(/ "AERLS11", "Aerosol type 11 sink/loss accumulated", "kg/m^2" /)
-ecmwf210(42,:)=(/ "AERLS12", "Aerosol type 12 sink/loss accumulated", "kg/m^2" /)
-ecmwf210(46,:)=(/ "AERPR", "Aerosol precursor mixing ratio", "kg/kg" /)
-ecmwf210(47,:)=(/ "AERSM", "Aerosol small mode mixing ratio", "kg/kg" /)
-ecmwf210(48,:)=(/ "AERLG", "Aerosol large mode mixing ratio", "kg/kg" /)
-ecmwf210(49,:)=(/ "AODPR", "Aerosol precursor optical depth", "none" /)
-ecmwf210(50,:)=(/ "AODSM", "Aerosol small mode optical depth", "none" /)
-ecmwf210(51,:)=(/ "AODLG", "Aerosol large mode optical depth", "none" /)
-ecmwf210(52,:)=(/ "AERDEP", "Dust emission potential", "kg s^2/m^5" /)
-ecmwf210(53,:)=(/ "AERLTS", "Lifting threshold speed", "m/s" /)
-ecmwf210(54,:)=(/ "AERSCC", "Soil clay content", "%" /)
-ecmwf210(61,:)=(/ "CO2", "Carbon Dioxide", "kg/kg" /)
-ecmwf210(62,:)=(/ "CH4", "Methane", "kg/kg" /)
-ecmwf210(63,:)=(/ "N20", "Nitrous oxide", "kg/kg" /)
-ecmwf210(64,:)=(/ "TCCO2", "Total column Carbon Dioxide", "kg/m^2" /)
-ecmwf210(65,:)=(/ "TCCH4", "Total column Methane", "kg/m^2" /)
-ecmwf210(66,:)=(/ "TCN2O", "Total column Nitrous oxide", "kg/m^2" /)
-ecmwf210(67,:)=(/ "CO2OF", "Ocean flux of Carbon Dioxide", "kg/m^2/s" /)
-ecmwf210(68,:)=(/ "CO2NBF", "Natural biosphere flux of Carbon Dioxide", "kg/m^2/s" /)
-ecmwf210(69,:)=(/ "CO2APF", "Anthropogenic emissions of Carbon Dioxide", "kg/m^2/s" /)
-ecmwf210(70,:)=(/ "CH4F", "Methane suface fluxes", "kg/m^2/s" /)
-ecmwf210(71,:)=(/ "kCH4", "Methane loss rate due to radical hydroxyl(OH)", "1/s" /)
-ecmwf210(80,:)=(/ "CO2FIRE", "Wildfire flux of Carbon Dioxide", "kg/m^2/s" /)
-ecmwf210(81,:)=(/ "COFIRE", "Wildfire flux of Carbon Monoxide", "kg/m^2/s" /)
-ecmwf210(82,:)=(/ "CH4FIRE", "Wildfire flux of Methane", "kg/m^2/s" /)
-ecmwf210(83,:)=(/ "NMHCFIRE", "Wildfire flux of Non-Methane Hydro-Carbons", "kg/m^2/s" /)
-ecmwf210(84,:)=(/ "H2FIRE", "Wildfire flux of Hydrogen", "kg/m^2/s" /)
-ecmwf210(85,:)=(/ "NOXFIRE", "Wildfire flux of Nitrogen Oxides NOx", "kg/m^2/s" /)
-ecmwf210(86,:)=(/ "N2OFIRE", "Wildfire flux of Nitrous Oxide", "kg/m^2/s" /)
-ecmwf210(87,:)=(/ "PM2P5FIRE", "Wildfire flux of Particulate Matter PM2.5", "kg/m^2/s" /)
-ecmwf210(88,:)=(/ "TPMFIRE", "Wildfire flux of Total Particulate Matter", "kg/m^2/s" /)
-ecmwf210(89,:)=(/ "TCFIRE", "Wildfire flux of Total Carbon in Aerosols", "kg/m^2/s" /)
-ecmwf210(90,:)=(/ "OCFIRE", "Wildfire flux of Organic Carbon", "kg/m^2/s" /)
-ecmwf210(91,:)=(/ "BCFIRE", "Wildfire flux of Black Carbon", "kg/m^2/s" /)
-ecmwf210(92,:)=(/ "CFIRE", "Wildfire overall flux of burnt Carbon", "kg/m^2/s" /)
-ecmwf210(93,:)=(/ "C4FFIRE", "Wildfire fraction of C4 plants", "none" /)
-ecmwf210(94,:)=(/ "VEGFIRE", "Wildfire vegetation map index", "none" /)
-ecmwf210(95,:)=(/ "CCFIRE", "Wildfire Combustion Completeness", "none" /)
-ecmwf210(96,:)=(/ "FLFIRE", "Wildfire fuel load: Carbon per unit area", "kg/m^2" /)
-ecmwf210(97,:)=(/ "BFFIRE", "Wildfire fraction of area burnt", "none" /)
-ecmwf210(98,:)=(/ "OAFIRE", "Wildfire observed area", "m^2" /)
-ecmwf210(99,:)=(/ "FRPFIRE", "Wildfire radiative power", "W/m^2" /)
-ecmwf210(100,:)=(/ "CRFIRE", "Wildfire combusion rate", "kg/m^2/s" /)
-ecmwf210(121,:)=(/ "NO2", "Nitrogen dioxide", "kg/kg" /)
-ecmwf210(122,:)=(/ "SO2", "Sulphur dioxide", "kg/kg" /)
-ecmwf210(123,:)=(/ "CO", "Carbon monoxide", "kg/kg" /)
-ecmwf210(124,:)=(/ "HCHO", "Formaldehyde", "kg/kg" /)
-ecmwf210(125,:)=(/ "TCNO2", "Total column Nitrogen dioxide", "kg/m^2" /)
-ecmwf210(126,:)=(/ "TCSO2", "Total column Sulphur dioxide", "kg/m^2" /)
-ecmwf210(127,:)=(/ "TCCO", "Total column Carbon monoxide", "kg/m^2" /)
-ecmwf210(128,:)=(/ "TCHCHO", "Total column Formaldehyde", "kg/m^2" /)
-ecmwf210(129,:)=(/ "NOX", "Nitrogen Oxides", "kg/kg" /)
-ecmwf210(130,:)=(/ "TCNOX", "Total column Nitrogen Oxides", "kg/m^2" /)
-ecmwf210(131,:)=(/ "GRG1", "Reactive tracer 1 mass mixing ratio", "kg/kg" /)
-ecmwf210(132,:)=(/ "TCGRG1", "Total column GRG tracer 1", "kg/m^2" /)
-ecmwf210(133,:)=(/ "GRG2", "Reactive tracer 2 mass mixing ratio", "kg/kg" /)
-ecmwf210(134,:)=(/ "TCGRG2", "Total column GRG tracer 2", "kg/m^2" /)
-ecmwf210(135,:)=(/ "GRG3", "Reactive tracer 3 mass mixing ratio", "kg/kg" /)
-ecmwf210(136,:)=(/ "TCGRG3", "Total column GRG tracer 3", "kg/m^2" /)
-ecmwf210(137,:)=(/ "GRG4", "Reactive tracer 4 mass mixing ratio", "kg/kg" /)
-ecmwf210(138,:)=(/ "TCGRG4", "Total column GRG tracer 4", "kg/m^2" /)
-ecmwf210(139,:)=(/ "GRG5", "Reactive tracer 5 mass mixing ratio", "kg/kg" /)
-ecmwf210(140,:)=(/ "TCGRG5", "Total column GRG tracer 5", "kg/m^2" /)
-ecmwf210(141,:)=(/ "GRG6", "Reactive tracer 6 mass mixing ratio", "kg/kg" /)
-ecmwf210(142,:)=(/ "TCGRG6", "Total column GRG tracer 6", "kg/m^2" /)
-ecmwf210(143,:)=(/ "GRG7", "Reactive tracer 7 mass mixing ratio", "kg/kg" /)
-ecmwf210(144,:)=(/ "TCGRG7", "Total column GRG tracer 7", "kg/m^2" /)
-ecmwf210(145,:)=(/ "GRG8", "Reactive tracer 8 mass mixing ratio", "kg/kg" /)
-ecmwf210(146,:)=(/ "TCGRG8", "Total column GRG tracer 8", "kg/m^2" /)
-ecmwf210(147,:)=(/ "GRG9", "Reactive tracer 9 mass mixing ratio", "kg/kg" /)
-ecmwf210(148,:)=(/ "TCGRG9", "Total column GRG tracer 9", "kg/m^2" /)
-ecmwf210(149,:)=(/ "GRG10", "Reactive tracer 10 mass mixing ratio", "kg/kg" /)
-ecmwf210(150,:)=(/ "TCGRG10", "Total column GRG tracer 10", "kg/m^2" /)
-ecmwf210(151,:)=(/ "SFNOX", "Surface flux Nitrogen oxides", "kg/m^2/s" /)
-ecmwf210(152,:)=(/ "SFNO2", "Surface flux Nitrogen dioxide", "kg/m^2/s" /)
-ecmwf210(153,:)=(/ "SFSO2", "Surface flux Sulphur dioxide", "kg/m^2/s" /)
-ecmwf210(154,:)=(/ "SFCO2", "Surface flux Carbon monoxide", "kg/m^2/s" /)
-ecmwf210(155,:)=(/ "SFHCHO", "Surface flux Formaldehyde", "kg/m^2/s" /)
-ecmwf210(156,:)=(/ "SFGO3", "Surface flux GEMS ozone", "kg/m^2/s" /)
-ecmwf210(157,:)=(/ "SFGR1", "Surface flux reactive tracer 1", "kg/m^2/s" /)
-ecmwf210(158,:)=(/ "SFGR2", "Surface flux reactive tracer 2", "kg/m^2/s" /)
-ecmwf210(159,:)=(/ "SFGR3", "Surface flux reactive tracer 3", "kg/m^2/s" /)
-ecmwf210(160,:)=(/ "SFGR4", "Surface flux reactive tracer 4", "kg/m^2/s" /)
-ecmwf210(161,:)=(/ "SFGR5", "Surface flux reactive tracer 5", "kg/m^2/s" /)
-ecmwf210(162,:)=(/ "SFGR6", "Surface flux reactive tracer 6", "kg/m^2/s" /)
-ecmwf210(163,:)=(/ "SFGR7", "Surface flux reactive tracer 7", "kg/m^2/s" /)
-ecmwf210(164,:)=(/ "SFGR8", "Surface flux reactive tracer 8", "kg/m^2/s" /)
-ecmwf210(165,:)=(/ "SFGR9", "Surface flux reactive tracer 9", "kg/m^2/s" /)
-ecmwf210(166,:)=(/ "SFGR10", "Surface flux reactive tracer 10", "kg/m^2/s" /)
-ecmwf210(181,:)=(/ "Ra", "Radon", "kg/kg" /)
-ecmwf210(182,:)=(/ "SF6", "Sulphur Hexafluoride", "kg/kg" /)
-ecmwf210(183,:)=(/ "TCRa", "Total column of Radon", "kg/m^2" /)
-ecmwf210(184,:)=(/ "TCSF6", "Total column of Sulphur Hexafluoride", "kg/m^2" /)
-ecmwf210(185,:)=(/ "SF6APF", "Anthropogenic Emissions of Sulphur Hexafluoride", "kg/m^2/s" /)
-ecmwf210(203,:)=(/ "GO3", "GEMS ozone", "kg/kg" /)
-ecmwf210(206,:)=(/ "GTCO3", "GEMS Total column ozone", "kg/m^2" /)
-ecmwf210(207,:)=(/ "AOD550", "Total Aerosol Optical Depth at 550nm", "none" /)
-ecmwf210(208,:)=(/ "SSAOD550", "Sea Salt Aerosol Optical Depth at 550nm", "none" /)
-ecmwf210(209,:)=(/ "DUAOD550", "Dust Aerosol Optical Depth at 550nm", "none" /)
-ecmwf210(210,:)=(/ "OMAOD550", "Organic Matter Aerosol Optical Depth at 550nm", "none" /)
-ecmwf210(211,:)=(/ "BCAOD550", "Black Carbon Aerosol Optical Depth at 550nm", "none" /)
-ecmwf210(212,:)=(/ "SUAOD550", "Sulphate Aerosol Optical Depth at 550nm", "none" /)
-ecmwf210(213,:)=(/ "AOD469", "Total Aerosol Optical Depth at 469nm", "none" /)
-ecmwf210(214,:)=(/ "AOD670", "Total Aerosol Optical Depth at 670nm", "none" /)
-ecmwf210(215,:)=(/ "AOD865", "Total Aerosol Optical Depth at 865nm", "none" /)
-ecmwf210(216,:)=(/ "AOD1240", "Total Aerosol Optical Depth at 1240nm", "none" /)
+  ecmwf210=""
+  ecmwf210(1,1)="AERMR01"
+  ecmwf210(1,2)="Sea Salt Aerosol (0.03-0.5 um) Mixing Ratio"
+  ecmwf210(1,3)="kg/kg"
+  ecmwf210(2,1)="AERMR02"
+  ecmwf210(2,2)="Sea Salt Aerosol (0.5-5 um) Mixing Ratio"
+  ecmwf210(2,3)="kg/kg"
+  ecmwf210(3,1)="AERMR03"
+  ecmwf210(3,2)="Sea Salt Aerosol (5-20 um) Mixing Ratio"
+  ecmwf210(3,3)="kg/kg"
+  ecmwf210(4,1)="AERMR04"
+  ecmwf210(4,2)="Dust Aerosol (0.03-0.55 um) Mixing Ratio"
+  ecmwf210(4,3)="kg/kg"
+  ecmwf210(5,1)="AERMR05"
+  ecmwf210(5,2)="Dust Aerosol (0.55-0.9 um) Mixing Ratio"
+  ecmwf210(5,3)="kg/kg"
+  ecmwf210(6,1)="AERMR06"
+  ecmwf210(6,2)="Dust Aerosol (0.9-20 um) Mixing Ratio"
+  ecmwf210(6,3)="kg/kg"
+  ecmwf210(7,1)="AERMR07"
+  ecmwf210(7,2)="Hydrophobic Organic Matter Aerosol Mixing Ratio"
+  ecmwf210(7,3)="kg/kg"
+  ecmwf210(8,1)="AERMR08"
+  ecmwf210(8,2)="Hydrophilic Organic Matter Aerosol Mixing Ratio"
+  ecmwf210(8,3)="kg/kg"
+  ecmwf210(9,1)="AERMR09"
+  ecmwf210(9,2)="Hydrophobic Black Carbon Aerosol Mixing Ratio"
+  ecmwf210(9,3)="kg/kg"
+  ecmwf210(10,1)="AERMR10"
+  ecmwf210(10,2)="Hydrophilic Black Carbon Aerosol Mixing Ratio"
+  ecmwf210(10,3)="kg/kg"
+  ecmwf210(11,1)="AERMR11"
+  ecmwf210(11,2)="Sulphate Aerosol Mixing Ratio"
+  ecmwf210(11,3)="kg/kg"
+  ecmwf210(12,1)="AERMR12"
+  ecmwf210(12,2)="Aerosol Type 12 Mixing Ratio"
+  ecmwf210(12,3)="kg/kg"
+  ecmwf210(16,1)="AERGN01"
+  ecmwf210(16,2)="Aerosol type 1 source/gain accumulated"
+  ecmwf210(16,3)="kg/m^2"
+  ecmwf210(17,1)="AERGN02"
+  ecmwf210(17,2)="Aerosol type 2 source/gain accumulated"
+  ecmwf210(17,3)="kg/m^2"
+  ecmwf210(18,1)="AERGN03"
+  ecmwf210(18,2)="Aerosol type 3 source/gain accumulated"
+  ecmwf210(18,3)="kg/m^2"
+  ecmwf210(19,1)="AERGN04"
+  ecmwf210(19,2)="Aerosol type 4 source/gain accumulated"
+  ecmwf210(19,3)="kg/m^2"
+  ecmwf210(20,1)="AERGN05"
+  ecmwf210(20,2)="Aerosol type 5 source/gain accumulated"
+  ecmwf210(20,3)="kg/m^2"
+  ecmwf210(21,1)="AERGN06"
+  ecmwf210(21,2)="Aerosol type 6 source/gain accumulated"
+  ecmwf210(21,3)="kg/m^2"
+  ecmwf210(22,1)="AERGN07"
+  ecmwf210(22,2)="Aerosol type 7 source/gain accumulated"
+  ecmwf210(22,3)="kg/m^2"
+  ecmwf210(23,1)="AERGN08"
+  ecmwf210(23,2)="Aerosol type 8 source/gain accumulated"
+  ecmwf210(23,3)="kg/m^2"
+  ecmwf210(24,1)="AERGN09"
+  ecmwf210(24,2)="Aerosol type 9 source/gain accumulated"
+  ecmwf210(24,3)="kg/m^2"
+  ecmwf210(25,1)="AERGN10"
+  ecmwf210(25,2)="Aerosol type 10 source/gain accumulated"
+  ecmwf210(25,3)="kg/m^2"
+  ecmwf210(26,1)="AERGN11"
+  ecmwf210(26,2)="Aerosol type 11 source/gain accumulated"
+  ecmwf210(26,3)="kg/m^2"
+  ecmwf210(27,1)="AERGN12"
+  ecmwf210(27,2)="Aerosol type 12 source/gain accumulated"
+  ecmwf210(27,3)="kg/m^2"
+  ecmwf210(31,1)="AERLS01"
+  ecmwf210(31,2)="Aerosol type 1 sink/loss accumulated"
+  ecmwf210(31,3)="kg/m^2"
+  ecmwf210(32,1)="AERLS02"
+  ecmwf210(32,2)="Aerosol type 2 sink/loss accumulated"
+  ecmwf210(32,3)="kg/m^2"
+  ecmwf210(33,1)="AERLS03"
+  ecmwf210(33,2)="Aerosol type 3 sink/loss accumulated"
+  ecmwf210(33,3)="kg/m^2"
+  ecmwf210(34,1)="AERLS04"
+  ecmwf210(34,2)="Aerosol type 4 sink/loss accumulated"
+  ecmwf210(34,3)="kg/m^2"
+  ecmwf210(35,1)="AERLS05"
+  ecmwf210(35,2)="Aerosol type 5 sink/loss accumulated"
+  ecmwf210(35,3)="kg/m^2"
+  ecmwf210(36,1)="AERLS06"
+  ecmwf210(36,2)="Aerosol type 6 sink/loss accumulated"
+  ecmwf210(36,3)="kg/m^2"
+  ecmwf210(37,1)="AERLS07"
+  ecmwf210(37,2)="Aerosol type 7 sink/loss accumulated"
+  ecmwf210(37,3)="kg/m^2"
+  ecmwf210(38,1)="AERLS08"
+  ecmwf210(38,2)="Aerosol type 8 sink/loss accumulated"
+  ecmwf210(38,3)="kg/m^2"
+  ecmwf210(39,1)="AERLS09"
+  ecmwf210(39,2)="Aerosol type 9 sink/loss accumulated"
+  ecmwf210(39,3)="kg/m^2"
+  ecmwf210(40,1)="AERLS10"
+  ecmwf210(40,2)="Aerosol type 10 sink/loss accumulated"
+  ecmwf210(40,3)="kg/m^2"
+  ecmwf210(41,1)="AERLS11"
+  ecmwf210(41,2)="Aerosol type 11 sink/loss accumulated"
+  ecmwf210(41,3)="kg/m^2"
+  ecmwf210(42,1)="AERLS12"
+  ecmwf210(42,2)="Aerosol type 12 sink/loss accumulated"
+  ecmwf210(42,3)="kg/m^2"
+  ecmwf210(46,1)="AERPR"
+  ecmwf210(46,2)="Aerosol precursor mixing ratio"
+  ecmwf210(46,3)="kg/kg"
+  ecmwf210(47,1)="AERSM"
+  ecmwf210(47,2)="Aerosol small mode mixing ratio"
+  ecmwf210(47,3)="kg/kg"
+  ecmwf210(48,1)="AERLG"
+  ecmwf210(48,2)="Aerosol large mode mixing ratio"
+  ecmwf210(48,3)="kg/kg"
+  ecmwf210(49,1)="AODPR"
+  ecmwf210(49,2)="Aerosol precursor optical depth"
+  ecmwf210(49,3)="none"
+  ecmwf210(50,1)="AODSM"
+  ecmwf210(50,2)="Aerosol small mode optical depth"
+  ecmwf210(50,3)="none"
+  ecmwf210(51,1)="AODLG"
+  ecmwf210(51,2)="Aerosol large mode optical depth"
+  ecmwf210(51,3)="none"
+  ecmwf210(52,1)="AERDEP"
+  ecmwf210(52,2)="Dust emission potential"
+  ecmwf210(52,3)="kg s^2/m^5"
+  ecmwf210(53,1)="AERLTS"
+  ecmwf210(53,2)="Lifting threshold speed"
+  ecmwf210(53,3)="m/s"
+  ecmwf210(54,1)="AERSCC"
+  ecmwf210(54,2)="Soil clay content"
+  ecmwf210(54,3)="%"
+  ecmwf210(61,1)="CO2"
+  ecmwf210(61,2)="Carbon Dioxide"
+  ecmwf210(61,3)="kg/kg"
+  ecmwf210(62,1)="CH4"
+  ecmwf210(62,2)="Methane"
+  ecmwf210(62,3)="kg/kg"
+  ecmwf210(63,1)="N20"
+  ecmwf210(63,2)="Nitrous oxide"
+  ecmwf210(63,3)="kg/kg"
+  ecmwf210(64,1)="TCCO2"
+  ecmwf210(64,2)="Total column Carbon Dioxide"
+  ecmwf210(64,3)="kg/m^2"
+  ecmwf210(65,1)="TCCH4"
+  ecmwf210(65,2)="Total column Methane"
+  ecmwf210(65,3)="kg/m^2"
+  ecmwf210(66,1)="TCN2O"
+  ecmwf210(66,2)="Total column Nitrous oxide"
+  ecmwf210(66,3)="kg/m^2"
+  ecmwf210(67,1)="CO2OF"
+  ecmwf210(67,2)="Ocean flux of Carbon Dioxide"
+  ecmwf210(67,3)="kg/m^2/s"
+  ecmwf210(68,1)="CO2NBF"
+  ecmwf210(68,2)="Natural biosphere flux of Carbon Dioxide"
+  ecmwf210(68,3)="kg/m^2/s"
+  ecmwf210(69,1)="CO2APF"
+  ecmwf210(69,2)="Anthropogenic emissions of Carbon Dioxide"
+  ecmwf210(69,3)="kg/m^2/s"
+  ecmwf210(70,1)="CH4F"
+  ecmwf210(70,2)="Methane suface fluxes"
+  ecmwf210(70,3)="kg/m^2/s"
+  ecmwf210(71,1)="kCH4"
+  ecmwf210(71,2)="Methane loss rate due to radical hydroxyl(OH)"
+  ecmwf210(71,3)="1/s"
+  ecmwf210(80,1)="CO2FIRE"
+  ecmwf210(80,2)="Wildfire flux of Carbon Dioxide"
+  ecmwf210(80,3)="kg/m^2/s"
+  ecmwf210(81,1)="COFIRE"
+  ecmwf210(81,2)="Wildfire flux of Carbon Monoxide"
+  ecmwf210(81,3)="kg/m^2/s"
+  ecmwf210(82,1)="CH4FIRE"
+  ecmwf210(82,2)="Wildfire flux of Methane"
+  ecmwf210(82,3)="kg/m^2/s"
+  ecmwf210(83,1)="NMHCFIRE"
+  ecmwf210(83,2)="Wildfire flux of Non-Methane Hydro-Carbons"
+  ecmwf210(83,3)="kg/m^2/s"
+  ecmwf210(84,1)="H2FIRE"
+  ecmwf210(84,2)="Wildfire flux of Hydrogen"
+  ecmwf210(84,3)="kg/m^2/s"
+  ecmwf210(85,1)="NOXFIRE"
+  ecmwf210(85,2)="Wildfire flux of Nitrogen Oxides NOx"
+  ecmwf210(85,3)="kg/m^2/s"
+  ecmwf210(86,1)="N2OFIRE"
+  ecmwf210(86,2)="Wildfire flux of Nitrous Oxide"
+  ecmwf210(86,3)="kg/m^2/s"
+  ecmwf210(87,1)="PM2P5FIRE"
+  ecmwf210(87,2)="Wildfire flux of Particulate Matter PM2.5"
+  ecmwf210(87,3)="kg/m^2/s"
+  ecmwf210(88,1)="TPMFIRE"
+  ecmwf210(88,2)="Wildfire flux of Total Particulate Matter"
+  ecmwf210(88,3)="kg/m^2/s"
+  ecmwf210(89,1)="TCFIRE"
+  ecmwf210(89,2)="Wildfire flux of Total Carbon in Aerosols"
+  ecmwf210(89,3)="kg/m^2/s"
+  ecmwf210(90,1)="OCFIRE"
+  ecmwf210(90,2)="Wildfire flux of Organic Carbon"
+  ecmwf210(90,3)="kg/m^2/s"
+  ecmwf210(91,1)="BCFIRE"
+  ecmwf210(91,2)="Wildfire flux of Black Carbon"
+  ecmwf210(91,3)="kg/m^2/s"
+  ecmwf210(92,1)="CFIRE"
+  ecmwf210(92,2)="Wildfire overall flux of burnt Carbon"
+  ecmwf210(92,3)="kg/m^2/s"
+  ecmwf210(93,1)="C4FFIRE"
+  ecmwf210(93,2)="Wildfire fraction of C4 plants"
+  ecmwf210(93,3)="none"
+  ecmwf210(94,1)="VEGFIRE"
+  ecmwf210(94,2)="Wildfire vegetation map index"
+  ecmwf210(94,3)="none"
+  ecmwf210(95,1)="CCFIRE"
+  ecmwf210(95,2)="Wildfire Combustion Completeness"
+  ecmwf210(95,3)="none"
+  ecmwf210(96,1)="FLFIRE"
+  ecmwf210(96,2)="Wildfire fuel load: Carbon per unit area"
+  ecmwf210(96,3)="kg/m^2"
+  ecmwf210(97,1)="BFFIRE"
+  ecmwf210(97,2)="Wildfire fraction of area burnt"
+  ecmwf210(97,3)="none"
+  ecmwf210(98,1)="OAFIRE"
+  ecmwf210(98,2)="Wildfire observed area"
+  ecmwf210(98,3)="m^2"
+  ecmwf210(99,1)="FRPFIRE"
+  ecmwf210(99,2)="Wildfire radiative power"
+  ecmwf210(99,3)="W/m^2"
+  ecmwf210(100,1)="CRFIRE"
+  ecmwf210(100,2)="Wildfire combusion rate"
+  ecmwf210(100,3)="kg/m^2/s"
+  ecmwf210(121,1)="NO2"
+  ecmwf210(121,2)="Nitrogen dioxide"
+  ecmwf210(121,3)="kg/kg"
+  ecmwf210(122,1)="SO2"
+  ecmwf210(122,2)="Sulphur dioxide"
+  ecmwf210(122,3)="kg/kg"
+  ecmwf210(123,1)="CO"
+  ecmwf210(123,2)="Carbon monoxide"
+  ecmwf210(123,3)="kg/kg"
+  ecmwf210(124,1)="HCHO"
+  ecmwf210(124,2)="Formaldehyde"
+  ecmwf210(124,3)="kg/kg"
+  ecmwf210(125,1)="TCNO2"
+  ecmwf210(125,2)="Total column Nitrogen dioxide"
+  ecmwf210(125,3)="kg/m^2"
+  ecmwf210(126,1)="TCSO2"
+  ecmwf210(126,2)="Total column Sulphur dioxide"
+  ecmwf210(126,3)="kg/m^2"
+  ecmwf210(127,1)="TCCO"
+  ecmwf210(127,2)="Total column Carbon monoxide"
+  ecmwf210(127,3)="kg/m^2"
+  ecmwf210(128,1)="TCHCHO"
+  ecmwf210(128,2)="Total column Formaldehyde"
+  ecmwf210(128,3)="kg/m^2"
+  ecmwf210(129,1)="NOX"
+  ecmwf210(129,2)="Nitrogen Oxides"
+  ecmwf210(129,3)="kg/kg"
+  ecmwf210(130,1)="TCNOX"
+  ecmwf210(130,2)="Total column Nitrogen Oxides"
+  ecmwf210(130,3)="kg/m^2"
+  ecmwf210(131,1)="GRG1"
+  ecmwf210(131,2)="Reactive tracer 1 mass mixing ratio"
+  ecmwf210(131,3)="kg/kg"
+  ecmwf210(132,1)="TCGRG1"
+  ecmwf210(132,2)="Total column GRG tracer 1"
+  ecmwf210(132,3)="kg/m^2"
+  ecmwf210(133,1)="GRG2"
+  ecmwf210(133,2)="Reactive tracer 2 mass mixing ratio"
+  ecmwf210(133,3)="kg/kg"
+  ecmwf210(134,1)="TCGRG2"
+  ecmwf210(134,2)="Total column GRG tracer 2"
+  ecmwf210(134,3)="kg/m^2"
+  ecmwf210(135,1)="GRG3"
+  ecmwf210(135,2)="Reactive tracer 3 mass mixing ratio"
+  ecmwf210(135,3)="kg/kg"
+  ecmwf210(136,1)="TCGRG3"
+  ecmwf210(136,2)="Total column GRG tracer 3"
+  ecmwf210(136,3)="kg/m^2"
+  ecmwf210(137,1)="GRG4"
+  ecmwf210(137,2)="Reactive tracer 4 mass mixing ratio"
+  ecmwf210(137,3)="kg/kg"
+  ecmwf210(138,1)="TCGRG4"
+  ecmwf210(138,2)="Total column GRG tracer 4"
+  ecmwf210(138,3)="kg/m^2"
+  ecmwf210(139,1)="GRG5"
+  ecmwf210(139,2)="Reactive tracer 5 mass mixing ratio"
+  ecmwf210(139,3)="kg/kg"
+  ecmwf210(140,1)="TCGRG5"
+  ecmwf210(140,2)="Total column GRG tracer 5"
+  ecmwf210(140,3)="kg/m^2"
+  ecmwf210(141,1)="GRG6"
+  ecmwf210(141,2)="Reactive tracer 6 mass mixing ratio"
+  ecmwf210(141,3)="kg/kg"
+  ecmwf210(142,1)="TCGRG6"
+  ecmwf210(142,2)="Total column GRG tracer 6"
+  ecmwf210(142,3)="kg/m^2"
+  ecmwf210(143,1)="GRG7"
+  ecmwf210(143,2)="Reactive tracer 7 mass mixing ratio"
+  ecmwf210(143,3)="kg/kg"
+  ecmwf210(144,1)="TCGRG7"
+  ecmwf210(144,2)="Total column GRG tracer 7"
+  ecmwf210(144,3)="kg/m^2"
+  ecmwf210(145,1)="GRG8"
+  ecmwf210(145,2)="Reactive tracer 8 mass mixing ratio"
+  ecmwf210(145,3)="kg/kg"
+  ecmwf210(146,1)="TCGRG8"
+  ecmwf210(146,2)="Total column GRG tracer 8"
+  ecmwf210(146,3)="kg/m^2"
+  ecmwf210(147,1)="GRG9"
+  ecmwf210(147,2)="Reactive tracer 9 mass mixing ratio"
+  ecmwf210(147,3)="kg/kg"
+  ecmwf210(148,1)="TCGRG9"
+  ecmwf210(148,2)="Total column GRG tracer 9"
+  ecmwf210(148,3)="kg/m^2"
+  ecmwf210(149,1)="GRG10"
+  ecmwf210(149,2)="Reactive tracer 10 mass mixing ratio"
+  ecmwf210(149,3)="kg/kg"
+  ecmwf210(150,1)="TCGRG10"
+  ecmwf210(150,2)="Total column GRG tracer 10"
+  ecmwf210(150,3)="kg/m^2"
+  ecmwf210(151,1)="SFNOX"
+  ecmwf210(151,2)="Surface flux Nitrogen oxides"
+  ecmwf210(151,3)="kg/m^2/s"
+  ecmwf210(152,1)="SFNO2"
+  ecmwf210(152,2)="Surface flux Nitrogen dioxide"
+  ecmwf210(152,3)="kg/m^2/s"
+  ecmwf210(153,1)="SFSO2"
+  ecmwf210(153,2)="Surface flux Sulphur dioxide"
+  ecmwf210(153,3)="kg/m^2/s"
+  ecmwf210(154,1)="SFCO2"
+  ecmwf210(154,2)="Surface flux Carbon monoxide"
+  ecmwf210(154,3)="kg/m^2/s"
+  ecmwf210(155,1)="SFHCHO"
+  ecmwf210(155,2)="Surface flux Formaldehyde"
+  ecmwf210(155,3)="kg/m^2/s"
+  ecmwf210(156,1)="SFGO3"
+  ecmwf210(156,2)="Surface flux GEMS ozone"
+  ecmwf210(156,3)="kg/m^2/s"
+  ecmwf210(157,1)="SFGR1"
+  ecmwf210(157,2)="Surface flux reactive tracer 1"
+  ecmwf210(157,3)="kg/m^2/s"
+  ecmwf210(158,1)="SFGR2"
+  ecmwf210(158,2)="Surface flux reactive tracer 2"
+  ecmwf210(158,3)="kg/m^2/s"
+  ecmwf210(159,1)="SFGR3"
+  ecmwf210(159,2)="Surface flux reactive tracer 3"
+  ecmwf210(159,3)="kg/m^2/s"
+  ecmwf210(160,1)="SFGR4"
+  ecmwf210(160,2)="Surface flux reactive tracer 4"
+  ecmwf210(160,3)="kg/m^2/s"
+  ecmwf210(161,1)="SFGR5"
+  ecmwf210(161,2)="Surface flux reactive tracer 5"
+  ecmwf210(161,3)="kg/m^2/s"
+  ecmwf210(162,1)="SFGR6"
+  ecmwf210(162,2)="Surface flux reactive tracer 6"
+  ecmwf210(162,3)="kg/m^2/s"
+  ecmwf210(163,1)="SFGR7"
+  ecmwf210(163,2)="Surface flux reactive tracer 7"
+  ecmwf210(163,3)="kg/m^2/s"
+  ecmwf210(164,1)="SFGR8"
+  ecmwf210(164,2)="Surface flux reactive tracer 8"
+  ecmwf210(164,3)="kg/m^2/s"
+  ecmwf210(165,1)="SFGR9"
+  ecmwf210(165,2)="Surface flux reactive tracer 9"
+  ecmwf210(165,3)="kg/m^2/s"
+  ecmwf210(166,1)="SFGR10"
+  ecmwf210(166,2)="Surface flux reactive tracer 10"
+  ecmwf210(166,3)="kg/m^2/s"
+  ecmwf210(181,1)="Ra"
+  ecmwf210(181,2)="Radon"
+  ecmwf210(181,3)="kg/kg"
+  ecmwf210(182,1)="SF6"
+  ecmwf210(182,2)="Sulphur Hexafluoride"
+  ecmwf210(182,3)="kg/kg"
+  ecmwf210(183,1)="TCRa"
+  ecmwf210(183,2)="Total column of Radon"
+  ecmwf210(183,3)="kg/m^2"
+  ecmwf210(184,1)="TCSF6"
+  ecmwf210(184,2)="Total column of Sulphur Hexafluoride"
+  ecmwf210(184,3)="kg/m^2"
+  ecmwf210(185,1)="SF6APF"
+  ecmwf210(185,2)="Anthropogenic Emissions of Sulphur Hexafluoride"
+  ecmwf210(185,3)="kg/m^2/s"
+  ecmwf210(203,1)="GO3"
+  ecmwf210(203,2)="GEMS ozone"
+  ecmwf210(203,3)="kg/kg"
+  ecmwf210(206,1)="GTCO3"
+  ecmwf210(206,2)="GEMS Total column ozone"
+  ecmwf210(206,3)="kg/m^2"
+  ecmwf210(207,1)="AOD550"
+  ecmwf210(207,2)="Total Aerosol Optical Depth at 550nm"
+  ecmwf210(207,3)="none"
+  ecmwf210(208,1)="SSAOD550"
+  ecmwf210(208,2)="Sea Salt Aerosol Optical Depth at 550nm"
+  ecmwf210(208,3)="none"
+  ecmwf210(209,1)="DUAOD550"
+  ecmwf210(209,2)="Dust Aerosol Optical Depth at 550nm"
+  ecmwf210(209,3)="none"
+  ecmwf210(210,1)="OMAOD550"
+  ecmwf210(210,2)="Organic Matter Aerosol Optical Depth at 550nm"
+  ecmwf210(210,3)="none"
+  ecmwf210(211,1)="BCAOD550"
+  ecmwf210(211,2)="Black Carbon Aerosol Optical Depth at 550nm"
+  ecmwf210(211,3)="none"
+  ecmwf210(212,1)="SUAOD550"
+  ecmwf210(212,2)="Sulphate Aerosol Optical Depth at 550nm"
+  ecmwf210(212,3)="none"
+  ecmwf210(213,1)="AOD469"
+  ecmwf210(213,2)="Total Aerosol Optical Depth at 469nm"
+  ecmwf210(213,3)="none"
+  ecmwf210(214,1)="AOD670"
+  ecmwf210(214,2)="Total Aerosol Optical Depth at 670nm"
+  ecmwf210(214,3)="none"
+  ecmwf210(215,1)="AOD865"
+  ecmwf210(215,2)="Total Aerosol Optical Depth at 865nm"
+  ecmwf210(215,3)="none"
+  ecmwf210(216,1)="AOD1240"
+  ecmwf210(216,2)="Total Aerosol Optical Depth at 1240nm"
+  ecmwf210(216,3)="none"
 
-first=.false.
+  first=.false.
 end if
 
-if (ain.GT.size(ecmwf210,DIM=1)) Then
-  elemtxt=elemerr
-else
-  elemtxt=ecmwf210(ain,:)
-end If
+elemtxt=ecmwf210(ain,:)
 
 return
 end
@@ -907,777 +2103,1239 @@ elemerr='???'
 
 if (first) then
 
-meteotemp(0,:) =  (/ 'TMP',       'Temperature',                            'K' /)
-meteotemp(1,:) =  (/ 'VTMP',      'Virtual temperature',                    'K' /)
-meteotemp(2,:) =  (/ 'POT',       'Potential temperature',                  'K' /)
-meteotemp(3,:) =  (/ 'EPOT',      'Pseudo-adiabatic potential temperature', 'K' /)
-meteotemp(4,:) =  (/ 'TMAX',      'Maximum temperature',                    'K' /)
-meteotemp(5,:) =  (/ 'TMIN',      'Minimum temperature',                    'K' /)
-meteotemp(6,:) =  (/ 'DPT',       'Dew point temperature',                  'K' /)
-meteotemp(7,:) =  (/ 'DEPR',      'Dew point depression',                   'K' /)
-meteotemp(8,:) =  (/ 'LAPR',      'Lapse rate',                             'K' /)
-meteotemp(9,:) =  (/ 'TMPA',      'Temperature anomaly',                    'K' /)
-meteotemp(10,:) = (/ 'LHTFL',     'Latent heat net flux',                   'W/(m^2)' /)
-meteotemp(11,:) = (/ 'SHTFL',     'Sensible heat net flux',                 'K' /)
-meteotemp(12,:) = (/ 'HeatIndex', 'Heat index',                             'K' /)
-meteotemp(13,:) = (/ 'WCI',       'Wind chill factor',                      'K' /)
-meteotemp(14,:) = (/ '',          'Minimum dew point depression',           'K' /)
-meteotemp(15,:) = (/ 'VPTMP',     'Virtual potential temperature',          'K' /)
+  meteotemp(0,1) =  'TMP'
+  meteotemp(0,2) =  'Temperature'
+  meteotemp(0,3) =  'K'
+  meteotemp(1,1) =  'VTMP'
+  meteotemp(1,2) =  'Virtual temperature'
+  meteotemp(1,3) =  'K'
+  meteotemp(2,1) =  'POT'
+  meteotemp(2,2) =  'Potential temperature'
+  meteotemp(2,3) =  'K'
+  meteotemp(3,1) =  'EPOT'
+  meteotemp(3,2) =  'Pseudo-adiabatic potential temperature'
+  meteotemp(3,3) =  'K'
+  meteotemp(4,1) =  'TMAX'
+  meteotemp(4,2) =  'Maximum temperature'
+  meteotemp(4,3) =  'K'
+  meteotemp(5,1) =  'TMIN'
+  meteotemp(5,2) =  'Minimum temperature'
+  meteotemp(5,3) =  'K'
+  meteotemp(6,1) =  'DPT'
+  meteotemp(6,2) =  'Dew point temperature'
+  meteotemp(6,3) =  'K'
+  meteotemp(7,1) =  'DEPR'
+  meteotemp(7,2) =  'Dew point depression'
+  meteotemp(7,3) =  'K'
+  meteotemp(8,1) =  'LAPR'
+  meteotemp(8,2) =  'Lapse rate'
+  meteotemp(8,3) =  'K'
+  meteotemp(9,1) =  'TMPA'
+  meteotemp(9,2) =  'Temperature anomaly'
+  meteotemp(9,3) =  'K'
+  meteotemp(10,1) = 'LHTFL'
+  meteotemp(10,2) = 'Latent heat net flux'
+  meteotemp(10,3) = 'W/(m^2)'
+  meteotemp(11,1) = 'SHTFL'
+  meteotemp(11,2) = 'Sensible heat net flux'
+  meteotemp(11,3) = 'K'
+  meteotemp(12,1) = 'HeatIndex'
+  meteotemp(12,2) = 'Heat index'
+  meteotemp(12,3) = 'K'
+  meteotemp(13,1) = 'WCI'
+  meteotemp(13,2) = 'Wind chill factor'
+  meteotemp(13,3) = 'K'
+  meteotemp(14,1) = ''
+  meteotemp(14,2) = 'Minimum dew point depression'
+  meteotemp(14,3) = 'K'
+  meteotemp(15,1) = 'VPTMP'
+  meteotemp(15,2) = 'Virtual potential temperature'
+  meteotemp(15,3) = 'K'
 
-meteomoist(0,:) =  (/ 'SPFH',  'Specific humidity',               'kg/kg' /)
-meteomoist(1,:) =  (/ 'RH',    'Relative humidity',               '%' /)
-meteomoist(2,:) =  (/ 'MIXR',  'Humidity mixing ratio',           'kg/kg' /)
-meteomoist(3,:) =  (/ 'PWAT',  'Precipitable water',              'kg/(m^2)' /)
-meteomoist(4,:) =  (/ 'VAPP',  'Vapor pressure',                  'Pa' /)
-meteomoist(5,:) =  (/ 'SATD',  'Saturation deficit',              'Pa' /)
-meteomoist(6,:) =  (/ 'EVP',   'Evaporation',                     'kg/(m^2)' /)
-meteomoist(7,:) =  (/ 'PRATE', 'Precipitation rate',              'kg/(m^2 s)' /)
-meteomoist(8,:) =  (/ 'APCP',  'Total precipitation',             'kg/(m^2)' /)
-meteomoist(9,:) =  (/ 'NCPCP', 'Large scale precipitation',       'kg/(m^2)' /)
-meteomoist(10,:) = (/ 'ACPCP', 'Convective precipitation',        'kg/(m^2)' /)
-meteomoist(11,:) = (/ 'SNOD',  'Snow depth',                      'm' /)
-meteomoist(12,:) = (/ 'SRWEQ', 'Snowfall rare water equivalent',  'kg/(m^2)' /)
-meteomoist(13,:) = (/ 'WEASD', 'Water equivalent of accumulated snow depth', 'kg/(m^2)' /)
-meteomoist(14,:) = (/ 'SNOC',  'Convective snow',                 'kg/(m^2)' /)
-meteomoist(15,:) = (/ 'SNOL',  'Large scale snow',                'kg/(m^2)' /)
-meteomoist(16,:) = (/ 'SNOM',  'Snow melt',                       'kg/(m^2)' /)
-meteomoist(17,:) = (/ '',      'Snow age',                        'day' /)
-meteomoist(18,:) = (/ '',      'Absolute humidity',               'kg/(m^3)' /)
-meteomoist(19,:) = (/ '',      'Precipitation type',              '(1 Rain, 2 Thunderstorm, 3 Freezing rain, 4 Mixed/ice, 5 Snow, 255 Missing)' /)
-meteomoist(20,:) = (/ '',      'Integrated liquid water',         'km/(m^2)' /)
-meteomoist(21,:) = (/ '',      'Condensate',                      'kg/kg' /)
-meteomoist(22,:) = (/ 'CLWMR', 'Cloud water mixing ratio',        'kg/kg' /)
-meteomoist(23,:) = (/ '',      'Ice water mixing ratio',          'kg/kg' /)
-meteomoist(24,:) = (/ 'RWMR',  'Rain water mixing ratio',         'kg/kg' /)
-meteomoist(25,:) = (/ 'SNMR',  'Snow water mixing ratio',         'kg/kg' /)
-meteomoist(26,:) = (/ '',      'Horizontal moisture convergence', 'kg/(kg s)' /)
-meteomoist(27,:) = (/ '',      'Maximum relative humidity',       '%' /)
-meteomoist(28,:) = (/ '',      'Maximum absolute humidity',       'kg/(m^3)' /)
-meteomoist(29,:) = (/ 'SnowAmt', 'Total snowfall',                'm' /)
-meteomoist(30,:) = (/ '',      'Precipitable water category',     '(undefined)' /)
-meteomoist(31,:) = (/ '',      'Hail',                            'm' /)
-meteomoist(32,:) = (/ '',      'Graupel (snow pellets)',          'kg/kg' /)
+  meteomoist(0,1) =  'SPFH'
+  meteomoist(0,2) =  'Specific humidity'
+  meteomoist(0,3) =  'kg/kg'
+  meteomoist(1,1) =  'RH'
+  meteomoist(1,2) =  'Relative humidity'
+  meteomoist(1,3) =  '%'
+  meteomoist(2,1) =  'MIXR'
+  meteomoist(2,2) =  'Humidity mixing ratio'
+  meteomoist(2,3) =  'kg/kg'
+  meteomoist(3,1) =  'PWAT'
+  meteomoist(3,2) =  'Precipitable water'
+  meteomoist(3,3) =  'kg/(m^2)'
+  meteomoist(4,1) =  'VAPP'
+  meteomoist(4,2) =  'Vapor pressure'
+  meteomoist(4,3) =  'Pa'
+  meteomoist(5,1) =  'SATD'
+  meteomoist(5,2) =  'Saturation deficit'
+  meteomoist(5,3) =  'Pa'
+  meteomoist(6,1) =  'EVP'
+  meteomoist(6,2) =  'Evaporation'
+  meteomoist(6,3) =  'kg/(m^2)'
+  meteomoist(7,1) =  'PRATE'
+  meteomoist(7,2) =  'Precipitation rate'
+  meteomoist(7,3) =  'kg/(m^2 s)'
+  meteomoist(8,1) =  'APCP'
+  meteomoist(8,2) =  'Total precipitation'
+  meteomoist(8,3) =  'kg/(m^2)'
+  meteomoist(9,1) =  'NCPCP'
+  meteomoist(9,2) =  'Large scale precipitation'
+  meteomoist(9,3) =  'kg/(m^2)'
+  meteomoist(10,1) = 'ACPCP'
+  meteomoist(10,2) = 'Convective precipitation'
+  meteomoist(10,3) = 'kg/(m^2)'
+  meteomoist(11,1) = 'SNOD'
+  meteomoist(11,2) = 'Snow depth'
+  meteomoist(11,3) = 'm'
+  meteomoist(12,1) = 'SRWEQ'
+  meteomoist(12,2) = 'Snowfall rare water equivalent'
+  meteomoist(12,3) = 'kg/(m^2)'
+  meteomoist(13,1) = 'WEASD'
+  meteomoist(13,2) = 'Water equivalent of accumulated snow depth'
+  meteomoist(13,3) = 'kg/(m^2)'
+  meteomoist(14,1) = 'SNOC'
+  meteomoist(14,2) = 'Convective snow'
+  meteomoist(14,3) = 'kg/(m^2)'
+  meteomoist(15,1) = 'SNOL'
+  meteomoist(15,2) = 'Large scale snow'
+  meteomoist(15,3) = 'kg/(m^2)'
+  meteomoist(16,1) = 'SNOM'
+  meteomoist(16,2) = 'Snow melt'
+  meteomoist(16,3) = 'kg/(m^2)'
+  meteomoist(17,1) = ''
+  meteomoist(17,2) = 'Snow age'
+  meteomoist(17,3) = 'day'
+  meteomoist(18,1) = ''
+  meteomoist(18,2) = 'Absolute humidity'
+  meteomoist(18,3) = 'kg/(m^3)'
+  meteomoist(19,1) = ''
+  meteomoist(19,2) = 'Precipitation type'
+  meteomoist(19,3) = '(1 Rain, 2 Thunderstorm, 3 Freezing rain, 4 Mixed/ice, 5 Snow, 255 Missing)'
+  meteomoist(20,1) = ''
+  meteomoist(20,2) = 'Integrated liquid water'
+  meteomoist(20,3) = 'km/(m^2)'
+  meteomoist(21,1) = ''
+  meteomoist(21,2) = 'Condensate'
+  meteomoist(21,3) = 'kg/kg'
+  meteomoist(22,1) = 'CLWMR'
+  meteomoist(22,2) = 'Cloud water mixing ratio'
+  meteomoist(22,3) = 'kg/kg'
+  meteomoist(23,1) = ''
+  meteomoist(23,2) = 'Ice water mixing ratio'
+  meteomoist(23,3) = 'kg/kg'
+  meteomoist(24,1) = 'RWMR'
+  meteomoist(24,2) = 'Rain water mixing ratio'
+  meteomoist(24,3) = 'kg/kg'
+  meteomoist(25,1) = 'SNMR'
+  meteomoist(25,2) = 'Snow water mixing ratio'
+  meteomoist(25,3) = 'kg/kg'
+  meteomoist(26,1) = ''
+  meteomoist(26,2) = 'Horizontal moisture convergence'
+  meteomoist(26,3) = 'kg/(kg s)'
+  meteomoist(27,1) = ''
+  meteomoist(27,2) = 'Maximum relative humidity'
+  meteomoist(27,3) = '%'
+  meteomoist(28,1) = ''
+  meteomoist(28,2) = 'Maximum absolute humidity'
+  meteomoist(28,3) = 'kg/(m^3)'
+  meteomoist(29,1) = 'SnowAmt'
+  meteomoist(29,2) = 'Total snowfall'
+  meteomoist(29,3) = 'm'
+  meteomoist(30,1) = ''
+  meteomoist(30,2) = 'Precipitable water category'
+  meteomoist(30,3) = '(undefined)'
+  meteomoist(31,1) = ''
+  meteomoist(31,2) = 'Hail'
+  meteomoist(31,3) = 'm'
+  meteomoist(32,1) = ''
+  meteomoist(32,2) = 'Graupel (snow pellets)'
+  meteomoist(32,3) = 'kg/kg'
 
-meteomoment(0,:) =  (/ 'WDIR',    'Wind direction (from which blowing)', 'deg true' /)
-meteomoment(1,:) =  (/ 'WIND',    'Wind speed',                          'm/s' /)
-meteomoment(2,:) =  (/ 'UGRD',    'u-component of wind',                 'm/s' /)
-meteomoment(3,:) =  (/ 'VGRD',    'v-component of wind',                 'm/s' /)
-meteomoment(4,:) =  (/ 'STRM',    'Stream function',                     '(m^2)/s' /)
-meteomoment(5,:) =  (/ 'VPOT',    'Velocity potential',                  '(m^2)/s' /)
-meteomoment(6,:) =  (/ 'MNTSF',   'Montgomery stream function',          '(m^2)/(s^2)' /)
-meteomoment(7,:) =  (/ 'SGCVV',   'Sigma coordinate vertical velocity',  '1/s' /)
-meteomoment(8,:) =  (/ 'VVEL',    'Vertical velocity (pressure)',        'Pa/s' /)
-meteomoment(9,:) =  (/ 'DZDT',    'Vertical velocity (geometric)',       'm/s' /)
-meteomoment(10,:) = (/ 'ABSV',    'Absolute vorticity',                  '1/s' /)
-meteomoment(11,:) = (/ 'ABSD',    'Absolute duvergence',                 '1/s' /)
-meteomoment(12,:) = (/ 'RELV',    'Relative vorticity',                  '1/s' /)
-meteomoment(13,:) = (/ 'RELD',    'Relative divergence',                 '1/s' /)
-meteomoment(14,:) = (/ 'PVORT',   'Potential vorticity',                 'K(m^2)/(kg s)' /)
-meteomoment(15,:) = (/ 'VUCSH',   'Vertical u-component shear',          '1/s' /)
-meteomoment(16,:) = (/ 'VVCSH',   'Vertical v-component shear',          '1/s' /)
-meteomoment(17,:) = (/ 'UFLX',    'Momentum flux, u component',          'N/(m^2)' /)
-meteomoment(18,:) = (/ 'VFLX',    'Momentum flux, v component',          'N/(m^2)' /)
-meteomoment(19,:) = (/ 'WMIXE',   'Wind mixing energy',                  'J' /)
-meteomoment(20,:) = (/ 'BLYDP',   'Boundary layer dissipation',          'W/(m^2)' /)
-meteomoment(21,:) = (/ 'MAXGUST', 'Maximum wind speed',                  'm/s' /)
-meteomoment(22,:) = (/ 'GUST',    'Wind speed (gust)',                   'm/s' /)
-meteomoment(23,:) = (/ 'UGUST',   'u-component of wind (gust)',          'm/s' /)
-meteomoment(24,:) = (/ 'VGUST',   'v-component of wind (gust)',          'm/s' /)
+  meteomoment(0,1) =  'WDIR'
+  meteomoment(0,2) =  'Wind direction (from which blowing)'
+  meteomoment(0,3) =  'deg true'
+  meteomoment(1,1) =  'WIND'
+  meteomoment(1,2) =  'Wind speed'
+  meteomoment(1,3) =  'm/s'
+  meteomoment(2,1) =  'UGRD'
+  meteomoment(2,2) =  'u-component of wind'
+  meteomoment(2,3) =  'm/s'
+  meteomoment(3,1) =  'VGRD'
+  meteomoment(3,2) =  'v-component of wind'
+  meteomoment(3,3) =  'm/s'
+  meteomoment(4,1) =  'STRM'
+  meteomoment(4,2) =  'Stream function'
+  meteomoment(4,3) =  '(m^2)/s'
+  meteomoment(5,1) =  'VPOT'
+  meteomoment(5,2) =  'Velocity potential'
+  meteomoment(5,3) =  '(m^2)/s'
+  meteomoment(6,1) =  'MNTSF'
+  meteomoment(6,2) =  'Montgomery stream function'
+  meteomoment(6,3) =  '(m^2)/(s^2)'
+  meteomoment(7,1) =  'SGCVV'
+  meteomoment(7,2) =  'Sigma coordinate vertical velocity'
+  meteomoment(7,3) =  '1/s'
+  meteomoment(8,1) =  'VVEL'
+  meteomoment(8,2) =  'Vertical velocity (pressure)'
+  meteomoment(8,3) =  'Pa/s'
+  meteomoment(9,1) =  'DZDT'
+  meteomoment(9,2) =  'Vertical velocity (geometric)'
+  meteomoment(9,3) =  'm/s'
+  meteomoment(10,1) = 'ABSV'
+  meteomoment(10,2) = 'Absolute vorticity'
+  meteomoment(10,3) = '1/s'
+  meteomoment(11,1) = 'ABSD'
+  meteomoment(11,2) = 'Absolute divergence'
+  meteomoment(11,3) = '1/s'
+  meteomoment(12,1) = 'RELV'
+  meteomoment(12,2) = 'Relative vorticity'
+  meteomoment(12,3) = '1/s'
+  meteomoment(13,1) = 'RELD'
+  meteomoment(13,2) = 'Relative divergence'
+  meteomoment(13,3) = '1/s'
+  meteomoment(14,1) = 'PVORT'
+  meteomoment(14,2) = 'Potential vorticity'
+  meteomoment(14,3) = 'K(m^2)/(kg s)'
+  meteomoment(15,1) = 'VUCSH'
+  meteomoment(15,2) = 'Vertical u-component shear'
+  meteomoment(15,3) = '1/s'
+  meteomoment(16,1) = 'VVCSH'
+  meteomoment(16,2) = 'Vertical v-component shear'
+  meteomoment(16,3) = '1/s'
+  meteomoment(17,1) = 'UFLX'
+  meteomoment(17,2) = 'Momentum flux, u component'
+  meteomoment(17,3) = 'N/(m^2)'
+  meteomoment(18,1) = 'VFLX'
+  meteomoment(18,2) = 'Momentum flux, v component'
+  meteomoment(18,3) = 'N/(m^2)'
+  meteomoment(19,1) = 'WMIXE'
+  meteomoment(19,2) = 'Wind mixing energy'
+  meteomoment(19,3) = 'J'
+  meteomoment(20,1) = 'BLYDP'
+  meteomoment(20,2) = 'Boundary layer dissipation'
+  meteomoment(20,3) = 'W/(m^2)'
+  meteomoment(21,1) = 'MAXGUST'
+  meteomoment(21,2) = 'Maximum wind speed'
+  meteomoment(21,3) = 'm/s'
+  meteomoment(22,1) = 'GUST'
+  meteomoment(22,2) = 'Wind speed (gust)'
+  meteomoment(22,3) = 'm/s'
+  meteomoment(23,1) = 'UGUST'
+  meteomoment(23,2) = 'u-component of wind (gust)'
+  meteomoment(23,3) = 'm/s'
+  meteomoment(24,1) = 'VGUST'
+  meteomoment(24,2) = 'v-component of wind (gust)'
+  meteomoment(24,3) = 'm/s'
 
-meteomass(0,:) =  (/ 'PRES',  'Pressure',                                  'Pa' /)
-meteomass(1,:) =  (/ 'PRMSL', 'Pressure reduced to MSL',                   'Pa' /)
-meteomass(2,:) =  (/ 'PTEND', 'Pressure tendency',                         'Pa/s' /)
-meteomass(3,:) =  (/ 'ICAHT', 'ICA0 standard atmosphere reference height', 'm' /)
-meteomass(4,:) =  (/ 'GP',    'Geopotential',                              '(m^2)/(s^2)' /)
-meteomass(5,:) =  (/ 'HGT',   'Geopotential height',                       'gpm' /)
-meteomass(6,:) =  (/ 'DIST',  'Geometric height',                          'm' /)
-meteomass(7,:) =  (/ 'HSTDV', 'Standard deviation of height',              'm' /)
-meteomass(8,:) =  (/ 'PRESA', 'Pressure anomaly',                          'Pa' /)
-meteomass(9,:) =  (/ 'GPA',   'Geopotential height anomally',              'gpm' /)
-meteomass(10,:) = (/ 'DEN',   'Density',                                   'kg/(m^3)' /)
-meteomass(11,:) = (/ '',      'Altimeter setting',                         'Pa' /)
-meteomass(12,:) = (/ '',      'Thickness',                                 'm' /)
-meteomass(13,:) = (/ '',      'Pressure altitude',                         'm' /)
-meteomass(14,:) = (/ '',      'Density altitude',                          'm' /)
+  meteomass(0,1) =  'PRES'
+  meteomass(0,2) =  'Pressure'
+  meteomass(0,3) =  'Pa'
+  meteomass(1,1) =  'PRMSL'
+  meteomass(1,2) =  'Pressure reduced to MSL'
+  meteomass(1,3) =  'Pa'
+  meteomass(2,1) =  'PTEND'
+  meteomass(2,2) =  'Pressure tendency'
+  meteomass(2,3) =  'Pa/s'
+  meteomass(3,1) =  'ICAHT'
+  meteomass(3,2) =  'ICA0 standard atmosphere reference height'
+  meteomass(3,3) =  'm'
+  meteomass(4,1) =  'GP'
+  meteomass(4,2) =  'Geopotential'
+  meteomass(4,3) =  '(m^2)/(s^2)'
+  meteomass(5,1) =  'HGT'
+  meteomass(5,2) =  'Geopotential height'
+  meteomass(5,3) =  'gpm'
+  meteomass(6,1) =  'DIST'
+  meteomass(6,2) =  'Geometric height'
+  meteomass(6,3) =  'm'
+  meteomass(7,1) =  'HSTDV'
+  meteomass(7,2) =  'Standard deviation of height'
+  meteomass(7,3) =  'm'
+  meteomass(8,1) =  'PRESA'
+  meteomass(8,2) =  'Pressure anomaly'
+  meteomass(8,3) =  'Pa'
+  meteomass(9,1) =  'GPA'
+  meteomass(9,2) =  'Geopotential height anomally'
+  meteomass(9,3) =  'gpm'
+  meteomass(10,1) = 'DEN'
+  meteomass(10,2) = 'Density'
+  meteomass(10,3) = 'kg/(m^3)'
+  meteomass(11,1) = ''
+  meteomass(11,2) = 'Altimeter setting'
+  meteomass(11,3) = 'Pa'
+  meteomass(12,1) = ''
+  meteomass(12,2) = 'Thickness'
+  meteomass(12,3) = 'm'
+  meteomass(13,1) = ''
+  meteomass(13,2) = 'Pressure altitude'
+  meteomass(13,3) = 'm'
+  meteomass(14,1) = ''
+  meteomass(14,2) = 'Density altitude'
+  meteomass(14,3) = 'm'
 
-meteoshortradiate(0,:)=(/ 'NSWRS', 'Net short-wave radiation flux (surface)', 'W/(m^2)' /)
-meteoshortradiate(1,:)=(/ 'NSWRT', 'Net short-wave radiation flux (top of atmosphere)', 'W/(m^2)' /)
-meteoshortradiate(2,:)=(/ 'SWAVR', 'Short wave radiation flux', 'W/(m^2)' /)
-meteoshortradiate(3,:)=(/ 'GRAD', 'Global radiation flux', 'W/(m^2)' /)
-meteoshortradiate(4,:)=(/ 'BRTMP', 'Brightness temperature', 'K' /)
-meteoshortradiate(5,:)=(/ 'LWRAD', 'Radiance (with respect to wave number)', 'W/(m sr)' /)
-meteoshortradiate(6,:)=(/ 'SWARD', 'Radiance (with respect to wave length', 'W/(m^3 sr)' /)
+  meteoshortradiate(0,1)='NSWRS'
+  meteoshortradiate(0,2)='Net short-wave radiation flux (surface)'
+  meteoshortradiate(0,3)='W/(m^2)'
+  meteoshortradiate(1,1)='NSWRT'
+  meteoshortradiate(1,2)='Net short-wave radiation flux (top of atmosphere)'
+  meteoshortradiate(1,3)='W/(m^2)'
+  meteoshortradiate(2,1)='SWAVR'
+  meteoshortradiate(2,2)='Short wave radiation flux'
+  meteoshortradiate(2,3)='W/(m^2)'
+  meteoshortradiate(3,1)='GRAD'
+  meteoshortradiate(3,2)='Global radiation flux'
+  meteoshortradiate(3,3)='W/(m^2)'
+  meteoshortradiate(4,1)='BRTMP'
+  meteoshortradiate(4,2)='Brightness temperature'
+  meteoshortradiate(4,3)='K'
+  meteoshortradiate(5,1)='LWRAD'
+  meteoshortradiate(5,2)='Radiance (with respect to wave number)'
+  meteoshortradiate(5,3)='W/(m sr)'
+  meteoshortradiate(6,1)='SWARD'
+  meteoshortradiate(6,2)='Radiance (with respect to wave length'
+  meteoshortradiate(6,3)='W/(m^3 sr)'
 
-meteolongradiate(0,:)=(/ 'NLWRS', 'Net long wave radiation flux (surface)', 'W/(m^2)' /)
-meteolongradiate(1,:)=(/ 'NLWRT', 'Net long wave radiation flux (top of atmosphere)', 'W/(m^2)' /)
-meteolongradiate(2,:)=(/ 'LWAVR', 'Long wave radiation flux', 'W/(m^2)' /)
+  meteolongradiate(0,1)='NLWRS'
+  meteolongradiate(0,2)='Net long wave radiation flux (surface)'
+  meteolongradiate(0,3)='W/(m^2)'
+  meteolongradiate(1,1)='NLWRT'
+  meteolongradiate(1,2)='Net long wave radiation flux (top of atmosphere)'
+  meteolongradiate(1,3)='W/(m^2)'
+  meteolongradiate(2,1)='LWAVR'
+  meteolongradiate(2,2)='Long wave radiation flux'
+  meteolongradiate(2,3)='W/(m^2)'
 
-meteocloud=''
-meteocloud(0,:)=(/ 'CICE', 'Cloud Ice', 'kg/(m^2)' /)
-meteocloud(1,:)=(/ 'TCDC', 'Total could cover', '%' /)
-meteocloud(2,:)=(/ 'CDCON', 'Convective cloud cover', '%' /)
-meteocloud(3,:)=(/ 'LCDC', 'Low cloud cover', '%' /)
-meteocloud(4,:)=(/ 'MCDC', 'Medium cloud cover', '%' /)
-meteocloud(5,:)=(/ 'HCDC', 'High cloud cover', '%' /)
-meteocloud(6,:)=(/ 'CWAT', 'Could water', 'kg/(m^2)' /)
-meteocloud(7,:)=(/ 'CDCA', 'Cloud amount', '%' /)
-meteocloud(8,:)=(/ 'CDCT', 'Cloud type', '(0 clear, 1 Cumulonimbus, 2 Stratus, 3 Stratocumulus, 4 Cumulus, 5 Altostratus, 6 Nimbostratus, 7 Altocumulus, 8 Cirrostratus, 9 Cirrocumulus, 10 Cirrus, 11 Cumulonimbus (fog), 12 Stratus (fog), 13 Stratocumulus (fog), 14 Cumulus (fog), Altostratus (fog), 16 Nimbostratus (fog), 17 Altocumulus (fog), 18 Cirrostratus (fog), 19 Cirrocumulus (fog), 20 Cirrus (fog), 191 unknown, 255 missing)' /)
-meteocloud(9,:)=(/ 'TMAXT', 'Thunderstorm maximum tops', 'm' /)
-meteocloud(10,:)=(/ 'THUNC', 'Thunderstorm coverage', '(0 none, 1 isolated (1%-2%), 2 few (3%-15%), 3 scattered (16%-45%), 4 numerous (>45%), 255 missing)' /)
-meteocloud(11,:)=(/ 'CDCB', 'Cloud base', 'm' /)
-meteocloud(12,:)=(/ 'CDCT', 'Cloud top', 'm' /)
-meteocloud(13,:)=(/ 'CEIL', 'Ceiling', 'm' /)
-meteocloud(14,:)=(/ 'CDLYR', 'Non-convective cloud cover', '%' /)
-meteocloud(15,:)=(/ 'CWORK', 'Cloud work function', 'J/kg' /)
-meteocloud(16,:)=(/ 'CUEFI', 'Convective cloud efficiency', '-' /)
-meteocloud(17,:)=(/ 'TCOND', 'Total condensate', 'kg/kg' /)
-meteocloud(18,:)=(/ 'TCOLW', 'Total column-integrated cloud water', 'kg/(m^2)' /)
-meteocloud(19,:)=(/ 'TCOLI', 'Total column-integrated cloud ice', 'kg/(m^2)' /)
-meteocloud(20,:)=(/ 'TCOLC', 'Total column-integrated cloud condensate' ,'kg/(m^2)' /)
-meteocloud(21,:)=(/ 'FICE', 'Ice fraction of total condensate', '-' /)
-meteocloud(22,:)=(/ 'CDCC', 'Cloud cover', '%' /)
-meteocloud(23,:)=(/ 'CDCIMR', 'Cloud ice mixing ratio', 'kg/kg' /)
-meteocloud(24,:)=(/ 'SUNS', 'Sunshine', '-' /)
-meteocloud(25,:)=(/ 'CBHE', 'Horizontal extent of cumulonibus', '%' /)
-meteocloud(33,:)=(/ 'SUNSD', 'Sunshine duration', 's' /)
-meteocloud(192,:)=(/ 'CDLYR', 'Non-convective cloud cover', '%' /)
-meteocloud(193,:)=(/ 'CWORK', 'Cloud work function', 'J/kg' /)
-meteocloud(194,:)=(/ 'CUEFI', 'Convective cloud efficiency', '-' /)
-meteocloud(195,:)=(/ 'TCOND', 'Total condensate', 'kg/kg' /)
-meteocloud(196,:)=(/ 'TCOLW', 'Total column-integrated cloud water', 'kg/(m^2)' /)
-meteocloud(197,:)=(/ 'TCOLI', 'Total column-integrated cloud ice', 'kg/(m^2)' /)
-meteocloud(198,:)=(/ 'TCOLC', 'Total column-integrated cloud condensate' ,'kg/(m^2)' /)
-meteocloud(199,:)=(/ 'FICE', 'Ice fraction of total condensate', '-' /)
-meteocloud(200,:)=(/ 'MFLUX', 'Convective cloud mass flux', 'Pa/s' /)
-meteocloud(201,:)=(/ 'SUNSD', 'Sunshine duration', 's' /)
+  meteocloud=''
+  meteocloud(0,1)='CICE'
+  meteocloud(0,2)='Cloud Ice'
+  meteocloud(0,3)='kg/(m^2)'
+  meteocloud(1,1)='TCDC'
+  meteocloud(1,2)='Total could cover'
+  meteocloud(1,3)='%'
+  meteocloud(2,1)='CDCON'
+  meteocloud(2,2)='Convective cloud cover'
+  meteocloud(2,3)='%'
+  meteocloud(3,1)='LCDC'
+  meteocloud(3,2)='Low cloud cover'
+  meteocloud(3,3)='%'
+  meteocloud(4,1)='MCDC'
+  meteocloud(4,2)='Medium cloud cover'
+  meteocloud(4,3)='%'
+  meteocloud(5,1)='HCDC'
+  meteocloud(5,2)='High cloud cover'
+  meteocloud(5,3)='%'
+  meteocloud(6,1)='CWAT'
+  meteocloud(6,2)='Could water'
+  meteocloud(6,3)='kg/(m^2)'
+  meteocloud(7,1)='CDCA'
+  meteocloud(7,2)='Cloud amount'
+  meteocloud(7,3)='%'
+  meteocloud(8,1)='CDCT'
+  meteocloud(8,2)='Cloud type'
+  meteocloud(8,3)="index"
+!      //"(0 clear, 1 Cumulonimbus, 2 Stratus, 3 Stratocumulus, 4 Cumulus, 5 Altostratus, 6 Nimbostratus, " &
+!      //"7 Altocumulus, 8 Cirrostratus, 9 Cirrocumulus, 10 Cirrus, 11 Cumulonimbus (fog), 12 Stratus (fog), "        &
+!      //"13 Stratocumulus (fog), 14 Cumulus (fog), Altostratus (fog), 16 Nimbostratus (fog), 17 Altocumulus (fog), " &
+!      //"18 Cirrostratus (fog), 19 Cirrocumulus (fog), 20 Cirrus (fog), 191 unknown, 255 missing)"
+  meteocloud(9,1)='TMAXT'
+  meteocloud(9,2)='Thunderstorm maximum tops'
+  meteocloud(9,3)='m'
+  meteocloud(10,1)='THUNC'
+  meteocloud(10,2)='Thunderstorm coverage'
+  meteocloud(10,3)='index'
+!      //'(0 none, 1 isolated (1%-2%), 2 few (3%-15%), 3 scattered (16%-45%), 4 numerous (>45%), 255 missing)'
+  meteocloud(11,1)='CDCB'
+  meteocloud(11,2)='Cloud base'
+  meteocloud(11,3)='m'
+  meteocloud(12,1)='CDCT'
+  meteocloud(12,2)='Cloud top'
+  meteocloud(12,3)='m'
+  meteocloud(13,1)='CEIL'
+  meteocloud(13,2)='Ceiling'
+  meteocloud(13,3)='m'
+  meteocloud(14,1)='CDLYR'
+  meteocloud(14,2)='Non-convective cloud cover'
+  meteocloud(14,3)='%'
+  meteocloud(15,1)='CWORK'
+  meteocloud(15,2)='Cloud work function'
+  meteocloud(15,3)='J/kg'
+  meteocloud(16,1)='CUEFI'
+  meteocloud(16,2)='Convective cloud efficiency'
+  meteocloud(16,3)='-'
+  meteocloud(17,1)='TCOND'
+  meteocloud(17,2)='Total condensate'
+  meteocloud(17,3)='kg/kg'
+  meteocloud(18,1)='TCOLW'
+  meteocloud(18,2)='Total column-integrated cloud water'
+  meteocloud(18,3)='kg/(m^2)'
+  meteocloud(19,1)='TCOLI'
+  meteocloud(19,2)='Total column-integrated cloud ice'
+  meteocloud(19,3)='kg/(m^2)'
+  meteocloud(20,1)='TCOLC'
+  meteocloud(20,2)='Total column-integrated cloud condensate'
+  meteocloud(20,3)='kg/(m^2)'
+  meteocloud(21,1)='FICE'
+  meteocloud(21,2)='Ice fraction of total condensate'
+  meteocloud(21,3)='-'
+  meteocloud(22,1)='CDCC'
+  meteocloud(22,2)='Cloud cover'
+  meteocloud(22,3)='%'
+  meteocloud(23,1)='CDCIMR'
+  meteocloud(23,2)='Cloud ice mixing ratio'
+  meteocloud(23,3)='kg/kg'
+  meteocloud(24,1)='SUNS'
+  meteocloud(24,2)='Sunshine'
+  meteocloud(24,3)='-'
+  meteocloud(25,1)='CBHE'
+  meteocloud(25,2)='Horizontal extent of cumulonibus'
+  meteocloud(25,3)='%'
+  meteocloud(33,1)='SUNSD'
+  meteocloud(33,2)='Sunshine duration'
+  meteocloud(33,3)='s'
+  meteocloud(192,1)='CDLYR'
+  meteocloud(192,2)='Non-convective cloud cover'
+  meteocloud(192,3)='%'
+  meteocloud(193,1)='CWORK'
+  meteocloud(193,2)='Cloud work function'
+  meteocloud(193,3)='J/kg'
+  meteocloud(194,1)='CUEFI'
+  meteocloud(194,2)='Convective cloud efficiency'
+  meteocloud(194,3)='-'
+  meteocloud(195,1)='TCOND'
+  meteocloud(195,2)='Total condensate'
+  meteocloud(195,3)='kg/kg'
+  meteocloud(196,1)='TCOLW'
+  meteocloud(196,2)='Total column-integrated cloud water'
+  meteocloud(196,3)='kg/(m^2)'
+  meteocloud(197,1)='TCOLI'
+  meteocloud(197,2)='Total column-integrated cloud ice'
+  meteocloud(197,3)='kg/(m^2)'
+  meteocloud(198,1)='TCOLC'
+  meteocloud(198,2)='Total column-integrated cloud condensate'
+  meteocloud(198,3)='kg/(m^2)'
+  meteocloud(199,1)='FICE'
+  meteocloud(199,2)='Ice fraction of total condensate'
+  meteocloud(199,3)='-'
+  meteocloud(200,1)='MFLUX'
+  meteocloud(200,2)='Convective cloud mass flux'
+  meteocloud(200,3)='Pa/s'
+  meteocloud(201,1)='SUNSD'
+  meteocloud(201,2)='Sunshine duration'
+  meteocloud(201,3)='s'
 
-meteostability(0,:)=(/ 'PLI', 'Parcel lifted index (to 500 hPa)', 'K' /)
-meteostability(1,:)=(/ 'BLI', 'Best lifted index (to 500 hPa)', 'K' /)
-meteostability(2,:)=(/ 'KX', 'K index', 'K' /)
-meteostability(3,:)=(/ '', 'K0 index', 'K' /)
-meteostability(4,:)=(/ '', 'Total totals index', 'K' /)
-meteostability(5,:)=(/ 'SX', 'Sweat index', 'numeric' /)
-meteostability(6,:)=(/ 'CAPE', 'Convective available potential energy', 'J/kg' /)
-meteostability(7,:)=(/ 'CIN', 'Convective inhibition', 'J/kg' /)
-meteostability(8,:)=(/ 'HLCY', 'Storm relative helicity', 'J/kg' /)
-meteostability(9,:)=(/ '', 'Energy helicity index', 'numeric' /)
+  meteostability(0,1)='PLI'
+  meteostability(0,2)='Parcel lifted index (to 500 hPa)'
+  meteostability(0,3)='K'
+  meteostability(1,1)='BLI'
+  meteostability(1,2)='Best lifted index (to 500 hPa)'
+  meteostability(1,3)='K'
+  meteostability(2,1)='KX'
+  meteostability(2,2)='K index'
+  meteostability(2,3)='K'
+  meteostability(3,1)=''
+  meteostability(3,2)='K0 index'
+  meteostability(3,3)='K'
+  meteostability(4,1)=''
+  meteostability(4,2)='Total totals index'
+  meteostability(4,3)='K'
+  meteostability(5,1)='SX'
+  meteostability(5,2)='Sweat index'
+  meteostability(5,3)='numeric'
+  meteostability(6,1)='CAPE'
+  meteostability(6,2)='Convective available potential energy'
+  meteostability(6,3)='J/kg'
+  meteostability(7,1)='CIN'
+  meteostability(7,2)='Convective inhibition'
+  meteostability(7,3)='J/kg'
+  meteostability(8,1)='HLCY'
+  meteostability(8,2)='Storm relative helicity'
+  meteostability(8,3)='J/kg'
+  meteostability(9,1)=''
+  meteostability(9,2)='Energy helicity index'
+  meteostability(9,3)='numeric'
 
-meteoaerosols(0,:)=(/ '', 'Aerosol type', '(0 Aerosol not present, 1 Aerosol present)' /)
+  meteoaerosols(0,1)=''
+  meteoaerosols(0,2)='Aerosol type'
+  meteoaerosols(0,3)='(0 Aerosol not present, 1 Aerosol present)'
 
-meteogases(0,:)=(/ 'TOZNE', 'Total ozone', 'Dobson' /)
+  meteogases(0,1)='TOZNE'
+  meteogases(0,2)='Total ozone'
+  meteogases(0,3)='Dobson'
 
-meteoradar(0,:)=(/ '', 'Base spectrum width', 'm/s' /)
-meteoradar(1,:)=(/ '', 'Base reflectivity', 'dB' /)
-meteoradar(2,:)=(/ '', 'Base radial velocity', 'm/s' /)
-meteoradar(3,:)=(/ '', 'Vertically-integrated liquid', 'kg/m' /)
-meteoradar(4,:)=(/ '', 'Layer-maximum base reflectivity', 'dB' /)
-meteoradar(5,:)=(/ '', 'Precipitation', 'kg/(m^2)' /)
-meteoradar(6,:)=(/ 'RDSP1', 'Radar spectra (1)', '-' /)
-meteoradar(7,:)=(/ 'RDSP2', 'Radar spectra (2)', '-' /)
-meteoradar(8,:)=(/ 'RDSP3', 'Radar spectra (3)', '-' /)
+  meteoradar(0,1)=''
+  meteoradar(0,2)='Base spectrum width'
+  meteoradar(0,3)='m/s'
+  meteoradar(1,1)=''
+  meteoradar(1,2)='Base reflectivity'
+  meteoradar(1,3)='dB'
+  meteoradar(2,1)=''
+  meteoradar(2,2)='Base radial velocity'
+  meteoradar(2,3)='m/s'
+  meteoradar(3,1)=''
+  meteoradar(3,2)='Vertically-integrated liquid'
+  meteoradar(3,3)='kg/m'
+  meteoradar(4,1)=''
+  meteoradar(4,2)='Layer-maximum base reflectivity'
+  meteoradar(4,3)='dB'
+  meteoradar(5,1)=''
+  meteoradar(5,2)='Precipitation'
+  meteoradar(5,3)='kg/(m^2)'
+  meteoradar(6,1)='RDSP1'
+  meteoradar(6,2)='Radar spectra (1)'
+  meteoradar(6,3)='-'
+  meteoradar(7,1)='RDSP2'
+  meteoradar(7,2)='Radar spectra (2)'
+  meteoradar(7,3)='-'
+  meteoradar(8,1)='RDSP3'
+  meteoradar(8,2)='Radar spectra (3)'
+  meteoradar(8,3)='-'
 
-meteonuclear(0,:)=(/ '', 'Air concentration of Caesium 137', 'Bq/(m^3)' /)
-meteonuclear(1,:)=(/ '', 'Air concentration of Iodine 131', 'Bq/(m^3)' /)
-meteonuclear(2,:)=(/ '', 'Air concentration of radioactive pollutant', 'Bq/(m^3)' /)
-meteonuclear(3,:)=(/ '', 'Ground deposition of Caesium 137', 'Bq/(m^2)' /)
-meteonuclear(4,:)=(/ '', 'Ground deposition of Iodine 131', 'Bq/(m^2)' /)
-meteonuclear(5,:)=(/ '', 'Ground deposition of radioactive pollutant', 'Bq/(m^2)' /)
-meteonuclear(6,:)=(/ '', 'Time-integrated air concentration of caesium pollutant', '(Bq s)/(m^3)' /)
-meteonuclear(7,:)=(/ '', 'Time-integrated air concentration of iodine pollutant', '(Bq s)/(m^3)' /)
-meteonuclear(8,:)=(/ '', 'Time-integrated air concentration of radioactive pollutant', '(Bq s)/(m^3)' /)
+  meteonuclear(0,1)=''
+  meteonuclear(0,2)='Air concentration of Caesium 137'
+  meteonuclear(0,3)='Bq/(m^3)'
+  meteonuclear(1,1)=''
+  meteonuclear(1,2)='Air concentration of Iodine 131'
+  meteonuclear(1,3)='Bq/(m^3)'
+  meteonuclear(2,1)=''
+  meteonuclear(2,2)='Air concentration of radioactive pollutant'
+  meteonuclear(2,3)='Bq/(m^3)'
+  meteonuclear(3,1)=''
+  meteonuclear(3,2)='Ground deposition of Caesium 137'
+  meteonuclear(3,3)='Bq/(m^2)'
+  meteonuclear(4,1)=''
+  meteonuclear(4,2)='Ground deposition of Iodine 131'
+  meteonuclear(4,3)='Bq/(m^2)'
+  meteonuclear(5,1)=''
+  meteonuclear(5,2)='Ground deposition of radioactive pollutant'
+  meteonuclear(5,3)='Bq/(m^2)'
+  meteonuclear(6,1)=''
+  meteonuclear(6,2)='Time-integrated air concentration of caesium pollutant'
+  meteonuclear(6,3)='(Bq s)/(m^3)'
+  meteonuclear(7,1)=''
+  meteonuclear(7,2)='Time-integrated air concentration of iodine pollutant'
+  meteonuclear(7,3)='(Bq s)/(m^3)'
+  meteonuclear(8,1)=''
+  meteonuclear(8,2)='Time-integrated air concentration of radioactive pollutant'
+  meteonuclear(8,3)='(Bq s)/(m^3)'
 
-meteoatmos(0,:)=(/ 'VIS', 'Visibility', 'm' /)
-meteoatmos(1,:)=(/ 'ALBDO', 'Albedo', '%' /)
-meteoatmos(2,:)=(/ 'TSTM', 'Thunderstorm probability', '%' /)
-meteoatmos(3,:)=(/ 'MIXHT', 'Mixed layer depth', 'm' /)
-meteoatmos(4,:)=(/ '', 'Volcanic ash', '(0 not present, 1 present, 255 missing)' /)
-meteoatmos(5,:)=(/ '', 'Icing top', 'm' /)
-meteoatmos(6,:)=(/ '', 'Icing base', 'm' /)
-meteoatmos(7,:)=(/ '', 'Icing', '(0 None, 1 light, 2 moderate, 3 severe, 255 missing)' /)
-meteoatmos(8,:)=(/ '', 'Turbulance top', 'm' /)
-meteoatmos(9,:)=(/ '', 'Turbulence base', 'm' /)
-meteoatmos(10,:)=(/ '', 'Turbulence', '(0 None(smooth), 1 light, 2 moderate, 3 severe, 4 extreme, 255 missing)' /)
-meteoatmos(11,:)=(/ 'TKE', 'Turbulent kinetic energy', 'J/kg' /)
-meteoatmos(12,:)=(/ '', 'Planetary boundary layer regime', '(0 reserved, 1 stable, 2 mechanically driven turbulence, 3 forced convection, 4 free convection, 255 missing)' /)
-meteoatmos(13,:)=(/ '', 'Contrail intensity', '(0 Contrail not present, 1 contrail present, 255 missing)' /)
-meteoatmos(14,:)=(/ '', 'Contrail engine type', '(0 Low bypass, 1 high bypass, 2 non bypass, 255 missing)' /)
-meteoatmos(15,:)=(/ '', 'Contrail top', 'm' /)
-meteoatmos(16,:)=(/ '', 'Contrail base', 'm' /)
+  meteoatmos(0,1)='VIS'
+  meteoatmos(0,2)='Visibility'
+  meteoatmos(0,3)='m'
+  meteoatmos(1,1)='ALBDO'
+  meteoatmos(1,2)='Albedo'
+  meteoatmos(1,3)='%'
+  meteoatmos(2,1)='TSTM'
+  meteoatmos(2,2)='Thunderstorm probability'
+  meteoatmos(2,3)='%'
+  meteoatmos(3,1)='MIXHT'
+  meteoatmos(3,2)='Mixed layer depth'
+  meteoatmos(3,3)='m'
+  meteoatmos(4,1)=''
+  meteoatmos(4,2)='Volcanic ash'
+  meteoatmos(4,3)='(0 not present, 1 present, 255 missing)'
+  meteoatmos(5,1)=''
+  meteoatmos(5,2)='Icing top'
+  meteoatmos(5,3)='m'
+  meteoatmos(6,1)=''
+  meteoatmos(6,2)='Icing base'
+  meteoatmos(6,3)='m'
+  meteoatmos(7,1)=''
+  meteoatmos(7,2)='Icing'
+  meteoatmos(7,3)='(0 None, 1 light, 2 moderate, 3 severe, 255 missing)'
+  meteoatmos(8,1)=''
+  meteoatmos(8,2)='Turbulance top'
+  meteoatmos(8,3)='m'
+  meteoatmos(9,1)=''
+  meteoatmos(9,2)='Turbulence base'
+  meteoatmos(9,3)='m'
+  meteoatmos(10,1)=''
+  meteoatmos(10,2)='Turbulence'
+  meteoatmos(10,3)='(0 None(smooth), 1 light, 2 moderate, 3 severe, 4 extreme, 255 missing)'
+  meteoatmos(11,1)='TKE'
+  meteoatmos(11,2)='Turbulent kinetic energy'
+  meteoatmos(11,3)='J/kg'
+  meteoatmos(12,1)=''
+  meteoatmos(12,2)='Planetary boundary layer regime'
+  meteoatmos(12,3)='(0 reserved, 1 stable, 2 mechanically driven turbulence, 3 forced convection, 4 free convection, 255 missing)'
+  meteoatmos(13,1)=''
+  meteoatmos(13,2)='Contrail intensity'
+  meteoatmos(13,3)='(0 Contrail not present, 1 contrail present, 255 missing)'
+  meteoatmos(14,1)=''
+  meteoatmos(14,2)='Contrail engine type'
+  meteoatmos(14,3)='(0 Low bypass, 1 high bypass, 2 non bypass, 255 missing)'
+  meteoatmos(15,1)=''
+  meteoatmos(15,2)='Contrail top'
+  meteoatmos(15,3)='m'
+  meteoatmos(16,1)=''
+  meteoatmos(16,2)='Contrail base'
+  meteoatmos(16,3)='m'
 
-meteotext(0,:)=(/ '', 'Arbitrary test string', 'CCITTIA5' /)
+  meteotext(0,1)=''
+  meteotext(0,2)='Arbitrary test string'
+  meteotext(0,3)='CCITTIA5'
 
-hydrobasic(0,:)=(/ '', 'Flash flood guidance', 'kg/(m^2)' /)
-hydrobasic(1,:)=(/ '', 'Flash flood runoff', 'kg/(m^2)' /)
-hydrobasic(2,:)=(/ '', 'Remotely sensed snow cover', '(50 no-snow/no-cloud, 100 clouds, 250 snow, 255 missing)' /)
-hydrobasic(3,:)=(/ '', 'Elevation of snow covered terrain', '(0-90 elevation in increments of 100m, 254 clouds, 255 missing)' /)
-hydrobasic(4,:)=(/ '', 'Snow water equivalent precent of normal', '%' /)
+  hydrobasic(0,1)=''
+  hydrobasic(0,2)='Flash flood guidance'
+  hydrobasic(0,3)='kg/(m^2)'
+  hydrobasic(1,1)=''
+  hydrobasic(1,2)='Flash flood runoff'
+  hydrobasic(1,3)='kg/(m^2)'
+  hydrobasic(2,1)=''
+  hydrobasic(2,2)='Remotely sensed snow cover'
+  hydrobasic(2,3)='(50 no-snow/no-cloud, 100 clouds, 250 snow, 255 missing)'
+  hydrobasic(3,1)=''
+  hydrobasic(3,2)='Elevation of snow covered terrain'
+  hydrobasic(3,3)='(0-90 elevation in increments of 100m, 254 clouds, 255 missing)'
+  hydrobasic(4,1)=''
+  hydrobasic(4,2)='Snow water equivalent precent of normal'
+  hydrobasic(4,3)='%'
 
-hydroprob(0,:)=(/ '', 'Conditional percent precipitation amount factile for an overall period', 'kg/(m^2)' /)
-hydroprob(1,:)=(/ '', 'Percent precipitation in a sub-period of an overall period', '%' /)
-hydroprob(2,:)=(/ '', 'Probability of 0.01 inch of precipitation (POP)', '%' /)
+  hydroprob(0,1)=''
+  hydroprob(0,2)='Conditional percent precipitation amount factile for an overall period'
+  hydroprob(0,3)='kg/(m^2)'
+  hydroprob(1,1)=''
+  hydroprob(1,2)='Percent precipitation in a sub-period of an overall period'
+  hydroprob(1,3)='%'
+  hydroprob(2,1)=''
+  hydroprob(2,2)='Probability of 0.01 inch of precipitation (POP)'
+  hydroprob(2,3)='%'
 
-landveg(0,:)=(/ 'LAND', 'Landcover (0=sea 1=land)', 'Proportion' /)
-landveg(1,:)=(/ 'SFCR', 'Surface roughness', 'm' /)
-landveg(2,:)=(/ 'TSOIL', 'Soil temperature', 'K' /)
-landveg(3,:)=(/ 'SOILM', 'Soil moisture content', 'kg/(m^2)' /)
-landveg(4,:)=(/ 'VEG', 'Vegetation', '%' /)
-landveg(5,:)=(/ 'WATR', 'Water runoff', 'kg/(m^2)' /)
-landveg(6,:)=(/ '', 'Evapotranspiration', '1/(kg^2 s)' /)
-landveg(7,:)=(/ '', 'Model terrain height', 'm' /)
-landveg(8,:)=(/ '', 'Land use', '(1 Urban land, 2 agriculture, 3 range land, 4 deciduous forest, 5 coniferous forest, 6 forest/wetland, 7 water, 8 wetlands, 9 desert, 10 tundra, 11 ice, 12 tropical forest, 13 savannah' /)
+  landveg(0,1)='LAND'
+  landveg(0,2)='Landcover (0=sea 1=land)'
+  landveg(0,3)='Proportion'
+  landveg(1,1)='SFCR'
+  landveg(1,2)='Surface roughness'
+  landveg(1,3)='m'
+  landveg(2,1)='TSOIL'
+  landveg(2,2)='Soil temperature'
+  landveg(2,3)='K'
+  landveg(3,1)='SOILM'
+  landveg(3,2)='Soil moisture content'
+  landveg(3,3)='kg/(m^2)'
+  landveg(4,1)='VEG'
+  landveg(4,2)='Vegetation'
+  landveg(4,3)='%'
+  landveg(5,1)='WATR'
+  landveg(5,2)='Water runoff'
+  landveg(5,3)='kg/(m^2)'
+  landveg(6,1)=''
+  landveg(6,2)='Evapotranspiration'
+  landveg(6,3)='1/(kg^2 s)'
+  landveg(7,1)=''
+  landveg(7,2)='Model terrain height'
+  landveg(7,3)='m'
+  landveg(8,1)=''
+  landveg(8,2)='Land use'
+  landveg(8,3)='(1 Urban land, 2 agriculture, 3 range land, 4 deciduous forest, 5 coniferous forest, 6 forest/wetland, ' &
+      //'7 water, 8 wetlands, 9 desert, 10 tundra, 11 ice, 12 tropical forest, 13 savannah'
 
-landsoil=''
-landsoil(0,:)=(/ 'SOTYP', 'Soil type', '(1 Sand, 2 loamy sand, 3 sandy loam, 4 silt loam, 5 orgainc (redefined), 6 sandy clay loam, 7 silt clay loam, 8 clay loam, 9 sandy clay, 10 silty clay, 11 clay)' /)
-landsoil(1,:)=(/ 'UPLST', 'Upper layer soil temperature', 'K' /)
-landsoil(2,:)=(/ 'UPLSM', 'Upper layer soil moisture', 'kg/(m^3)' /)
-landsoil(3,:)=(/ 'LOWLSM', 'Lower layer soil moisture', 'kg/(m^3)' /)
-landsoil(4,:)=(/ 'BOTLST', 'Bottom layer soil temperature', 'K' /)
-landsoil(5,:)=(/ 'SOILL', 'Liquid volumetric soil moisture', '-' /)
-landsoil(6,:)=(/ 'RLYRS', 'Number of soil layers in root zone', '-' /)
-landsoil(7,:)=(/ 'SMREF', 'Transpiration stress-onset', '-' /)
-landsoil(8,:)=(/ 'SMDRY', 'Direct evaporation cease', '-' /)
-landsoil(9,:)=(/ 'POROS', 'Soil porosity' ,'-' /)
-landsoil(10,:)=(/ 'LIQVSM', 'Liquid volumetric soil moisture', 'm^3/(m^3)' /)
-landsoil(11,:)=(/ 'VOLTSO', 'Volumetric transpiration stree-onset', 'm^3/(m^3)' /)
-landsoil(12,:)=(/ 'TRANSO', 'Transpiration stree-onset', 'kg/(m^3)' /)
-landsoil(13,:)=(/ 'VOLDEC', 'Volumetric direct evaporation cease', 'm^3/(m^3)' /)
-landsoil(14,:)=(/ 'DIREC', 'Direct evaporation cease', 'kg/(m^3)' /)
-landsoil(15,:)=(/ 'SOILP', 'Soil porosity', 'm^3/(m^3)' /)
-landsoil(16,:)=(/ 'VSOSM', 'Volumetric saturation of soil moisture', 'm^3/(m^3)' /)
-landsoil(17,:)=(/ 'SATOSM', 'Saturation of soil moisture', 'kg/(m^3)' /)
-landsoil(192,:)=(/ 'SOILL', 'Liquid volumetric soil moisture', '-' /)
-landsoil(193,:)=(/ 'RLYRS', 'Number of soil layers in root zone', '-' /)
-landsoil(194,:)=(/ 'SLTYP', 'Surface slope type', '-' /)
-landsoil(195,:)=(/ 'SMREF', 'Transpiration stress-onset', '-' /)
-landsoil(196,:)=(/ 'SMDRY', 'Direct evaporation cease', '-' /)
-landsoil(197,:)=(/ 'POROS', 'Soil porosity' ,'-' /)
-landsoil(198,:)=(/ 'EVBS', 'Direct evaporation from bare soil', 'W/(m^2)' /)
-landsoil(199,:)=(/ 'LSPA', 'Land surface precipitation accumulation', 'kg/(m^2)' /)
-landsoil(200,:)=(/ 'BARET', 'Bare soil surface skin temperature', 'K' /)
-landsoil(201,:)=(/ 'AVSFT', 'Average surface skin temperature', 'K' /)
-landsoil(202,:)=(/ 'RADT', 'Effective radiative skin temperature', 'K' /)
-landsoil(203,:)=(/ 'FLDCP', 'Field capacity', '-' /)
+  landsoil=''
+  landsoil(0,1)='SOTYP'
+  landsoil(0,2)='Soil type'
+  landsoil(0,3)='(1 Sand, 2 loamy sand, 3 sandy loam, 4 silt loam, 5 orgainc (redefined), 6 sandy clay loam, ' &
+      //'7 silt clay loam, 8 clay loam, 9 sandy clay, 10 silty clay, 11 clay)'
+  landsoil(1,1)='UPLST'
+  landsoil(1,2)='Upper layer soil temperature'
+  landsoil(1,3)='K'
+  landsoil(2,1)='UPLSM'
+  landsoil(2,2)='Upper layer soil moisture'
+  landsoil(2,3)='kg/(m^3)'
+  landsoil(3,1)='LOWLSM'
+  landsoil(3,2)='Lower layer soil moisture'
+  landsoil(3,3)='kg/(m^3)'
+  landsoil(4,1)='BOTLST'
+  landsoil(4,2)='Bottom layer soil temperature'
+  landsoil(4,3)='K'
+  landsoil(5,1)='SOILL'
+  landsoil(5,2)='Liquid volumetric soil moisture'
+  landsoil(5,3)='-'
+  landsoil(6,1)='RLYRS'
+  landsoil(6,2)='Number of soil layers in root zone'
+  landsoil(6,3)='-'
+  landsoil(7,1)='SMREF'
+  landsoil(7,2)='Transpiration stress-onset'
+  landsoil(7,3)='-'
+  landsoil(8,1)='SMDRY'
+  landsoil(8,2)='Direct evaporation cease'
+  landsoil(8,3)='-'
+  landsoil(9,1)='POROS'
+  landsoil(9,2)='Soil porosity'
+  landsoil(9,3)='-'
+  landsoil(10,1)='LIQVSM'
+  landsoil(10,2)='Liquid volumetric soil moisture'
+  landsoil(10,3)='m^3/(m^3)'
+  landsoil(11,1)='VOLTSO'
+  landsoil(11,2)='Volumetric transpiration stree-onset'
+  landsoil(11,3)='m^3/(m^3)'
+  landsoil(12,1)='TRANSO'
+  landsoil(12,2)='Transpiration stree-onset'
+  landsoil(12,3)='kg/(m^3)'
+  landsoil(13,1)='VOLDEC'
+  landsoil(13,2)='Volumetric direct evaporation cease'
+  landsoil(13,3)='m^3/(m^3)'
+  landsoil(14,1)='DIREC'
+  landsoil(14,2)='Direct evaporation cease'
+  landsoil(14,3)='kg/(m^3)'
+  landsoil(15,1)='SOILP'
+  landsoil(15,2)='Soil porosity'
+  landsoil(15,3)='m^3/(m^3)'
+  landsoil(16,1)='VSOSM'
+  landsoil(16,2)='Volumetric saturation of soil moisture'
+  landsoil(16,3)='m^3/(m^3)'
+  landsoil(17,1)='SATOSM'
+  landsoil(17,2)='Saturation of soil moisture'
+  landsoil(17,3)='kg/(m^3)'
+  landsoil(192,1)='SOILL'
+  landsoil(192,2)='Liquid volumetric soil moisture'
+  landsoil(192,3)='-'
+  landsoil(193,1)='RLYRS'
+  landsoil(193,2)='Number of soil layers in root zone'
+  landsoil(193,3)='-'
+  landsoil(194,1)='SLTYP'
+  landsoil(194,2)='Surface slope type'
+  landsoil(194,3)='-'
+  landsoil(195,1)='SMREF'
+  landsoil(195,2)='Transpiration stress-onset'
+  landsoil(195,3)='-'
+  landsoil(196,1)='SMDRY'
+  landsoil(196,2)='Direct evaporation cease'
+  landsoil(196,3)='-'
+  landsoil(197,1)='POROS'
+  landsoil(197,2)='Soil porosity'
+  landsoil(197,3)='-'
+  landsoil(198,1)='EVBS'
+  landsoil(198,2)='Direct evaporation from bare soil'
+  landsoil(198,3)='W/(m^2)'
+  landsoil(199,1)='LSPA'
+  landsoil(199,2)='Land surface precipitation accumulation'
+  landsoil(199,3)='kg/(m^2)'
+  landsoil(200,1)='BARET'
+  landsoil(200,2)='Bare soil surface skin temperature'
+  landsoil(200,3)='K'
+  landsoil(201,1)='AVSFT'
+  landsoil(201,2)='Average surface skin temperature'
+  landsoil(201,3)='K'
+  landsoil(202,1)='RADT'
+  landsoil(202,2)='Effective radiative skin temperature'
+  landsoil(202,3)='K'
+  landsoil(203,1)='FLDCP'
+  landsoil(203,2)='Field capacity'
+  landsoil(203,3)='-'
 
-spaceimage(0,:)=(/ '', 'Scaled radiance', 'numeric' /)
-spaceimage(1,:)=(/ '', 'Scaled albedo', 'numeric' /)
-spaceimage(2,:)=(/ '', 'Scaled brightness temperature', 'numeric' /)
-spaceimage(3,:)=(/ '', 'Scaled precipitable water', 'numeric' /)
-spaceimage(4,:)=(/ '', 'Scaled lifted index', 'numeric' /)
-spaceimage(5,:)=(/ '', 'Scaled cloud top pressure', 'numeric' /)
-spaceimage(6,:)=(/ '', 'Scaled skin temperature', 'numeric' /)
-spaceimage(7,:)=(/ '', 'Cloud mask', '(0 Clear over water, 1 clear over land, 2 cloud)' /)
+  spaceimage(0,1)=''
+  spaceimage(0,2)='Scaled radiance'
+  spaceimage(0,3)='numeric'
+  spaceimage(1,1)=''
+  spaceimage(1,2)='Scaled albedo'
+  spaceimage(1,3)='numeric'
+  spaceimage(2,1)=''
+  spaceimage(2,2)='Scaled brightness temperature'
+  spaceimage(2,3)='numeric'
+  spaceimage(3,1)=''
+  spaceimage(3,2)='Scaled precipitable water'
+  spaceimage(3,3)='numeric'
+  spaceimage(4,1)=''
+  spaceimage(4,2)='Scaled lifted index'
+  spaceimage(4,3)='numeric'
+  spaceimage(5,1)=''
+  spaceimage(5,2)='Scaled cloud top pressure'
+  spaceimage(5,3)='numeric'
+  spaceimage(6,1)=''
+  spaceimage(6,2)='Scaled skin temperature'
+  spaceimage(6,3)='numeric'
+  spaceimage(7,1)=''
+  spaceimage(7,2)='Cloud mask'
+  spaceimage(7,3)='(0 Clear over water, 1 clear over land, 2 cloud)'
 
-spacequantitative(0,:)=(/ '', 'Estimated precipitation', 'kg/(m^2)' /)
+  spacequantitative(0,1)=''
+  spacequantitative(0,2)='Estimated precipitation'
+  spacequantitative(0,3)='kg/(m^2)'
 
-oceanwaves(0,:)=(/ 'WVSP1', 'Wave spectra (1)', '-' /)
-oceanwaves(1,:)=(/ 'WVSP2', 'Wave spectra (2)', '-' /)
-oceanwaves(2,:)=(/ 'WVSP3', 'Wave spectra (3)', '-' /)
-oceanwaves(3,:)=(/ 'HTSGW', 'Significant height of combined wind waves and swell', 'm' /)
-oceanwaves(4,:)=(/ 'WVDIR', 'Direction of wind waves', 'Degree true' /)
-oceanwaves(5,:)=(/ 'WVHGT', 'Significant height of wind waves', 'm' /)
-oceanwaves(6,:)=(/ 'WVPER', 'Mean period of wind waves', 's' /)
-oceanwaves(7,:)=(/ 'SWDIR', 'Direction of swell waves', 'Degree true' /)
-oceanwaves(8,:)=(/ 'SWELL', 'Significant height of swell waves', 'm' /)
-oceanwaves(9,:)=(/ 'SWPER', 'Mean period of swell waves', 's' /)
-oceanwaves(10,:)=(/ 'DIRPW', 'Primary wave direction', 'Degree true' /)
-oceanwaves(11,:)=(/ 'PERPW', 'Primary wave mean period', 's' /)
-oceanwaves(12,:)=(/ 'DIRSW', 'Secondary wave direction', 'Degree true' /)
-oceanwaves(13,:)=(/ 'PERSW', 'Secondary wave mean period', 's' /)
+  oceanwaves(0,1)='WVSP1'
+  oceanwaves(0,2)='Wave spectra (1)'
+  oceanwaves(0,3)='-'
+  oceanwaves(1,1)='WVSP2'
+  oceanwaves(1,2)='Wave spectra (2)'
+  oceanwaves(1,3)='-'
+  oceanwaves(2,1)='WVSP3'
+  oceanwaves(2,2)='Wave spectra (3)'
+  oceanwaves(2,3)='-'
+  oceanwaves(3,1)='HTSGW'
+  oceanwaves(3,2)='Significant height of combined wind waves and swell'
+  oceanwaves(3,3)='m'
+  oceanwaves(4,1)='WVDIR'
+  oceanwaves(4,2)='Direction of wind waves'
+  oceanwaves(4,3)='Degree true'
+  oceanwaves(5,1)='WVHGT'
+  oceanwaves(5,2)='Significant height of wind waves'
+  oceanwaves(5,3)='m'
+  oceanwaves(6,1)='WVPER'
+  oceanwaves(6,2)='Mean period of wind waves'
+  oceanwaves(6,3)='s'
+  oceanwaves(7,1)='SWDIR'
+  oceanwaves(7,2)='Direction of swell waves'
+  oceanwaves(7,3)='Degree true'
+  oceanwaves(8,1)='SWELL'
+  oceanwaves(8,2)='Significant height of swell waves'
+  oceanwaves(8,3)='m'
+  oceanwaves(9,1)='SWPER'
+  oceanwaves(9,2)='Mean period of swell waves'
+  oceanwaves(9,3)='s'
+  oceanwaves(10,1)='DIRPW'
+  oceanwaves(10,2)='Primary wave direction'
+  oceanwaves(10,3)='Degree true'
+  oceanwaves(11,1)='PERPW'
+  oceanwaves(11,2)='Primary wave mean period'
+  oceanwaves(11,3)='s'
+  oceanwaves(12,1)='DIRSW'
+  oceanwaves(12,2)='Secondary wave direction'
+  oceanwaves(12,3)='Degree true'
+  oceanwaves(13,1)='PERSW'
+  oceanwaves(13,2)='Secondary wave mean period'
+  oceanwaves(13,3)='s'
 
-oceancurrents(0,:)=(/ 'DIRC', 'Current direction', 'Degree true' /)
-oceancurrents(1,:)=(/ 'SPC', 'Current speed', 'm/s' /)
-oceancurrents(2,:)=(/ 'U0GRD', 'u-component of current', 'm/s' /)
-oceancurrents(3,:)=(/ 'v0GRD', 'v-component of current', 'm/s' /)
+  oceancurrents(0,1)='DIRC'
+  oceancurrents(0,2)='Current direction'
+  oceancurrents(0,3)='Degree true'
+  oceancurrents(1,1)='SPC'
+  oceancurrents(1,2)='Current speed'
+  oceancurrents(1,3)='m/s'
+  oceancurrents(2,1)='U0GRD'
+  oceancurrents(2,2)='u-component of current'
+  oceancurrents(2,3)='m/s'
+  oceancurrents(3,1)='v0GRD'
+  oceancurrents(3,2)='v-component of current'
+  oceancurrents(3,3)='m/s'
 
-oceanice(0,:)=(/ 'ICEC', 'Ice cover', 'Proportion' /)
-oceanice(1,:)=(/ 'ICETK', 'Ice thickness', 'm' /)
-oceanice(2,:)=(/ 'DICED', 'Direction of ice drift', 'Degree true' /)
-oceanice(3,:)=(/ 'SICED', 'Speed of ice drift', 'm/s' /)
-oceanice(4,:)=(/ 'UICE', 'u-component of ice drift', 'm/s' /)
-oceanice(5,:)=(/ 'VICE', 'v-component of ice drift', 'm/s' /)
-oceanice(6,:)=(/ 'ICEG', 'Ice growth rate', 'm/s' /)
-oceanice(7,:)=(/ 'ICED', 'Ice divergence', '1/s' /)
+  oceanice(0,1)='ICEC'
+  oceanice(0,2)='Ice cover'
+  oceanice(0,3)='Proportion'
+  oceanice(1,1)='ICETK'
+  oceanice(1,2)='Ice thickness'
+  oceanice(1,3)='m'
+  oceanice(2,1)='DICED'
+  oceanice(2,2)='Direction of ice drift'
+  oceanice(2,3)='Degree true'
+  oceanice(3,1)='SICED'
+  oceanice(3,2)='Speed of ice drift'
+  oceanice(3,3)='m/s'
+  oceanice(4,1)='UICE'
+  oceanice(4,2)='u-component of ice drift'
+  oceanice(4,3)='m/s'
+  oceanice(5,1)='VICE'
+  oceanice(5,2)='v-component of ice drift'
+  oceanice(5,3)='m/s'
+  oceanice(6,1)='ICEG'
+  oceanice(6,2)='Ice growth rate'
+  oceanice(6,3)='m/s'
+  oceanice(7,1)='ICED'
+  oceanice(7,2)='Ice divergence'
+  oceanice(7,3)='1/s'
 
-oceansurface(0,:)=(/ 'WTMP', 'Water temperature', 'K' /)
-oceansurface(1,:)=(/ 'DSLM', 'Deviation of sea level from mean', 'm' /)
+  oceansurface(0,1)='WTMP'
+  oceansurface(0,2)='Water temperature'
+  oceansurface(0,3)='K'
+  oceansurface(1,1)='DSLM'
+  oceansurface(1,2)='Deviation of sea level from mean'
+  oceansurface(1,3)='m'
 
-oceansubsurface(0,:)=(/ 'MTHD', 'Main thermocline depth', 'm' /)
-oceansubsurface(1,:)=(/ 'MTHA', 'Main thermocline anomaly', 'm' /)
-oceansubsurface(2,:)=(/ 'TTHDP', 'Transient thermocline depth', 'm' /)
-oceansubsurface(3,:)=(/ 'SALTY', 'Salinity', 'kg/kg' /)
+  oceansubsurface(0,1)='MTHD'
+  oceansubsurface(0,2)='Main thermocline depth'
+  oceansubsurface(0,3)='m'
+  oceansubsurface(1,1)='MTHA'
+  oceansubsurface(1,2)='Main thermocline anomaly'
+  oceansubsurface(1,3)='m'
+  oceansubsurface(2,1)='TTHDP'
+  oceansubsurface(2,2)='Transient thermocline depth'
+  oceansubsurface(2,3)='m'
+  oceansubsurface(3,1)='SALTY'
+  oceansubsurface(3,2)='Salinity'
+  oceansubsurface(3,3)='kg/kg'
 
-nceplcltable000000(192,:)=(/ 'SNOHF', 'Snow phase change heat flux', 'W/(m^2)' /)
+  nceplcltable000000(192,1)='SNOHF'
+  nceplcltable000000(192,2)='Snow phase change heat flux'
+  nceplcltable000000(192,3)='W/(m^2)'
 
-nceplcltable000001(192,:)=(/ 'CRAIN', 'Categorical rain', '(0 no, 1 yes)' /)
-nceplcltable000001(193,:)=(/ 'CFRZR', 'Categorical freezing rain', '(0 no, 1 yes)' /)
-nceplcltable000001(194,:)=(/ 'CICEP', 'Categorical ice pellets', '(0 no, 1 yes)' /)
-nceplcltable000001(195,:)=(/ 'CSNOW', 'Categorical snow', '(0 no, 1 yes)' /)
-nceplcltable000001(196,:)=(/ 'CPRAT', 'Convective precipitation rate', '(kg s)/(m^2)' /)
-nceplcltable000001(197,:)=(/ 'MCONV', 'Horizontal moisture divergence', '(kg s)/(m^2)' /)
-nceplcltable000001(198,:)=(/ '', 'Percent frozen precipitation', '-' /)
-nceplcltable000001(199,:)=(/ 'PEVAP', 'Potential evaporation', 'kg/(m^2)' /)
-nceplcltable000001(200,:)=(/ 'PEVPR', 'Potential evaporation rate', 'W/(m^2)' /)
-nceplcltable000001(201,:)=(/ 'SNOWC', 'Snow cover', '%' /)
-nceplcltable000001(202,:)=(/ 'FRAIN', 'Rain fraction of total liquid water', '' /)
-nceplcltable000001(203,:)=(/ 'FRIME', 'Rime factor', '-' /)
-nceplcltable000001(204,:)=(/ 'TCOLR', 'Total column integrated rain', 'kg/(m/m)' /)
-nceplcltable000001(205,:)=(/ 'TCOLS', 'Total column integrated snow', 'kg/(m/m)' /)
+  nceplcltable000001(192,1)='CRAIN'
+  nceplcltable000001(192,2)='Categorical rain'
+  nceplcltable000001(192,3)='(0 no, 1 yes)'
+  nceplcltable000001(193,1)='CFRZR'
+  nceplcltable000001(193,2)='Categorical freezing rain'
+  nceplcltable000001(193,3)='(0 no, 1 yes)'
+  nceplcltable000001(194,1)='CICEP'
+  nceplcltable000001(194,2)='Categorical ice pellets'
+  nceplcltable000001(194,3)='(0 no, 1 yes)'
+  nceplcltable000001(195,1)='CSNOW'
+  nceplcltable000001(195,2)='Categorical snow'
+  nceplcltable000001(195,3)='(0 no, 1 yes)'
+  nceplcltable000001(196,1)='CPRAT'
+  nceplcltable000001(196,2)='Convective precipitation rate'
+  nceplcltable000001(196,3)='(kg s)/(m^2)'
+  nceplcltable000001(197,1)='MCONV'
+  nceplcltable000001(197,2)='Horizontal moisture divergence'
+  nceplcltable000001(197,3)='(kg s)/(m^2)'
+  nceplcltable000001(198,1)=''
+  nceplcltable000001(198,2)='Percent frozen precipitation'
+  nceplcltable000001(198,3)='-'
+  nceplcltable000001(199,1)='PEVAP'
+  nceplcltable000001(199,2)='Potential evaporation'
+  nceplcltable000001(199,3)='kg/(m^2)'
+  nceplcltable000001(200,1)='PEVPR'
+  nceplcltable000001(200,2)='Potential evaporation rate'
+  nceplcltable000001(200,3)='W/(m^2)'
+  nceplcltable000001(201,1)='SNOWC'
+  nceplcltable000001(201,2)='Snow cover'
+  nceplcltable000001(201,3)='%'
+  nceplcltable000001(202,1)='FRAIN'
+  nceplcltable000001(202,2)='Rain fraction of total liquid water'
+  nceplcltable000001(202,3)=''
+  nceplcltable000001(203,1)='FRIME'
+  nceplcltable000001(203,2)='Rime factor'
+  nceplcltable000001(203,3)='-'
+  nceplcltable000001(204,1)='TCOLR'
+  nceplcltable000001(204,2)='Total column integrated rain'
+  nceplcltable000001(204,3)='kg/(m/m)'
+  nceplcltable000001(205,1)='TCOLS'
+  nceplcltable000001(205,2)='Total column integrated snow'
+  nceplcltable000001(205,3)='kg/(m/m)'
 
-nceplcltable000002(192,:)=(/ 'VWSH', 'Vertical speed shear', '1/s' /)
-nceplcltable000002(193,:)=(/ 'MFLX', 'Horizontal momentum flux', 'N/(m^2)' /)
-nceplcltable000002(194,:)=(/ 'USTM', 'u-component storm motion', 'm/s' /)
-nceplcltable000002(195,:)=(/ 'VSTM', 'v-component storm motion', 'm/s' /)
-nceplcltable000002(196,:)=(/ 'CD', 'Drag coefficient', '-' /)
-nceplcltable000002(197,:)=(/ 'FRICV', 'Frictional velocity', 'm/s' /)
+  nceplcltable000002(192,1)='VWSH'
+  nceplcltable000002(192,2)='Vertical speed shear'
+  nceplcltable000002(192,3)='1/s'
+  nceplcltable000002(193,1)='MFLX'
+  nceplcltable000002(193,2)='Horizontal momentum flux'
+  nceplcltable000002(193,3)='N/(m^2)'
+  nceplcltable000002(194,1)='USTM'
+  nceplcltable000002(194,2)='u-component storm motion'
+  nceplcltable000002(194,3)='m/s'
+  nceplcltable000002(195,1)='VSTM'
+  nceplcltable000002(195,2)='v-component storm motion'
+  nceplcltable000002(195,3)='m/s'
+  nceplcltable000002(196,1)='CD'
+  nceplcltable000002(196,2)='Drag coefficient'
+  nceplcltable000002(196,3)='-'
+  nceplcltable000002(197,1)='FRICV'
+  nceplcltable000002(197,2)='Frictional velocity'
+  nceplcltable000002(197,3)='m/s'
 
-nceplcltable000003(192,:) = (/ 'MSLET', 'Mean Sea Level Pressure (Eta reduction)', 'Pa' /)
-nceplcltable000003(193,:) = (/ '5WAVH', '5-wave geopotential height',              'gpm' /)
-nceplcltable000003(194,:) = (/ 'U-GWD', 'Zonal flux of gravity wave stress',       'N/(m^2)' /)
-nceplcltable000003(195,:) = (/ 'V-GWD', 'Meridional flux of gravity wave stress',  'N/(m^2)' /)
-nceplcltable000003(196,:) = (/ 'HPBL',  'Planetary boundary layer height',         'm' /)
-nceplcltable000003(197,:) = (/ '5WAVA', '5-wave geopotential height anomaly',      'gpm' /)
+  nceplcltable000003(192,1) = 'MSLET'
+  nceplcltable000003(192,2) = 'Mean Sea Level Pressure (Eta reduction)'
+  nceplcltable000003(192,3) = 'Pa'
+  nceplcltable000003(193,1) = '5WAVH'
+  nceplcltable000003(193,2) = '5-wave geopotential height'
+  nceplcltable000003(193,3) = 'gpm'
+  nceplcltable000003(194,1) = 'U-GWD'
+  nceplcltable000003(194,2) = 'Zonal flux of gravity wave stress'
+  nceplcltable000003(194,3) = 'N/(m^2)'
+  nceplcltable000003(195,1) = 'V-GWD'
+  nceplcltable000003(195,2) = 'Meridional flux of gravity wave stress'
+  nceplcltable000003(195,3) = 'N/(m^2)'
+  nceplcltable000003(196,1) = 'HPBL'
+  nceplcltable000003(196,2) = 'Planetary boundary layer height'
+  nceplcltable000003(196,3) = 'm'
+  nceplcltable000003(197,1) = '5WAVA'
+  nceplcltable000003(197,2) = '5-wave geopotential height anomaly'
+  nceplcltable000003(197,3) = 'gpm'
 
-nceplcltable000004(192,:)=(/ 'DSWRF', 'Downward short-wave rad. flux', 'W/(m^2)' /)
-nceplcltable000004(193,:)=(/ 'USWRF', 'Upward short-wave rad. flux', 'W/(m^2)' /)
+  nceplcltable000004(192,1)='DSWRF'
+  nceplcltable000004(192,2)='Downward short-wave rad. flux'
+  nceplcltable000004(192,3)='W/(m^2)'
+  nceplcltable000004(193,1)='USWRF'
+  nceplcltable000004(193,2)='Upward short-wave rad. flux'
+  nceplcltable000004(193,3)='W/(m^2)'
 
-nceplcltable000005(192,:)=(/ 'DLWRF', 'Downward long-wave rad. flux', 'W/(m^2)' /)
-nceplcltable000005(193,:)=(/ 'ULWRF', 'Upward long-wave rad. flux', 'W/(m^2)' /)
+  nceplcltable000005(192,1)='DLWRF'
+  nceplcltable000005(192,2)='Downward long-wave rad. flux'
+  nceplcltable000005(192,3)='W/(m^2)'
+  nceplcltable000005(193,1)='ULWRF'
+  nceplcltable000005(193,2)='Upward long-wave rad. flux'
+  nceplcltable000005(193,3)='W/(m^2)'
 
-nceplcltable000006(192,:)=(/ 'CDLYR', 'Non-convective cloud cover', '%' /)
-nceplcltable000006(193,:)=(/ 'CWORK', 'Cloud work function', 'J/kg' /)
-nceplcltable000006(194,:)=(/ 'CUEFI', 'Convective cloud efficiency', '-' /)
-nceplcltable000006(195,:)=(/ 'TCOND', 'Total condenstate', 'kg/kg' /)
-nceplcltable000006(196,:)=(/ 'TCOLW', 'Total column-integrated cloud water', 'kg/(m/m)' /)
-nceplcltable000006(197,:)=(/ 'TCOLI', 'Total column-integrated cloud ice', 'kg/(m/m)' /)
-nceplcltable000006(198,:)=(/ 'TCOLC', 'Total column-integrated cloud condensate', 'kg/(m/m)' /)
-nceplcltable000006(199,:)=(/ 'FICE', 'Ice fraction of total condensate', 'kg/(m/m)' /)
+  nceplcltable000006(192,1)='CDLYR'
+  nceplcltable000006(192,2)='Non-convective cloud cover'
+  nceplcltable000006(192,3)='%'
+  nceplcltable000006(193,1)='CWORK'
+  nceplcltable000006(193,2)='Cloud work function'
+  nceplcltable000006(193,3)='J/kg'
+  nceplcltable000006(194,1)='CUEFI'
+  nceplcltable000006(194,2)='Convective cloud efficiency'
+  nceplcltable000006(194,3)='-'
+  nceplcltable000006(195,1)='TCOND'
+  nceplcltable000006(195,2)='Total condenstate'
+  nceplcltable000006(195,3)='kg/kg'
+  nceplcltable000006(196,1)='TCOLW'
+  nceplcltable000006(196,2)='Total column-integrated cloud water'
+  nceplcltable000006(196,3)='kg/(m/m)'
+  nceplcltable000006(197,1)='TCOLI'
+  nceplcltable000006(197,2)='Total column-integrated cloud ice'
+  nceplcltable000006(197,3)='kg/(m/m)'
+  nceplcltable000006(198,1)='TCOLC'
+  nceplcltable000006(198,2)='Total column-integrated cloud condensate'
+  nceplcltable000006(198,3)='kg/(m/m)'
+  nceplcltable000006(199,1)='FICE'
+  nceplcltable000006(199,2)='Ice fraction of total condensate'
+  nceplcltable000006(199,3)='kg/(m/m)'
 
-nceplcltable000007(192,:)=(/ 'LFTX', 'Surface lifted index', 'K' /)
-nceplcltable000007(193,:)=(/ '4LFTX', 'Best (4 layer) lifted index', 'K' /)
-nceplcltable000007(194,:)=(/ 'RI', 'Richardson number', '-' /)
+  nceplcltable000007(192,1)='LFTX'
+  nceplcltable000007(192,2)='Surface lifted index'
+  nceplcltable000007(192,3)='K'
+  nceplcltable000007(193,1)='4LFTX'
+  nceplcltable000007(193,2)='Best (4 layer) lifted index'
+  nceplcltable000007(193,3)='K'
+  nceplcltable000007(194,1)='RI'
+  nceplcltable000007(194,2)='Richardson number'
+  nceplcltable000007(194,3)='-'
 
-nceplcltable000014(192,:)=(/ '03MR', 'Ozone mixing ratio', 'kg/kg' /)
-nceplcltable000014(193,:)=(/ 'OZCON', 'Ozone concentration', 'PPB' /)
-nceplcltable000014(194,:)=(/ 'OZCAT', 'Categorical ozone concentration', 'unknown' /)
+  nceplcltable000014(192,1)='03MR'
+  nceplcltable000014(192,2)='Ozone mixing ratio'
+  nceplcltable000014(192,3)='kg/kg'
+  nceplcltable000014(193,1)='OZCON'
+  nceplcltable000014(193,2)='Ozone concentration'
+  nceplcltable000014(193,3)='PPB'
+  nceplcltable000014(194,1)='OZCAT'
+  nceplcltable000014(194,2)='Categorical ozone concentration'
+  nceplcltable000014(194,3)='unknown'
 
-nceplcltable000019(192,:)=(/ 'MXSALB', 'Maxmium snow albedo', '%' /)
-nceplcltable000019(193,:)=(/ 'SNFALB', 'Snow-free albedo', '%' /)
+  nceplcltable000019(192,1)='MXSALB'
+  nceplcltable000019(192,2)='Maxmium snow albedo'
+  nceplcltable000019(192,3)='%'
+  nceplcltable000019(193,1)='SNFALB'
+  nceplcltable000019(193,2)='Snow-free albedo'
+  nceplcltable000019(193,3)='%'
 
-nceplcltable000191(192,:)=(/ 'NLAT', 'Latitude (-90 to 90)', 'deg' /)
-nceplcltable000191(193,:)=(/ 'ELON', 'East logitude (0 to 360)', 'deg' /)
-nceplcltable000191(194,:)=(/ 'secPriorInitRef', 'Seconds prior to initial reference time', 'sec' /)
+  nceplcltable000191(192,1)='NLAT'
+  nceplcltable000191(192,2)='Latitude (-90 to 90)'
+  nceplcltable000191(192,3)='deg'
+  nceplcltable000191(193,1)='ELON'
+  nceplcltable000191(193,2)='East logitude (0 to 360)'
+  nceplcltable000191(193,3)='deg'
+  nceplcltable000191(194,1)='secPriorInitRef'
+  nceplcltable000191(194,2)='Seconds prior to initial reference time'
+  nceplcltable000191(194,3)='sec'
 
-nceplcltable001000(192,:)=(/ 'BGRUN', 'Baseflow-groundwater runoff', 'kg/(m^2)' /)
-nceplcltable001000(193,:)=(/ 'SSRUN', 'Storm surface runoff', 'kg/(m^2)' /)
+  nceplcltable001000(192,1)='BGRUN'
+  nceplcltable001000(192,2)='Baseflow-groundwater runoff'
+  nceplcltable001000(192,3)='kg/(m^2)'
+  nceplcltable001000(193,1)='SSRUN'
+  nceplcltable001000(193,2)='Storm surface runoff'
+  nceplcltable001000(193,3)='kg/(m^2)'
 
-nceplcltable002000(192,:)=(/ 'SOILW', 'Volumetric soil moisture content', 'fraction' /)
-nceplcltable002000(193,:)=(/ 'GFLUX', 'Ground heat flux', 'W/(m^2)' /)
-nceplcltable002000(194,:)=(/ 'MSTAV', 'Moisture avaliability', '%' /)
-nceplcltable002000(195,:)=(/ 'SFEXC', 'Exchange coefficient', '(kg/(m^3))(m/s)' /)
-nceplcltable002000(196,:)=(/ 'CNWAT', 'Plant canopy surface water', 'kg/(m^2)' /)
-nceplcltable002000(197,:)=(/ 'BMIXL', 'Blackadars mixing length scale', 'm' /)
-nceplcltable002000(198,:)=(/ 'VGTYP', 'Vegetation type', '0..13' /)
-nceplcltable002000(199,:)=(/ 'CCOND', 'Canopy conductance', 'm/s' /)
-nceplcltable002000(200,:)=(/ 'RSMIN', 'Minimal stomatal resistance', 's/m' /)
-nceplcltable002000(201,:)=(/ 'WILT', 'Wilting point', 'fraction' /)
-nceplcltable002000(202,:)=(/ 'RCS', 'Solar parameter in canopy conductance', 'fraction' /)
-nceplcltable002000(203,:)=(/ 'RCT', 'Temperature parameter in canopy conductance', 'fraction' /)
-nceplcltable002000(204,:)=(/ 'RCQ', 'Humidity parameter in canopy conductance', 'fraction' /)
-nceplcltable002000(205,:)=(/ 'RCSOIL', 'Soil moisture parameter in canopy conductance', 'fraction' /)
+  nceplcltable002000(192,1)='SOILW'
+  nceplcltable002000(192,2)='Volumetric soil moisture content'
+  nceplcltable002000(192,3)='fraction'
+  nceplcltable002000(193,1)='GFLUX'
+  nceplcltable002000(193,2)='Ground heat flux'
+  nceplcltable002000(193,3)='W/(m^2)'
+  nceplcltable002000(194,1)='MSTAV'
+  nceplcltable002000(194,2)='Moisture avaliability'
+  nceplcltable002000(194,3)='%'
+  nceplcltable002000(195,1)='SFEXC'
+  nceplcltable002000(195,2)='Exchange coefficient'
+  nceplcltable002000(195,3)='(kg/(m^3))(m/s)'
+  nceplcltable002000(196,1)='CNWAT'
+  nceplcltable002000(196,2)='Plant canopy surface water'
+  nceplcltable002000(196,3)='kg/(m^2)'
+  nceplcltable002000(197,1)='BMIXL'
+  nceplcltable002000(197,2)='Blackadars mixing length scale'
+  nceplcltable002000(197,3)='m'
+  nceplcltable002000(198,1)='VGTYP'
+  nceplcltable002000(198,2)='Vegetation type'
+  nceplcltable002000(198,3)='0..13'
+  nceplcltable002000(199,1)='CCOND'
+  nceplcltable002000(199,2)='Canopy conductance'
+  nceplcltable002000(199,3)='m/s'
+  nceplcltable002000(200,1)='RSMIN'
+  nceplcltable002000(200,2)='Minimal stomatal resistance'
+  nceplcltable002000(200,3)='s/m'
+  nceplcltable002000(201,1)='WILT'
+  nceplcltable002000(201,2)='Wilting point'
+  nceplcltable002000(201,3)='fraction'
+  nceplcltable002000(202,1)='RCS'
+  nceplcltable002000(202,2)='Solar parameter in canopy conductance'
+  nceplcltable002000(202,3)='fraction'
+  nceplcltable002000(203,1)='RCT'
+  nceplcltable002000(203,2)='Temperature parameter in canopy conductance'
+  nceplcltable002000(203,3)='fraction'
+  nceplcltable002000(204,1)='RCQ'
+  nceplcltable002000(204,2)='Humidity parameter in canopy conductance'
+  nceplcltable002000(204,3)='fraction'
+  nceplcltable002000(205,1)='RCSOIL'
+  nceplcltable002000(205,2)='Soil moisture parameter in canopy conductance'
+  nceplcltable002000(205,3)='fraction'
 
-nceplcltable002003(192,:)=(/ 'SOILL', 'Liquid volumetic soil moisture', 'fraction' /)
-nceplcltable002003(193,:)=(/ 'RLYRS', 'Number of soil layers in root zone', '-' /)
-nceplcltable002003(194,:)=(/ 'SLTYP', 'Surface slope type', 'Index' /)
-nceplcltable002003(195,:)=(/ 'SMREF', 'Transpiration stress-onset (soil moisture)', 'fraction' /)
-nceplcltable002003(196,:)=(/ 'SMDRY', 'Direct evaporation cease (soil moisture)', 'fraction' /)
-nceplcltable002003(197,:)=(/ 'POROS', 'Soil porosity', 'fraction' /)
+  nceplcltable002003(192,1)='SOILL'
+  nceplcltable002003(192,2)='Liquid volumetic soil moisture'
+  nceplcltable002003(192,3)='fraction'
+  nceplcltable002003(193,1)='RLYRS'
+  nceplcltable002003(193,2)='Number of soil layers in root zone'
+  nceplcltable002003(193,3)='-'
+  nceplcltable002003(194,1)='SLTYP'
+  nceplcltable002003(194,2)='Surface slope type'
+  nceplcltable002003(194,3)='Index'
+  nceplcltable002003(195,1)='SMREF'
+  nceplcltable002003(195,2)='Transpiration stress-onset (soil moisture)'
+  nceplcltable002003(195,3)='fraction'
+  nceplcltable002003(196,1)='SMDRY'
+  nceplcltable002003(196,2)='Direct evaporation cease (soil moisture)'
+  nceplcltable002003(196,3)='fraction'
+  nceplcltable002003(197,1)='POROS'
+  nceplcltable002003(197,2)='Soil porosity'
+  nceplcltable002003(197,3)='fraction'
 
-nceplcltable003001(192,:)=(/ 'ScatEstUWind', 'Scatterometer estimated u wind', 'unknown' /)
-nceplcltable003001(193,:)=(/ 'ScatEstVWind', 'Scatterometer estimated v wind', 'unknown' /)
+  nceplcltable003001(192,1)='ScatEstUWind'
+  nceplcltable003001(192,2)='Scatterometer estimated u wind'
+  nceplcltable003001(192,3)='unknown'
+  nceplcltable003001(193,1)='ScatEstVWind'
+  nceplcltable003001(193,2)='Scatterometer estimated v wind'
+  nceplcltable003001(193,3)='unknown'
 
-first=.false.
+  first=.false.
 end if
 
 ! Check standard meta data
 Select Case(alist(3))
-
   Case(0)
     Select Case(alist(5))
-    
       Case(0)
-        If (alist(6).GT.Size(meteotemp,DIM=1)) Then
-          elemtxt=elemerr
-        Else
-          elemtxt=meteotemp(alist(6),:)
-        End If
-	
+        elemtxt=meteotemp(alist(6),:)
       Case(1)
-        If (alist(6).GT.Size(meteomoist,DIM=1)) Then
-	      elemtxt=elemerr
-	    Else
-          elemtxt=meteomoist(alist(6),:)
-	    End If
-	
+        elemtxt=meteomoist(alist(6),:)
       Case(2)
-        If (alist(6).GT.Size(meteomoment,DIM=1)) Then
-	      elemtxt=elemerr
-	    Else
-          elemtxt=meteomoment(alist(6),:)
-	    End If
-	
+        elemtxt=meteomoment(alist(6),:)
       Case(3)
-        If (alist(6).GT.Size(meteomass,DIM=1)) Then
-          elemtxt=elemerr
-        Else
-          elemtxt=meteomass(alist(6),:)
-        End If
-
+        elemtxt=meteomass(alist(6),:)
       Case(4)
-        If (alist(6).GT.Size(meteoshortradiate,DIM=1)) Then
-          elemtxt=elemerr
-        Else
-          elemtxt=meteoshortradiate(alist(6),:)
-        End If
-
+        elemtxt=meteoshortradiate(alist(6),:)
       Case(5)
-        If (alist(6).GT.Size(meteolongradiate,DIM=1)) Then
-          elemtxt=elemerr
-        Else
-          elemtxt=meteolongradiate(alist(6),:)
-        End If
-
+        elemtxt=meteolongradiate(alist(6),:)
       Case(6)
-        If (alist(6).GT.Size(meteocloud,DIM=1)) Then
-          elemtxt=elemerr
-        Else
-          elemtxt=meteocloud(alist(6),:)
-        End If
-
+        elemtxt=meteocloud(alist(6),:)
       Case(7)
-        If (alist(6).GT.Size(meteostability,DIM=1)) Then
-          elemtxt=elemerr
-        Else
-          elemtxt=meteostability(alist(6),:)
-        End If
-
+        elemtxt=meteostability(alist(6),:)
       Case(13)
-        If (alist(6).GT.Size(meteoaerosols,DIM=1)) Then
-	  elemtxt=elemerr
-	Else
-          elemtxt=meteoaerosols(alist(6),:)
-	End If
-
+        elemtxt=meteoaerosols(alist(6),:)
       Case(14)
-        If (alist(6).GT.Size(meteogases,DIM=1)) Then
-	  elemtxt=elemerr
-	Else
-          elemtxt=meteogases(alist(6),:)
-	End If
-
+        elemtxt=meteogases(alist(6),:)
       Case(15)
-        If (alist(6).GT.Size(meteoradar,DIM=1)) Then
-	  elemtxt=elemerr
-	Else
-          elemtxt=meteoradar(alist(6),:)
-	End If
-
+        elemtxt=meteoradar(alist(6),:)
       Case(18)
-        If (alist(6).GT.Size(meteonuclear,DIM=1)) Then
-	  elemtxt=elemerr
-	Else
-          elemtxt=meteonuclear(alist(6),:)
-	End If
-
+        elemtxt=meteonuclear(alist(6),:)
       Case(19)
-        If (alist(6).GT.Size(meteoatmos,DIM=1)) Then
-	  elemtxt=elemerr
-	Else
-          elemtxt=meteoatmos(alist(6),:)
-	End If
-
+        elemtxt=meteoatmos(alist(6),:)
       Case(190)
-        If (alist(6).GT.Size(meteotext,DIM=1)) Then
-	  elemtxt=elemerr
-	Else
-          elemtxt=meteotext(alist(6),:)
-	End If
-
+        elemtxt=meteotext(alist(6),:)
       Case(253)
-        If (alist(6).GT.Size(meteotext,DIM=1)) Then
-    	  elemtxt=elemerr
-	    Else
-          elemtxt=meteotext(alist(6),:)
-	    End If
-           
+        elemtxt=meteotext(alist(6),:)
       Case DEFAULT
         elemtxt=elemerr
-      
     End Select
-    
   Case(1)
     Select Case(alist(5))
-
-        Case(0)
-        If (alist(6).GT.Size(hydrobasic,DIM=1)) Then
-	      elemtxt=elemerr
-	    Else
-          elemtxt=hydrobasic(alist(6),:)
-	    End If
-
-        Case(1)
-        If (alist(6).GT.Size(hydroprob,DIM=1)) Then
-	      elemtxt=elemerr
-	    Else
-          elemtxt=hydroprob(alist(6),:)
-	    End If
-	
-    Case DEFAULT
-      elemtxt=elemerr
-      
+      Case(0)
+        elemtxt=hydrobasic(alist(6),:)
+      Case(1)
+        elemtxt=hydroprob(alist(6),:)
+      Case DEFAULT
+        elemtxt=elemerr
     End Select
-
   Case(2)
     Select Case(alist(5))
-
-        Case(0)
-        If (alist(6).GT.Size(landveg,DIM=1)) Then
-	      elemtxt=elemerr
-	    Else
-          elemtxt=landveg(alist(6),:)
-	    End If
-
-        Case(3)
-        If (alist(6).GT.Size(landsoil,DIM=1)) Then
-	      elemtxt=elemerr
-	    Else
-          elemtxt=landsoil(alist(6),:)
-	    End If
-	
-    Case DEFAULT
-      elemtxt=elemerr
-      
+      Case(0)
+        elemtxt=landveg(alist(6),:)
+      Case(3)
+        elemtxt=landsoil(alist(6),:)
+      Case DEFAULT
+        elemtxt=elemerr
     End Select
-
   Case(3)
     Select Case(alist(5))
-
-        Case(0)
-        If (alist(6).GT.Size(spaceimage,DIM=1)) Then
-	      elemtxt=elemerr
-	    Else
-          elemtxt=spaceimage(alist(6),:)
-	    End If
-
-        Case(1)
-        If (alist(6).GT.Size(spacequantitative,DIM=1)) Then
-	      elemtxt=elemerr
-	    Else
-          elemtxt=spacequantitative(alist(6),:)
-	    End If
-	
-    Case DEFAULT
-      elemtxt=elemerr
-      
+      Case(0)
+        elemtxt=spaceimage(alist(6),:)
+      Case(1)
+        elemtxt=spacequantitative(alist(6),:)
+      Case DEFAULT
+        elemtxt=elemerr
     End Select
-
   Case(10)
     Select Case(alist(5))
-
-        Case(0)
-        If (alist(6).GT.Size(oceanwaves,DIM=1)) Then
-	  elemtxt=elemerr
-	Else
-          elemtxt=oceanwaves(alist(6),:)
-	End If
-
-        Case(1)
-        If (alist(6).GT.Size(oceancurrents,DIM=1)) Then
-	  elemtxt=elemerr
-	Else
-          elemtxt=oceancurrents(alist(6),:)
-	End If
-
-        Case(2)
-        If (alist(6).GT.Size(oceanice,DIM=1)) Then
-	  elemtxt=elemerr
-	Else
-          elemtxt=oceanice(alist(6),:)
-	End If
-
-        Case(3)
-        If (alist(6).GT.Size(oceansurface,DIM=1)) Then
-	  elemtxt=elemerr
-	Else
-          elemtxt=oceansurface(alist(6),:)
-	End If
-
-        Case(4)
-        If (alist(6).GT.Size(oceansubsurface,DIM=1)) Then
-	  elemtxt=elemerr
-	Else
-          elemtxt=oceansubsurface(alist(6),:)
-	End If
-
-	
-    Case DEFAULT
-      elemtxt=elemerr
-      
+      Case(0)
+        elemtxt=oceanwaves(alist(6),:)
+      Case(1)
+        elemtxt=oceancurrents(alist(6),:)
+      Case(2)
+        elemtxt=oceanice(alist(6),:)
+      Case(3)
+        elemtxt=oceansurface(alist(6),:)
+      Case(4)
+        elemtxt=oceansubsurface(alist(6),:)
+      Case DEFAULT
+        elemtxt=elemerr
     End Select
-  
   Case DEFAULT
     elemtxt=elemerr
-
 End Select
 
 ! Check local meta data
 If (elemtxt(1).EQ.'???') Then
   Select Case(alist(3))
-
     Case(0)
       Select Case(alist(5))
-
         Case(0)
-          If ((alist(6)-192).GT.Size(nceplcltable000000,DIM=1)) Then
-	    elemtxt=elemerr
-          Else
-            elemtxt=nceplcltable000000(alist(6),:)
-          End If
-
+          elemtxt=nceplcltable000000(alist(6),:)
         Case(1)
-          If ((alist(6)-192).GT.Size(nceplcltable000001,DIM=1)) Then
-	    elemtxt=elemerr
-          Else
-            elemtxt=nceplcltable000001(alist(6),:)
-          End If
-
+          elemtxt=nceplcltable000001(alist(6),:)
         Case(2)
-          If ((alist(6)-192).GT.Size(nceplcltable000002,DIM=1)) Then
-	    elemtxt=elemerr
-          Else
-            elemtxt=nceplcltable000002(alist(6),:)
-          End If
-    
+          elemtxt=nceplcltable000002(alist(6),:)
         Case(3)
-          If ((alist(6)-192).GT.Size(nceplcltable000003,DIM=1)) Then
-	    elemtxt=elemerr
-          Else
-            elemtxt=nceplcltable000003(alist(6),:)
-          End If
-
+          elemtxt=nceplcltable000003(alist(6),:)
         Case(4)
-          If ((alist(6)-192).GT.Size(nceplcltable000004,DIM=1)) Then
-	    elemtxt=elemerr
-          Else
-            elemtxt=nceplcltable000004(alist(6),:)
-          End If
-
+          elemtxt=nceplcltable000004(alist(6),:)
         Case(5)
-          If ((alist(6)-192).GT.Size(nceplcltable000005,DIM=1)) Then
-	    elemtxt=elemerr
-          Else
-            elemtxt=nceplcltable000005(alist(6),:)
-          End If
-
+          elemtxt=nceplcltable000005(alist(6),:)
         Case(6)
-          If ((alist(6)-192).GT.Size(nceplcltable000006,DIM=1)) Then
-	    elemtxt=elemerr
-          Else
-            elemtxt=nceplcltable000006(alist(6),:)
-          End If
-
+          elemtxt=nceplcltable000006(alist(6),:)
         Case(7)
-          If ((alist(6)-192).GT.Size(nceplcltable000007,DIM=1)) Then
-	    elemtxt=elemerr
-          Else
-            elemtxt=nceplcltable000007(alist(6),:)
-          End If
-
+          elemtxt=nceplcltable000007(alist(6),:)
         Case(14)
-          If ((alist(6)-192).GT.Size(nceplcltable000014,DIM=1)) Then
-	    elemtxt=elemerr
-          Else
-            elemtxt=nceplcltable000014(alist(6),:)
-          End If
-
+          elemtxt=nceplcltable000014(alist(6),:)
         Case(19)
-          If ((alist(6)-192).GT.Size(nceplcltable000019,DIM=1)) Then
-	    elemtxt=elemerr
-          Else
-            elemtxt=nceplcltable000019(alist(6),:)
-          End If
-
+          elemtxt=nceplcltable000019(alist(6),:)
         Case(191)
-          If ((alist(6)-192).GT.Size(nceplcltable000191,DIM=1)) Then
-	    elemtxt=elemerr
-          Else
-            elemtxt=nceplcltable000191(alist(6),:)
-          End If
-            
+          elemtxt=nceplcltable000191(alist(6),:)
         Case DEFAULT
           elemtxt=elemerr
-      
       End Select
-      
-      Case(1)
+    Case(1)
       Select Case(alist(5))
-
         Case(0)
-          If ((alist(6)-192).GT.Size(nceplcltable001000,DIM=1)) Then
-	    elemtxt=elemerr
-          Else
-            elemtxt=nceplcltable001000(alist(6),:)
-          End If
-
+          elemtxt=nceplcltable001000(alist(6),:)
         Case DEFAULT
           elemtxt=elemerr
-      
       End Select
-
-      Case(2)
+    Case(2)
       Select Case(alist(5))
-
         Case(0)
-          If ((alist(6)-192).GT.Size(nceplcltable002000,DIM=1)) Then
-	    elemtxt=elemerr
-          Else
-            elemtxt=nceplcltable002000(alist(6),:)
-          End If
-	  
+          elemtxt=nceplcltable002000(alist(6),:)
         Case(3)
-          If ((alist(6)-192).GT.Size(nceplcltable002003,DIM=1)) Then
-	        elemtxt=elemerr
-          Else
-            elemtxt=nceplcltable002003(alist(6),:)
-          End If
-
+          elemtxt=nceplcltable002003(alist(6),:)
         Case DEFAULT
           elemtxt=elemerr
-      
       End Select
-
-      Case(3)
+    Case(3)
       Select Case(alist(5))
-
         Case(1)
-          If ((alist(6)-192).GT.Size(nceplcltable003001,DIM=1)) Then
-	    elemtxt=elemerr
-          Else
-            elemtxt=nceplcltable003001(alist(6),:)
-          End If
-
+          elemtxt=nceplcltable003001(alist(6),:)
         Case DEFAULT
           elemtxt=elemerr
-      
       End Select
-    
     Case DEFAULT
       elemtxt=elemerr
-
   End Select
 End If
 
 ! Check for errors
-If ((elemtxt(1).EQ.'???').OR.(elemtxt(1).EQ.'')) Then
+If ((elemtxt(1)=='???').OR.(elemtxt(1)=='')) Then
   elemtxt(1)='      '
   Write(elemtxt(1)(1:2),'(Z2.2)') alist(3)
   Write(elemtxt(1)(3:4),'(Z2.2)') alist(5)
@@ -1695,7 +3353,7 @@ Subroutine getelemlvl(alist,indx,surfvalue,sndvalue,surtxt)
 
 Implicit None
 
-Integer, dimension(0:49), intent(in) :: alist
+Integer, dimension(0:49), intent(inout) :: alist
 Integer, intent(out) :: indx
 Double Precision, intent(out) :: surfvalue,sndvalue
 Character*80, dimension(1:3), intent(out) :: surtxt
@@ -1732,307 +3390,429 @@ ozero=real(alist(9))
 
 Select Case(alist(8))
   Case(1)
-    surtxt(:)=(/ "SFC", "sfc", "-" /)
+    surtxt(1)="SFC"
+    surtxt(2)="sfc"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(2)
-    surtxt(:)=(/ "CBL", "cld base", "-" /)
+    surtxt(1)="CBL"
+    surtxt(2)="cld base"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(3) 
-    surtxt(:)=(/ "CTL", "cld top", "-" /)
+    surtxt(1)="CTL"
+    surtxt(2)="cld top"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(4)
-    surtxt(:)=(/ "0DEG", "0C isotherm", "-" /)
+    surtxt(1)="0DEG"
+    surtxt(2)="0C isotherm"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(5)
-    surtxt(:)=(/ "ADCL", "cond lev", "-" /)
+    surtxt(1)="ADCL"
+    surtxt(2)="cond lev"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(6)
-    surtxt(:)=(/ "MWSL", "max wind lev", "-" /)
+    surtxt(1)="MWSL"
+    surtxt(2)="max wind lev"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(7)
-    surtxt(:)=(/ "TRO", "tropopause", "-" /)
+    surtxt(1)="TRO"
+    surtxt(2)="tropopause"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(8)
-    surtxt(:)=(/ "NTAT", "nom. top", "-" /)
+    surtxt(1)="NTAT"
+    surtxt(2)="nom. top"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(9)
-    surtxt(:)=(/ "SEAB", "sea bottom", "-" /)
+    surtxt(1)="SEAB"
+    surtxt(2)="sea bottom"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(10,200)
-    surtxt(:)=(/ "reserved", "atmos col", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="atmos col"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(12,212)
-    surtxt(:)=(/ "reserved", "low cld bot", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="low cld bot"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(13,213)
-    surtxt(:)=(/ "reserved", "low cld top", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="low cld top"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(14,214)
-    surtxt(:)=(/ "reserved", "low cld lay", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="low cld lay"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(22,222)
-    surtxt(:)=(/ "reserved", "mid cld bot", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="mid cld bot"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(23,223)
-    surtxt(:)=(/ "reserved", "mid cld top", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="mid cld top"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(24,224)
-    surtxt(:)=(/ "reserved", "mid cld lay", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="mid cld lay"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(32,232)
-    surtxt(:)=(/ "reserved", "high cld bot", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="high cld bot"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(33,233)
-    surtxt(:)=(/ "reserved", "high cld top", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="high cld top"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(34,234)
-    surtxt(:)=(/ "reserved", "high cld lay", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="high cld lay"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(201)
-    surtxt(:)=(/ "reserved", "ocean column", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="ocean column"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(204)
-    surtxt(:)=(/ "reserved", "high trop freezing lvl", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="high trop freezing lvl"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(206)
-    surtxt(:)=(/ "reserved", "grid-scale cld bot", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="grid-scale cld bot"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(207)
-    surtxt(:)=(/ "reserved", "grid-scale cld top", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="grid-scale cld top"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(209)
-    surtxt(:)=(/ "reserved", "bndary-layer cld bot", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="bndary-layer cld bot"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(210)
-    surtxt(:)=(/ "reserved", "bndary-layer cld top", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="bndary-layer cld top"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(211)
-    surtxt(:)=(/ "reserved", "bndary-layer cld layer", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="bndary-layer cld layer"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(242)
-    surtxt(:)=(/ "reserved", "convect-cld bot", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="convect-cld bot"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(243)
-    surtxt(:)=(/ "reserved", "convect-cld top", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="convect-cld top"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(244)
-    surtxt(:)=(/ "reserved", "convect-cld layer", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="convect-cld layer"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(246)
-    surtxt(:)=(/ "reserved", "max e-pot-temp lvl", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="max e-pot-temp lvl"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(247)
-    surtxt(:)=(/ "reserved", "equilibrium lvl", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="equilibrium lvl"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(248)
-    surtxt(:)=(/ "reserved", "shallow convect-cld bot", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="shallow convect-cld bot"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(249)
-    surtxt(:)=(/ "reserved", "shallow convect-cld top", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="shallow convect-cld top"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(251)
-    surtxt(:)=(/ "reserved", "deep convect-cld bot", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="deep convect-cld bot"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(252)
-    surtxt(:)=(/ "reserved", "deep convect-cld top", "-" /)
+    surtxt(1)="reserved"
+    surtxt(2)="deep convect-cld top"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(100)
-    surtxt(:)=(/ "ISBL", "Pa", "Pa" /)
+    surtxt(1)="ISBL"
+    surtxt(2)="Pa"
+    surtxt(3)="Pa"
     alist(13)=0
     surfvalue=ozero*100.
     sndvalue=0.
   Case(101)
-    surtxt(:)=(/ "ISBL", "Pa", "Pa" /)
+    surtxt(1)="ISBL"
+    surtxt(2)="Pa"
+    surtxt(3)="Pa"
     alist(13)=1
     surfvalue=o11*1000.
     sndvalue=o12*1000.
   Case(102)
-    surtxt(:)=(/ "MSL", "MSL", "-" /)
+    surtxt(1)="MSL"
+    surtxt(2)="MSL"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=0.
     sndvalue=0.
   Case(103)
-    surtxt(:)=(/ "GPML", "m above MSL", "m" /)
+    surtxt(1)="GPML"
+    surtxt(2)="m above MSL"
+    surtxt(3)="m"
     alist(13)=0
     surfvalue=ozero
     sndvalue=0.
   Case(104)
-    surtxt(:)=(/ "GPML", "m above MSL", "m" /)
+    surtxt(1)="GPML"
+    surtxt(2)="m above MSL"
+    surtxt(3)="m"
     alist(13)=1
     surfvalue=o11*100.
     sndvalue=o12*100.
   Case(105)
-    surtxt(:)=(/ "HTGL", "m above gnd", "m" /)
+    surtxt(1)="HTGL"
+    surtxt(2)="m above gnd"
+    surtxt(3)="m"
     alist(13)=0
     surfvalue=ozero
     sndvalue=0.
   Case(106)
-    surtxt(:)=(/ "HTGL", "m above gnd", "m" /)
+    surtxt(1)="HTGL"
+    surtxt(2)="m above gnd"
+    surtxt(3)="m"
     alist(13)=1
     surfvalue=o11*100.
     sndvalue=o12*100.
   Case(107)
-    surtxt(:)=(/ "SIGL", "sigma", "sigma value" /)
+    surtxt(1)="SIGL"
+    surtxt(2)="sigma"
+    surtxt(3)="sigma value"
     alist(13)=0
     surfvalue=ozero/10000.
     sndvalue=0.
   Case(108)
-    surtxt(:)=(/ "SIGL", "sigma", "sigma value" /)
+    surtxt(1)="SIGL"
+    surtxt(2)="sigma"
+    surtxt(3)="sigma value"
     alist(13)=1
     surfvalue=o11/100.
     sndvalue=o12/100.
   Case(109)
-    surtxt(:)=(/ "HYBL", "hybrid lev", "-" /)
+    surtxt(1)="HYBL"
+    surtxt(2)="hybrid lev"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=ozero
     sndvalue=0.
   Case(110)
-    surtxt(:)=(/ "HYBL", "hybrid lev", "-" /)
+    surtxt(1)="HYBL"
+    surtxt(2)="hybrid lev"
+    surtxt(3)="-"
     alist(13)=1
     surfvalue=o11
     sndvalue=o12
   Case(111)
-    surtxt(:)=(/ "DBLL", "m down", "m" /)
+    surtxt(1)="DBLL"
+    surtxt(2)="m down"
+    surtxt(3)="m"
     alist(13)=0
     surfvalue=ozero*0.01
     sndvalue=0.
   Case(112)
-    surtxt(:)=(/ "DBLL", "m down", "m" /)
+    surtxt(1)="DBLL"
+    surtxt(2)="m down"
+    surtxt(3)="m"
     alist(13)=1
     surfvalue=o11*0.01
     sndvalue=o12*0.01
   Case(113)
-    surtxt(:)=(/ "THEL", "K", "K" /)
+    surtxt(1)="THEL"
+    surtxt(2)="K"
+    surtxt(3)="K"
     alist(13)=0
     surfvalue=ozero
     sndvalue=0.
   Case(114)
-    surtxt(:)=(/ "THEL", "K", "K" /)
+    surtxt(1)="THEL"
+    surtxt(2)="K"
+    surtxt(3)="K"
     alist(13)=1
     surfvalue=475.-o11
     sndvalue=475.-o12
   Case(115)
-    surtxt(:)=(/ "SPDL", "Pa above gnd", "Pa" /)
+    surtxt(1)="SPDL"
+    surtxt(2)="Pa above gnd"
+    surtxt(3)="Pa"
     alist(13)=0
     surfvalue=ozero*100.
     sndvalue=0.
   Case(116)
-    surtxt(:)=(/ "SPDL", "Pa above gnd", "Pa" /)
+    surtxt(1)="SPDL"
+    surtxt(2)="Pa above gnd"
+    surtxt(3)="Pa"
     alist(13)=1
     surfvalue=o11*100.
     sndvalue=o12*100.
   Case(117)
-    surtxt(:)=(/ "PVL", "pv units", "(K M^2)/(kg s)" /)
+    surtxt(1)="PVL"
+    surtxt(2)="pv units"
+    surtxt(3)="(K M^2)/(kg s)"
     alist(13)=0
     surfvalue=ozero
     sndvalue=0.
   Case(119)
-    surtxt(:)=(/ "EtaL", "(ETA level)", "-" /)
+    surtxt(1)="EtaL"
+    surtxt(2)="(ETA level)"
+    surtxt(3)="-"
     alist(13)=0
     surfvalue=ozero/10000.
     sndvalue=0.
   Case(120)
-    surtxt(:)=(/ "EtaL", "(ETA levels)", "-" /)
+    surtxt(1)="EtaL"
+    surtxt(2)="(ETA levels)"
+    surtxt(3)="-"
     alist(13)=1
     surfvalue=o11/100.
     sndvalue=o12/100.
   Case(121)
-    surtxt(:)=(/ "ISBL", "Pa", "Pa" /)
+    surtxt(1)="ISBL"
+    surtxt(2)="Pa"
+    surtxt(3)="Pa"
     alist(13)=1
     surfvalue=(1100.-o11)*100.
     sndvalue=(1100.-o12)*100.
   Case(125)
-    surtxt(:)=(/ "HTGL", "m above gnd", "m" /)
+    surtxt(1)="HTGL"
+    surtxt(2)="m above gnd"
+    surtxt(3)="m"
     alist(13)=0
     surfvalue=ozero*100.
     sndvalue=0.
   Case(126)
-    surtxt(:)=(/ "ISBL", "Pa", "Pa" /)
+    surtxt(1)="ISBL"
+    surtxt(2)="Pa"
+    surtxt(3)="Pa"
     alist(13)=0
     surfvalue=ozero
     sndvalue=0.
   Case(128)
-    surtxt(:)=(/ "SIGL", "(sigma)", "sigma value" /)
+    surtxt(1)="SIGL"
+    surtxt(2)="(sigma)"
+    surtxt(3)="sigma value"
     alist(13)=1
     surfvalue=1.1-o11/1000.
     sndvalue=1.1-o12/1000.
   Case(141)
-    surtxt(:)=(/ "ISBL", "Pa", "Pa" /)
+    surtxt(1)="ISBL"
+    surtxt(2)="Pa"
+    surtxt(3)="Pa"
     alist(13)=1
     surfvalue=o11*1000.
     sndvalue=(1100.-o12)*100.
   Case(160)
-    surtxt(:)=(/ "DBSL", "m below sea level", "m" /)
+    surtxt(1)="DBSL"
+    surtxt(2)="m below sea level"
+    surtxt(3)="m"
     alist(13)=0
     surfvalue=ozero
     sndvalue=0.
@@ -2088,42 +3868,88 @@ logical, save :: first = .true.
 
 if (first) then
 
-surface='???'
+  surface='???'
 
-! Define surface table
+  ! Define surface table
 
-surface(1,:) = (/   'SFC',   'Ground or water surface',       '-' /)
-surface(2,:) = (/   'CBL',   'Cloud base level',              '-' /)  
-surface(3,:) = (/   'CTL',   'Level of cloud tops',           '-' /)
-surface(4,:) = (/   '0DEG',  'Level of 0 degreee C isotherm', '-' /)
-surface(5,:) = (/   'ADCL',  'Level of adiabatic condensation lifted from the surface', '-' /)
-surface(6,:) = (/   'MWSL',  'Maximum wind level',            '-' /)
-surface(7,:) = (/   'TRO',   'Tropopause',                    '-' /)
-surface(8,:) = (/   'NTAT',  'Nominal top of atmosphere',     '-' /)
-surface(9,:) = (/   'SEAB',  'Sea bottom',                    '-' /)
-surface(20,:) = (/  'TMPL',  'Isotherm level',                'K' /)
-surface(100,:) = (/ 'ISBL',  'Isobaric surface',              'Pa' /)
-surface(101,:) = (/ 'MSL',   'Mean sea level',                '-' /)
-surface(102,:) = (/ 'GPML',  'Specific altitude above mean sea level', 'm' /)
-surface(103,:) = (/ 'HTGL',  'Specific height level above ground', 'm' /)
-surface(104,:) = (/ 'SIGL',  'Sigma level',                   'sigma value' /)
-surface(105,:) = (/ 'HYBL',  'Hybrid level',                  '-' /)
-surface(106,:) = (/ 'DBLL',  'Depth below land surface',      'm' /)
-surface(107,:) = (/ 'THEL',  'Isentropic (theta) level',      'K' /)
-surface(108,:) = (/ 'SPDL',  'Level at specified pressure difference from ground to level', 'Pa' /)
-surface(109,:) = (/ 'PVL',   'Potential vorticity surface',   '(K M^2)/(kg s)' /)
-surface(111,:) = (/ 'EtaL',  'Eta* level',                    '-' /)
-surface(117,:) = (/ 'unknown', 'Mixed layer depth',           'm' /)
-surface(160,:) = (/ 'DBSL',  'Depth below sea level',         'm' /)
+  surface(1,1) = 'SFC'
+  surface(1,2) = 'Ground or water surface'
+  surface(1,3) = '-'
+  surface(2,1) = 'CBL'
+  surface(2,2) = 'Cloud base level'
+  surface(2,3) = '-'
+  surface(3,1) = 'CTL'
+  surface(3,2) = 'Level of cloud tops'
+  surface(3,3) = '-'
+  surface(4,1) = '0DEG'
+  surface(4,2) = 'Level of 0 degreee C isotherm'
+  surface(4,3) = '-'
+  surface(5,1) = 'ADCL'
+  surface(5,2) = 'Level of adiabatic condensation lifted from the surface'
+  surface(5,3) = '-'
+  surface(6,1) = 'MWSL'
+  surface(6,2) = 'Maximum wind level'
+  surface(6,3) = '-'
+  surface(7,1) = 'TRO'
+  surface(7,2) = 'Tropopause'
+  surface(7,3) = '-'
+  surface(8,1) = 'NTAT'
+  surface(8,2) = 'Nominal top of atmosphere'
+  surface(8,3) = '-'
+  surface(9,1) = 'SEAB'
+  surface(9,2) = 'Sea bottom'
+  surface(9,3) = '-'
+  surface(20,1) = 'TMPL'
+  surface(20,2) = 'Isotherm level'
+  surface(20,3) = 'K'
+  surface(100,1) = 'ISBL'
+  surface(100,2) = 'Isobaric surface'
+  surface(100,3) = 'Pa'
+  surface(101,1) = 'MSL'
+  surface(101,2) = 'Mean sea level'
+  surface(101,3) = '-'
+  surface(102,1) = 'GPML'
+  surface(102,2) = 'Specific altitude above mean sea level'
+  surface(102,3) = 'm'
+  surface(103,1) = 'HTGL'
+  surface(103,2) = 'Specific height level above ground'
+  surface(103,3) = 'm'
+  surface(104,1) = 'SIGL'
+  surface(104,2) = 'Sigma level'
+  surface(104,3) = 'sigma value'
+  surface(105,1) = 'HYBL'
+  surface(105,2) = 'Hybrid level'
+  surface(105,3) = '-'
+  surface(106,1) = 'DBLL'
+  surface(106,2) = 'Depth below land surface'
+  surface(106,3) = 'm'
+  surface(107,1) = 'THEL'
+  surface(107,2) = 'Isentropic (theta) level'
+  surface(107,3) = 'K'
+  surface(108,1) = 'SPDL'
+  surface(108,2) = 'Level at specified pressure difference from ground to level'
+  surface(108,3) = 'Pa'
+  surface(109,1) = 'PVL'
+  surface(109,2) = 'Potential vorticity surface'
+  surface(109,3) = '(K M^2)/(kg s)'
+  surface(111,1) = 'EtaL'
+  surface(111,2) = 'Eta* level'
+  surface(111,3) = '-'
+  surface(117,1) = 'unknown'
+  surface(117,2) = 'Mixed layer depth'
+  surface(117,3) = 'm'
+  surface(160,1) = 'DBSL'
+  surface(160,2) = 'Depth below sea level'
+  surface(160,3) = 'm'
 
-first=.false.
+  first=.false.
 end if
 
 ! Determine level data
 
 surtxt='Reserved (index=191)'
 
-If (alist(8).LT.1) Then
+If (alist(8)<1) Then
   ! Undefined
   surfvalue=0
   sndvalue=0
@@ -2131,13 +3957,13 @@ If (alist(8).LT.1) Then
   Return
 End If
 
-if (alist(9).ge.0.) then
+if (alist(9)>=0.) then
   surfvalue=Real(alist(10))/Real(10**alist(9))
 else
   surfvalue=real(alist(10))*real(10**abs(alist(9)))
 end if
 
-If ((alist(8).GT.160).OR.(surface(alist(8),1).EQ.'???')) Then
+If ((alist(8)>160).OR.(surface(alist(8),1)=='???')) Then
   indx=191
   Write(surtxt(1),'("Reserved (",I4,")")') alist(8)
 Else
@@ -2146,8 +3972,8 @@ Else
 End If
 
 ! snd data    
-If (alist(13).EQ.1) Then
-  if (alist(12).eq.-2147483646) then
+If (alist(13)==1) Then
+  if (alist(12)==-2147483646) then
     sndvalue=0.
   else
     sndvalue=Real(alist(12))/Real(10**alist(11))
@@ -2157,7 +3983,7 @@ Else
 End If
 
 ! MSL and SFC special case
-if (indx.eq.1.or.indx.eq.101) then
+if (indx==1.or.indx==101) then
    surfvalue=0.
    sndvalue=0.
 end if
@@ -2173,7 +3999,7 @@ Subroutine getlvltxt(alist,lvltxt)
 
 Implicit None
 
-Integer, dimension(0:49), intent(in) :: alist
+Integer, dimension(0:49), intent(inout) :: alist
 Character*80, dimension(1:2), intent(out) :: lvltxt
 
 Select Case(alist(48))
@@ -2194,7 +4020,7 @@ Subroutine getlvltxt1(alist,lvltxt)
 
 Implicit None
 
-Integer, dimension(0:49), intent(in) :: alist
+Integer, dimension(0:49), intent(inout) :: alist
 Character*80, dimension(1:2), intent(out) :: lvltxt
 Character*80, dimension(1:3) :: surtxt
 Double Precision surfvalue,sndvalue
@@ -2204,9 +4030,9 @@ lvltxt=''
 
 Call getelemlvl1(alist,indx,surfvalue,sndvalue,surtxt)
 
-If (alist(13).EQ.1) Then    
+If (alist(13)==1) Then    
   ! snd data
-  If (Int(surfvalue).EQ.surfvalue) Then
+  If (Int(surfvalue)==surfvalue) Then
     Write(lvltxt(1),'(I7,"-",I3,"-",A4)') Int(surfvalue),Int(sndvalue),surtxt(1)(1:10)
     Write(lvltxt(2),'(I7,"-",I3,"[",A,"] ",A4,"=""",A,"""")') Int(surfvalue),Int(sndvalue),surtxt(3)(1:10),surtxt(1)(1:10),surtxt(2)(1:30)
   Else
@@ -2215,7 +4041,7 @@ If (alist(13).EQ.1) Then
   End If
 Else
   ! no snd data
-  If (Int(surfvalue).EQ.surfvalue) Then
+  If (Int(surfvalue)==surfvalue) Then
     Write(lvltxt(1),'(I7,"-",A4)') Int(surfvalue),surtxt(1)(1:10)
     Write(lvltxt(2),'(I7,"[",A,"] ",A4,"=""",A,"""")') Int(surfvalue),surtxt(3)(1:10),surtxt(1)(1:10),surtxt(2)(1:30)
   Else
@@ -2243,7 +4069,7 @@ Integer indx
 
 lvltxt=''
 
-If (alist(8).LT.1) Then
+If (alist(8)<1) Then
   lvltxt(1)='0 undefined'
   lvltxt(2)='0.000[-] undefined ()'
   Return
@@ -2251,10 +4077,10 @@ End If
 
 Call getelemlvl2(alist,indx,surfvalue,sndvalue,surtxt)
 
-If (alist(13).EQ.1) Then    
+If (alist(13)==1) Then    
   ! snd data
-  If (indx.GE.191) Then
-    If (Int(surfvalue).EQ.surfvalue) Then
+  If (indx>=191) Then
+    If (Int(surfvalue)==surfvalue) Then
       Write(lvltxt(1),'(I7,"-",I3,"-reserved(",I3,")")') Int(surfvalue),Int(sndvalue),alist(8)
       Write(lvltxt(2),'(I7,"-",I3,"[-] reserved(",I3,") ()")') Int(surfvalue),Int(sndvalue),indx
     Else
@@ -2262,18 +4088,20 @@ If (alist(13).EQ.1) Then
       Write(lvltxt(2),'(F7.1,"-",F3.1,"[-] reserved(",I3,") ()")') surfvalue,sndvalue,indx
     End If
   Else
-    If (Int(surfvalue).EQ.surfvalue) Then
+    If (Int(surfvalue)==surfvalue) Then
       Write(lvltxt(1),'(I7,"-",I3,"-",A4)') Int(surfvalue),Int(sndvalue),surtxt(1)(1:10)
-      Write(lvltxt(2),'(I7,"-",I3,"[",A,"] ",A4,"=""",A,"""")') Int(surfvalue),Int(sndvalue),surtxt(3)(1:10),surtxt(1)(1:10),surtxt(2)(1:30)
+      Write(lvltxt(2),'(I7,"-",I3,"[",A,"] ",A4,"=""",A,"""")') Int(surfvalue),Int(sndvalue),           &
+          surtxt(3)(1:10),surtxt(1)(1:10),surtxt(2)(1:30)
     Else
       Write(lvltxt(1),'(F7.1,"-",F3.1,"-",A4)') surfvalue,sndvalue,surtxt(1)(1:10)
-      Write(lvltxt(2),'(F7.1,"-",F3.1,"[",A,"] ",A4,"=""",A,"""")') surfvalue,sndvalue,surtxt(3)(1:10),surtxt(1)(1:10),surtxt(2)(1:30)
+      Write(lvltxt(2),'(F7.1,"-",F3.1,"[",A,"] ",A4,"=""",A,"""")') surfvalue,sndvalue,surtxt(3)(1:10), &
+          surtxt(1)(1:10),surtxt(2)(1:30)
     End If
   End If
 Else
   ! no snd data
-  If (indx.GE.191) Then
-    If (Int(surfvalue).EQ.surfvalue) Then
+  If (indx>=191) Then
+    If (Int(surfvalue)==surfvalue) Then
       Write(lvltxt(1),'(I7,"-reserved(",I3,")")') Int(surfvalue),alist(8)
       Write(lvltxt(2),'(I7,"[-] reserved(",I3,") ()")') Int(surfvalue),alist(8)
     Else
@@ -2281,12 +4109,14 @@ Else
       Write(lvltxt(2),'(F7.1,"[-] reserved(",I3,") ()")') surfvalue,alist(8)
     End If
   Else
-    If (Int(surfvalue).EQ.surfvalue) Then
+    If (Int(surfvalue)==surfvalue) Then
       Write(lvltxt(1),'(I7,"-",A4)') Int(surfvalue),surtxt(1)(1:10)
-      Write(lvltxt(2),'(I7,"[",A,"] ",A4,"=""",A,"""")') Int(surfvalue),surtxt(3)(1:10),surtxt(1)(1:10),surtxt(2)(1:30)
+      Write(lvltxt(2),'(I7,"[",A,"] ",A4,"=""",A,"""")') Int(surfvalue),surtxt(3)(1:10),surtxt(1)(1:10), &
+          surtxt(2)(1:30)
     Else
       Write(lvltxt(1),'(F7.1,"-",A4)') surfvalue,surtxt(1)(1:10)
-      Write(lvltxt(2),'(F7.1,"[",A,"] ",A4,"=""",A,"""")') surfvalue,surtxt(3)(1:10),surtxt(1)(1:10),surtxt(2)(1:30)
+      Write(lvltxt(2),'(F7.1,"[",A,"] ",A4,"=""",A,"""")') surfvalue,surtxt(3)(1:10),surtxt(1)(1:10),    &
+          surtxt(2)(1:30)
     End If
   End If
 End If
@@ -2313,8 +4143,8 @@ Select Case(alist(48))
     Call getelemlonlat2(alist,alonlat,gridtype)
 End Select
 
-if (alonlat(1,1).eq.alonlat(1,2)) then
-  if (alonlat(1,3).gt.0.) then
+if (alonlat(1,1)==alonlat(1,2)) then
+  if (alonlat(1,3)>0.) then
     alonlat(1,1)=alonlat(1,1)-360.
   else
     alonlat(1,2)=alonlat(1,2)-360.
@@ -2344,27 +4174,27 @@ Select Case(alist(14))
     alonlat(1,1)=real(alist(18))/1000.
     alonlat(2,2)=real(alist(20))/1000.
     alonlat(1,2)=real(alist(21))/1000.
-    If (alist(19).GE.128) Then
+    If (alist(19)>=128) Then
       alonlat(2,3)=abs(real(alist(22))/1000.)
-      if (alonlat(2,1).gt.alonlat(2,2)) alonlat(2,3)=-alonlat(2,3)
+      if (alonlat(2,1)>alonlat(2,2)) alonlat(2,3)=-alonlat(2,3)
       alonlat(1,3)=abs(real(alist(23))/1000.)
-      if (alonlat(1,1).gt.alonlat(1,2)) alonlat(1,3)=-alonlat(1,3)
-      if (alist(16).gt.1) then
+      if (alonlat(1,1)>alonlat(1,2)) alonlat(1,3)=-alonlat(1,3)
+      if (alist(16)>1) then
         if (abs((alonlat(2,2)-alonlat(2,1))/real(alist(16)-1)) &
-            .lt.abs(0.99*alonlat(2,3))) then
+            <abs(0.99*alonlat(2,3))) then
           alonlat(2,3)=real(alist(22))/1000.
           alonlat(2,2)=alonlat(2,1)+alonlat(2,3)*real(alist(16)-1)
         end if
       end if
-      if (alist(15).gt.1) then
+      if (alist(15)>1) then
         if (abs((alonlat(1,2)-alonlat(1,1))/real(alist(15)-1)) &
-            .lt.abs(0.99*alonlat(1,3))) then
+            <abs(0.99*alonlat(1,3))) then
           alonlat(1,3)=real(alist(23))/1000.
           alonlat(1,2)=alonlat(1,1)+alonlat(1,3)*real(alist(15)-1)
         end if
       end if
     Else
-      If ((alist(15).GT.1).AND.(alist(16).GT.1)) Then
+      If ((alist(15)>1).AND.(alist(16)>1)) Then
         alonlat(2,3)=(alonlat(2,2)-alonlat(2,1))/real(alist(15)-1)
         alonlat(1,3)=(alonlat(1,2)-alonlat(1,1))/real(alist(16)-1)
       Else
@@ -2372,7 +4202,6 @@ Select Case(alist(14))
         Stop
       End If
     End If
-
   Case(10)
     gridtype="Mercator"
     alonlat(2,1)=real(alist(17))/1000.
@@ -2381,24 +4210,21 @@ Select Case(alist(14))
     alonlat(1,2)=real(alist(21))/1000.
     alonlat(2,3)=(alonlat(2,2)-alonlat(2,1))/real(alist(16)-1)
     alonlat(1,3)=(alonlat(1,2)-alonlat(1,1))/real(alist(15)-1)
-  
   Case(20)
     ! Un-supported
     gridtype="Polar"
     alonlat=0.
-  
   Case(30)
     ! Un-supported
     gridtype="Lambert"
     alonlat=0.
-
   Case(40)
     gridtype="Gaussian"
     alonlat(2,1)=real(alist(17))/1000.
     alonlat(1,1)=real(alist(18))/1000.
     alonlat(2,2)=real(alist(20))/1000.
     alonlat(1,2)=real(alist(21))/1000.
-    If (alist(19).GE.128) Then
+    If (alist(19)>=128) Then
       alonlat(2,3)=(alonlat(2,1)-alonlat(2,2))/real(2*alist(23)-1)
       alonlat(2,3)=real(int(alonlat(2,3)*1000.))/1000.
       midval=0.5*(alonlat(2,1)+alonlat(2,2))
@@ -2410,12 +4236,10 @@ Select Case(alist(14))
       Write(6,*) "ERROR: Cannot determine grid spacing"
       Stop
     End If
-  
   Case DEFAULT
     ! Un-supported
     gridtype="???"
     alonlat=0.
-    
 End Select
 
 Return
@@ -2461,21 +4285,18 @@ Real unt
 ! alist(49) = ensemble number
 
 Select Case(alist(14))
-
   Case(0)
     gridtype="Regular"
-    
-    If ((alist(15).NE.0).AND.(alist(16).EQ.0)) Then
+    If ((alist(15)/=0).AND.(alist(16)==0)) Then
       Write(6,*) "ERROR: Cannot read regular grid"
       Write(6,*) alist(15),alist(16)
       alonlat=0.
     Else
-      If (alist(15).EQ.0) Then
+      If (alist(15)==0) Then
         unt=1.E-6
       Else
         unt=Real(alist(15))/Real(alist(16))
       End If
-   
       alonlat(2,1)=Real(alist(17))*unt
       alonlat(1,1)=Real(alist(18))*unt
       resflag=alist(19)
@@ -2483,36 +4304,29 @@ Select Case(alist(14))
       alonlat(1,2)=Real(alist(21))*unt
       alonlat(2,3)=Real(alist(23))*unt
       alonlat(1,3)=Real(alist(22))*unt
-      
-      If (((resflag.AND.32).EQ.32).AND.(.NOT.((resflag.AND.16).EQ.16))) Then
+      If ((iand(resflag,32)==32).AND.(.NOT.(iand(resflag,16)==16))) Then
         alonlat(2,3)=alonlat(1,3)
       End If
-      If ((.NOT.((resflag.AND.32).EQ.32)).AND.((resflag.AND.16).EQ.16)) Then
+      If ((.NOT.(iand(resflag,32)==32)).AND.(iand(resflag,16)==16)) Then
         alonlat(1,3)=alonlat(2,3)
       End If
-            
     End If
-  
   Case(10)
     ! Un-supported
     gridtype="Mercator"
     alonlat=0.
-  
   Case(20)
     ! Un-supported
     gridtype="Polar"
     alonlat=0.
-  
   Case(30)
     ! Un-supported
     gridtype="Lambert"
     alonlat=0.
-  
   Case DEFAULT
     ! Un-supported
     gridtype="???"
     alonlat=0.
-  
 End Select
 
 Return

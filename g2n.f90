@@ -206,8 +206,9 @@ typename=returnoption('-f',options,nopts)
 
 ! Open GRIB file
 gribunit = 1
-Open(UNIT=gribunit,FILE=infile,STATUS='OLD',FORM='BINARY',IOSTAT=ierr)
-If (ierr.NE.0) Then
+!Open(UNIT=gribunit,FILE=infile,STATUS='OLD',FORM='BINARY',IOSTAT=ierr)
+Open(UNIT=gribunit,FILE=infile,STATUS='OLD',ACCESS='STREAM',FORM='UNFORMATTED',IOSTAT=ierr)
+If (ierr/=0) Then
   Write(6,*) "ERROR: Cannot open input file. ierr=",ierr
   Stop
 End If
