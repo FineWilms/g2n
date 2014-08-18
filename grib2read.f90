@@ -320,7 +320,11 @@ If (alist(48).EQ.2) then
     end if
     ! ensemble
     ! (values(12) holds the generating process=4 for ensemble)
-    alist(49)=arr2int(values(36),1)
+    if (seclen>=36) then
+      alist(49)=arr2int(values(36),1)
+    else
+      alist(49)=0
+    end if
     ! (values(37) holds the total number of ensemble members)
       
     ! lvl info
@@ -715,6 +719,7 @@ Integer*1 tmp
 Integer gribend,multigrid,packsize,ierr
 Integer i,minstart,oldpacksize
 Integer getmsgsize
+character(len=1), dimension(:), allocatable :: charpack
 
 oldpacksize=0
 
@@ -739,11 +744,12 @@ Do While (gribpos.LT.msgnum)
   End Select
 
   ! Allocate arrays
-  if (packsize.gt.oldpacksize) then
+  if (packsize>oldpacksize) then
     if (allocated(datapack)) then
-      deallocate(datapack)
+      deallocate(datapack,charpack)
     end if
     Allocate(datapack(1:packsize))
+    allocate(charpack(1:packsize))
     oldpacksize=packsize
   end if
 
@@ -752,7 +758,7 @@ Do While (gribpos.LT.msgnum)
   ! Read remaining packed data (assume disk cache for speed...)
   Read(UNIT=gribunit,IOSTAT=ierr) datapack(minstart:packsize)
 
-  If (ierr.NE.0) then
+  If (ierr/=0) then
     Write(6,*) "ERROR: Cannot read GRIB message."
     Stop
   End if
@@ -766,8 +772,9 @@ Select Case(dat(8))
   Case(1)
     Call unpackgrib1(datapack(1:packsize),packsize,dataunpack,unpacksize) 
   Case DEFAULT !GRIB2
-    Call gf_getfld(Char(datapack(1:packsize)),packsize,spliceskip,.TRUE.,1,gfld,ierr)
-    If (ierr.NE.0) Then
+    charpack=char(datapack(1:packsize))
+    Call gf_getfld(charpack,packsize,spliceskip,.TRUE.,1,gfld,ierr)
+    If (ierr/=0) Then
       Write(6,*) "ERROR: Error in unpack lib (",ierr,")"
       Stop
     End If

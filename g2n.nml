@@ -1,7 +1,7 @@
 &splice
-outputunit = "pres", "hPa"
-levinvert  = .TRUE.
-splicename = "HGT",  "TMP",  "UGRD", "VGRD", "RH",   "TMP", "PRMSL", "HGT", "LAND", "PRES"
-spliceunit = "ISBL", "ISBL", "ISBL", "ISBL", "ISBL", "SFC", "MSL",   "SFC", "SFC",  "SFC"
-newname    = "hgt",  "temp", "u",    "v",    "rh",   "tss", "mslp",  "zs",  "land", "ps"
+outputunit  = "pres", "hPa"
+levinvert   = .TRUE.
+splicename  = "HGT",  "TMP",  "UGRD", "VGRD", "RH",   "TMP", "HGT", "LAND", "PRES", "ICEC"
+spliceunit  = "ISBL", "ISBL", "ISBL", "ISBL", "ISBL", "SFC", "SFC", "SFC",  "SFC",  "SFC"
+newname     = "hgt",  "temp", "u",    "v",    "rh",   "tss", "zs",  "land", "ps",   "fracice"
 /

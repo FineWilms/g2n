@@ -3198,77 +3198,181 @@ Select Case(alist(3))
   Case(0)
     Select Case(alist(5))
       Case(0)
-        elemtxt=meteotemp(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=15) then
+          elemtxt=meteotemp(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case(1)
-        elemtxt=meteomoist(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=32) then
+          elemtxt=meteomoist(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case(2)
-        elemtxt=meteomoment(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=24) then
+          elemtxt=meteomoment(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if          
       Case(3)
-        elemtxt=meteomass(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=14) then
+          elemtxt=meteomass(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case(4)
-        elemtxt=meteoshortradiate(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=6) then
+          elemtxt=meteoshortradiate(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case(5)
-        elemtxt=meteolongradiate(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=2) then
+          elemtxt=meteolongradiate(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case(6)
-        elemtxt=meteocloud(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=201) then
+          elemtxt=meteocloud(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case(7)
-        elemtxt=meteostability(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=9) then          
+          elemtxt=meteostability(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case(13)
-        elemtxt=meteoaerosols(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=0) then
+          elemtxt=meteoaerosols(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case(14)
-        elemtxt=meteogases(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=0) then
+          elemtxt=meteogases(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case(15)
-        elemtxt=meteoradar(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=6) then
+          elemtxt=meteoradar(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case(18)
-        elemtxt=meteonuclear(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=8) then
+          elemtxt=meteonuclear(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case(19)
-        elemtxt=meteoatmos(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=16) then
+          elemtxt=meteoatmos(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case(190)
-        elemtxt=meteotext(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=0) then
+          elemtxt=meteotext(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case(253)
-        elemtxt=meteotext(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=0) then
+          elemtxt=meteotext(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case DEFAULT
         elemtxt=elemerr
     End Select
   Case(1)
     Select Case(alist(5))
       Case(0)
-        elemtxt=hydrobasic(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=4) then
+          elemtxt=hydrobasic(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case(1)
-        elemtxt=hydroprob(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=2) then
+          elemtxt=hydroprob(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case DEFAULT
         elemtxt=elemerr
     End Select
   Case(2)
     Select Case(alist(5))
       Case(0)
-        elemtxt=landveg(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=8) then
+          elemtxt=landveg(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if        
       Case(3)
-        elemtxt=landsoil(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=203) then
+          elemtxt=landsoil(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case DEFAULT
         elemtxt=elemerr
     End Select
   Case(3)
     Select Case(alist(5))
       Case(0)
-        elemtxt=spaceimage(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=7) then
+          elemtxt=spaceimage(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case(1)
-        elemtxt=spacequantitative(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=0) then
+          elemtxt=spacequantitative(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case DEFAULT
         elemtxt=elemerr
     End Select
   Case(10)
     Select Case(alist(5))
       Case(0)
-        elemtxt=oceanwaves(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=13) then
+          elemtxt=oceanwaves(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if        
       Case(1)
-        elemtxt=oceancurrents(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=3) then
+          elemtxt=oceancurrents(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case(2)
-        elemtxt=oceanice(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=7) then
+          elemtxt=oceanice(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case(3)
-        elemtxt=oceansurface(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=1) then
+          elemtxt=oceansurface(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case(4)
-        elemtxt=oceansubsurface(alist(6),:)
+        if (alist(6)>=0.and.alist(6)<=3) then
+          elemtxt=oceansubsurface(alist(6),:)
+        else
+          elemtxt=elemerr
+        end if
       Case DEFAULT
         elemtxt=elemerr
     End Select
@@ -3277,55 +3381,115 @@ Select Case(alist(3))
 End Select
 
 ! Check local meta data
-If (elemtxt(1).EQ.'???') Then
+If (elemtxt(1)=='???') Then
   Select Case(alist(3))
     Case(0)
       Select Case(alist(5))
         Case(0)
-          elemtxt=nceplcltable000000(alist(6),:)
+          if (alist(6)>=192.and.alist(6)<=192) then
+            elemtxt=nceplcltable000000(alist(6),:)
+          else
+            elemtxt=elemerr
+          end if
         Case(1)
-          elemtxt=nceplcltable000001(alist(6),:)
+          if (alist(6)>=192.and.alist(6)<=205) then
+            elemtxt=nceplcltable000001(alist(6),:)
+          else
+            elemtxt=elemerr
+          end if
         Case(2)
-          elemtxt=nceplcltable000002(alist(6),:)
+          if (alist(6)>=192.and.alist(6)<=197) then
+            elemtxt=nceplcltable000002(alist(6),:)
+          else
+            elemtxt=elemerr
+          end if
         Case(3)
-          elemtxt=nceplcltable000003(alist(6),:)
+          if (alist(6)>=192.and.alist(6)<=197) then
+            elemtxt=nceplcltable000003(alist(6),:)
+          else
+            elemtxt=elemerr
+          end if
         Case(4)
-          elemtxt=nceplcltable000004(alist(6),:)
+          if (alist(6)>=192.and.alist(6)<=193) then
+            elemtxt=nceplcltable000004(alist(6),:)
+          else
+            elemtxt=elemerr
+          end if
         Case(5)
-          elemtxt=nceplcltable000005(alist(6),:)
+          if (alist(6)>=192.and.alist(6)<=193) then
+            elemtxt=nceplcltable000005(alist(6),:)
+          else
+            elemtxt=elemerr
+          end if
         Case(6)
-          elemtxt=nceplcltable000006(alist(6),:)
+          if (alist(6)>=192.and.alist(6)<=199) then
+            elemtxt=nceplcltable000006(alist(6),:)
+          else
+            elemtxt=elemerr
+          end if
         Case(7)
-          elemtxt=nceplcltable000007(alist(6),:)
+          if (alist(6)>=192.and.alist(6)<=194) then
+            elemtxt=nceplcltable000007(alist(6),:)
+          else
+            elemtxt=elemerr
+          end if
         Case(14)
-          elemtxt=nceplcltable000014(alist(6),:)
+          if (alist(6)>=192.and.alist(6)<=194) then
+            elemtxt=nceplcltable000014(alist(6),:)
+          else
+            elemtxt=elemerr
+          end if
         Case(19)
-          elemtxt=nceplcltable000019(alist(6),:)
+          if (alist(6)>=192.and.alist(6)<=193) then
+            elemtxt=nceplcltable000019(alist(6),:)
+          else
+            elemtxt=elemerr
+          end if
         Case(191)
-          elemtxt=nceplcltable000191(alist(6),:)
+          if (alist(6)>=192.and.alist(6)<=194) then
+            elemtxt=nceplcltable000191(alist(6),:)
+          else
+            elemtxt=elemerr
+          end if
         Case DEFAULT
           elemtxt=elemerr
       End Select
     Case(1)
       Select Case(alist(5))
         Case(0)
-          elemtxt=nceplcltable001000(alist(6),:)
+          if (alist(6)>=192.and.alist(6)<=193) then
+            elemtxt=nceplcltable001000(alist(6),:)
+          else
+            elemtxt=elemerr
+          end if
         Case DEFAULT
           elemtxt=elemerr
       End Select
     Case(2)
       Select Case(alist(5))
         Case(0)
-          elemtxt=nceplcltable002000(alist(6),:)
+          if (alist(6)>=192.and.alist(6)<=205) then
+            elemtxt=nceplcltable002000(alist(6),:)
+          else
+            elemtxt=elemerr
+          end if
         Case(3)
-          elemtxt=nceplcltable002003(alist(6),:)
+          if (alist(6)>=192.and.alist(6)<=197) then
+            elemtxt=nceplcltable002003(alist(6),:)
+          else
+            elemtxt=elemerr
+          end if
         Case DEFAULT
           elemtxt=elemerr
       End Select
     Case(3)
       Select Case(alist(5))
         Case(1)
-          elemtxt=nceplcltable003001(alist(6),:)
+          if (alist(6)>=192.and.alist(6)<=193) then
+            elemtxt=nceplcltable003001(alist(6),:)
+          else
+            elemtxt=elemerr
+          end if
         Case DEFAULT
           elemtxt=elemerr
       End Select
@@ -3963,9 +4127,12 @@ else
   surfvalue=real(alist(10))*real(10**abs(alist(9)))
 end if
 
-If ((alist(8)>160).OR.(surface(alist(8),1)=='???')) Then
+If (alist(8)>160) then
   indx=191
   Write(surtxt(1),'("Reserved (",I4,")")') alist(8)
+else if (surface(alist(8),1)=='???') Then
+  indx=191
+  Write(surtxt(1),'("Reserved (",I4,")")') alist(8)   
 Else
   indx=alist(8)
   surtxt(:)=surface(indx,:)
