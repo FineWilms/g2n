@@ -4167,7 +4167,7 @@ Subroutine getlvltxt(alist,lvltxt)
 Implicit None
 
 Integer, dimension(0:49), intent(inout) :: alist
-Character*80, dimension(1:2), intent(out) :: lvltxt
+Character*80, intent(out) :: lvltxt
 
 Select Case(alist(48))
   Case(1)
@@ -4188,7 +4188,7 @@ Subroutine getlvltxt1(alist,lvltxt)
 Implicit None
 
 Integer, dimension(0:49), intent(inout) :: alist
-Character*80, dimension(1:2), intent(out) :: lvltxt
+Character*80, intent(out) :: lvltxt
 Character*80, dimension(1:3) :: surtxt
 Double Precision surfvalue,sndvalue
 Integer indx
@@ -4199,21 +4199,17 @@ Call getelemlvl1(alist,indx,surfvalue,sndvalue,surtxt)
 
 If (alist(13)==1) Then    
   ! snd data
-  If (Int(surfvalue)==surfvalue) Then
-    Write(lvltxt(1),'(I7,"-",I3,"-",A4)') Int(surfvalue),Int(sndvalue),surtxt(1)(1:10)
-    Write(lvltxt(2),'(I7,"-",I3,"[",A,"] ",A4,"=""",A,"""")') Int(surfvalue),Int(sndvalue),surtxt(3)(1:10),surtxt(1)(1:10),surtxt(2)(1:30)
+  If (dble(Int(surfvalue))==surfvalue) Then
+    Write(lvltxt,'(I7,"-",I3,"-",A4)') Int(surfvalue),Int(sndvalue),surtxt(1)(1:10)
   Else
-    Write(lvltxt(1),'(F7.1,"-",F3.1,"-",A4)') surfvalue,sndvalue,surtxt(1)(1:10)
-    Write(lvltxt(2),'(F7.1,"-",F3.1,"[",A,"] ",A4,"=""",A,"""")') surfvalue,sndvalue,surtxt(3)(1:10),surtxt(1)(1:10),surtxt(2)(1:30)
+    Write(lvltxt,'(F7.1,"-",F3.1,"-",A4)') surfvalue,sndvalue,surtxt(1)(1:10)
   End If
 Else
   ! no snd data
-  If (Int(surfvalue)==surfvalue) Then
-    Write(lvltxt(1),'(I7,"-",A4)') Int(surfvalue),surtxt(1)(1:10)
-    Write(lvltxt(2),'(I7,"[",A,"] ",A4,"=""",A,"""")') Int(surfvalue),surtxt(3)(1:10),surtxt(1)(1:10),surtxt(2)(1:30)
+  If (dble(Int(surfvalue))==surfvalue) Then
+    Write(lvltxt,'(I7,"-",A4)') Int(surfvalue),surtxt(1)(1:10)
   Else
-    Write(lvltxt(1),'(F7.1,"-",A4)') surfvalue,surtxt(1)(1:10)
-    Write(lvltxt(2),'(F7.1,"[",A,"] ",A4,"=""",A,"""")') surfvalue,surtxt(3)(1:10),surtxt(1)(1:10),surtxt(2)(1:30)
+    Write(lvltxt,'(F7.1,"-",A4)') surfvalue,surtxt(1)(1:10)
   End If
 End If
 
@@ -4229,7 +4225,7 @@ Subroutine getlvltxt2(alist,lvltxt)
 Implicit None
 
 Integer, dimension(0:49), intent(in) :: alist
-Character*80, dimension(1:2), intent(out) :: lvltxt
+Character*80, intent(out) :: lvltxt
 Character*80, dimension(1:3) :: surtxt
 Double Precision surfvalue,sndvalue
 Integer indx
@@ -4237,8 +4233,7 @@ Integer indx
 lvltxt=''
 
 If (alist(8)<1) Then
-  lvltxt(1)='0 undefined'
-  lvltxt(2)='0.000[-] undefined ()'
+  lvltxt='0 undefined'
   Return
 End If
 
@@ -4247,43 +4242,31 @@ Call getelemlvl2(alist,indx,surfvalue,sndvalue,surtxt)
 If (alist(13)==1) Then    
   ! snd data
   If (indx>=191) Then
-    If (Int(surfvalue)==surfvalue) Then
-      Write(lvltxt(1),'(I7,"-",I3,"-reserved(",I3,")")') Int(surfvalue),Int(sndvalue),alist(8)
-      Write(lvltxt(2),'(I7,"-",I3,"[-] reserved(",I3,") ()")') Int(surfvalue),Int(sndvalue),indx
+    If (dble(Int(surfvalue))==surfvalue) Then
+      Write(lvltxt,'(I7,"-",I3,"-reserved(",I3,")")') Int(surfvalue),Int(sndvalue),alist(8)
     Else
-      Write(lvltxt(1),'(F7.1,"-",F3.1,"-reserved(",I3,")")') surfvalue,sndvalue,alist(8)
-      Write(lvltxt(2),'(F7.1,"-",F3.1,"[-] reserved(",I3,") ()")') surfvalue,sndvalue,indx
+      Write(lvltxt,'(F7.1,"-",F3.1,"-reserved(",I3,")")') surfvalue,sndvalue,alist(8)
     End If
   Else
-    If (Int(surfvalue)==surfvalue) Then
-      Write(lvltxt(1),'(I7,"-",I3,"-",A4)') Int(surfvalue),Int(sndvalue),surtxt(1)(1:10)
-      Write(lvltxt(2),'(I7,"-",I3,"[",A,"] ",A4,"=""",A,"""")') Int(surfvalue),Int(sndvalue),           &
-          surtxt(3)(1:10),surtxt(1)(1:10),surtxt(2)(1:30)
+    If (dble(Int(surfvalue))==surfvalue) Then
+      Write(lvltxt,'(I7,"-",I3,"-",A4)') Int(surfvalue),Int(sndvalue),surtxt(1)(1:10)
     Else
-      Write(lvltxt(1),'(F7.1,"-",F3.1,"-",A4)') surfvalue,sndvalue,surtxt(1)(1:10)
-      Write(lvltxt(2),'(F7.1,"-",F3.1,"[",A,"] ",A4,"=""",A,"""")') surfvalue,sndvalue,surtxt(3)(1:10), &
-          surtxt(1)(1:10),surtxt(2)(1:30)
+      Write(lvltxt,'(F7.1,"-",F3.1,"-",A4)') surfvalue,sndvalue,surtxt(1)(1:10)
     End If
   End If
 Else
   ! no snd data
   If (indx>=191) Then
-    If (Int(surfvalue)==surfvalue) Then
-      Write(lvltxt(1),'(I7,"-reserved(",I3,")")') Int(surfvalue),alist(8)
-      Write(lvltxt(2),'(I7,"[-] reserved(",I3,") ()")') Int(surfvalue),alist(8)
+    If (dble(Int(surfvalue))==surfvalue) Then
+      Write(lvltxt,'(I7,"-reserved(",I3,")")') Int(surfvalue),alist(8)
     Else
-      Write(lvltxt(1),'(F7.1,"-reserved(",I3,")")') surfvalue,alist(8)
-      Write(lvltxt(2),'(F7.1,"[-] reserved(",I3,") ()")') surfvalue,alist(8)
+      Write(lvltxt,'(F7.1,"-reserved(",I3,")")') surfvalue,alist(8)
     End If
   Else
-    If (Int(surfvalue)==surfvalue) Then
-      Write(lvltxt(1),'(I7,"-",A4)') Int(surfvalue),surtxt(1)(1:10)
-      Write(lvltxt(2),'(I7,"[",A,"] ",A4,"=""",A,"""")') Int(surfvalue),surtxt(3)(1:10),surtxt(1)(1:10), &
-          surtxt(2)(1:30)
+    If (dble(Int(surfvalue))==surfvalue) Then
+      Write(lvltxt,'(I7,"-",A4)') Int(surfvalue),surtxt(1)(1:10)
     Else
-      Write(lvltxt(1),'(F7.1,"-",A4)') surfvalue,surtxt(1)(1:10)
-      Write(lvltxt(2),'(F7.1,"[",A,"] ",A4,"=""",A,"""")') surfvalue,surtxt(3)(1:10),surtxt(1)(1:10),    &
-          surtxt(2)(1:30)
+      Write(lvltxt,'(F7.1,"-",A4)') surfvalue,surtxt(1)(1:10)
     End If
   End If
 End If

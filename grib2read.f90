@@ -106,7 +106,7 @@ End If
 
 If (gribend.EQ.0) Then
   Select Case(alist(48))
-    Case(1)
+    Case(1)      !GRIB1
       Call gribsec1234(gribunit,alist,badecmwf)
     Case DEFAULT !GRIB2
       ! Note: Section 1 is unchanged in a multigrid message
@@ -129,6 +129,7 @@ End
 ! read depends on whether there are multiple grids in a single message
 ! or not.
 !
+! GRIB2
 
 Subroutine gribsec2340(gribunit,gribend,firstsec,alist,mtest,badecmwf)
 
@@ -552,9 +553,17 @@ alist(47)=0
 ! ensemble
 select case(alist(1))
   case(98)     ! ECMWF
-    alist(49)=arr2int(dat(50),1) ! This should be dat(51).  However, the actual number is stored at dat(50) for some reason.
+    if (seclen>=50) then
+      alist(49)=arr2int(dat(50),1) ! This should be dat(51).  However, the actual number is stored at dat(50) for some reason.
+    else
+      alist(49)=0
+    end if      
   case default ! NCEP
-    alist(49)=arr2int(dat(43),1)
+    if (seclen>=43) then
+      alist(49)=arr2int(dat(43),1)
+    else
+      alist(49)=0
+    end if
 end select
 
 tunit=arr2int(dat(18),1)
@@ -902,8 +911,8 @@ Implicit None
 Integer, intent(in) :: elemnum
 Integer, dimension(1:elemnum,0:49), intent(in) :: elemlist
 integer, dimension(0:49) :: duma
-Character*80 elemtxt(1:3),lvltxt(1:2)
-Character*80 gridtype
+Character*80 elemtxt(1:3)
+Character*80 gridtype,lvltxt
 Real alonlat(1:3,1:2)
 Integer i
 
@@ -916,7 +925,7 @@ Do i=1,elemnum
   Call getelemlonlat(duma,alonlat,gridtype)
   Call getlvltxt(duma,lvltxt)
   Write(6,'(T1I5,T8A,T17A,T21A,T38I4.4,T42I2.2,T44I2.2,T46I2.2,T49I2,T52A)') elemlist(i,0),elemtxt(1)(1:8),gridtype(1:3), &
-    lvltxt(1)(1:16),elemlist(i,42),elemlist(i,43),elemlist(i,44),elemlist(i,45),elemlist(i,49),elemtxt(2)(1:27)
+    lvltxt(1:16),elemlist(i,42),elemlist(i,43),elemlist(i,44),elemlist(i,45),elemlist(i,49),elemtxt(2)(1:27)
 End Do
 
 Return
