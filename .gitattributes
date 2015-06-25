@@ -6,5 +6,6 @@
 /makefile -text
 /misc.f90 -text
 /ncwrite.f90 -text
+/netcdf_m.f90 -text
 /readswitch.f90 -text
 /splice.f90 -text

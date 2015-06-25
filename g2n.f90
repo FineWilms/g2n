@@ -516,9 +516,9 @@ End
 Subroutine nccreatefile(ncidarr,outfile,dimnum,outputunit,adate,splicename,splicelist,varid, &
                         splicenum,datelist,datenum,elemlist,elemnum,alonlat,alvl,gridout)
 
-Implicit None
+use netcdf_m
 
-Include "netcdf.inc"
+Implicit None
 
 Integer, intent(in) :: splicenum,elemnum,datenum,gridout
 Integer, dimension(0:4), intent(inout) :: ncidarr
