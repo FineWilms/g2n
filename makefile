@@ -10,7 +10,7 @@ g2n : $(OBJ)
 	$(CMP) $(XFLAGS) $(OBJ) $(LIBS) -o g2n
 
 clean:
-	rm -f *.o core
+	rm -f *.o core *.mod
 
 
 .SUFFIXES:.f90
