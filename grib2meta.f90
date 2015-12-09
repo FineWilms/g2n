@@ -4461,6 +4461,20 @@ Select Case(alist(14))
         alonlat(1,3)=alonlat(2,3)
       End If
     End If
+    ! CMC bug fix
+    if (alonlat(1,3)>0. .and. alonlat(1,1)>alonlat(1,2) ) then
+      if ( alonlat(1,1)>0. ) then
+        alonlat(1,1) = alonlat(1,1) - 360.
+      else
+        alonlat(1,2) = alonlat(1,2) + 360.
+      end if
+    else if (alonlat(1,3)<0. .and. alonlat(1,1)<alonlat(1,2) ) then
+      if ( alonlat(1,1)<0. ) then
+        alonlat(1,1) = alonlat(1,1) + 360.
+      else
+        alonlat(1,2) = alonlat(1,2) - 360.
+      end if
+    end if
   Case(10)
     ! Un-supported
     gridtype="Mercator"

@@ -17,7 +17,7 @@ Integer splicenum,ensnum
 Logical levinvert,badecmwf
 Namelist /splice/ outputunit,splicename,spliceunit,newname,levinvert,badecmwf,ensnum
 
-Write(6,*) "g2n - GRIB1/2 to NetCDF converter (FEB-15)"
+Write(6,*) "g2n - GRIB1/2 to NetCDF converter (DEC-15)"
 Write(6,*) "Currently a work in progress.  There may be problems..."
 
 ! Read switches
