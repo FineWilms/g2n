@@ -327,7 +327,8 @@ If (typename.NE.'none') Then
       ! GRIB SCAN 3+N (N=0,1,2...) of the GRIB file
       If (splicelist(i,1).GT.0) then
       
-        Write(dateout,'(I4.4,"/",I2.2,"/",I2.2," ",I2.2,":",I2.2)') datelist(t,1:5)
+        Write(dateout,'(I4.4,"/",I2.2,"/",I2.2," ",I2.2,":",I2.2)') datelist(t,1),datelist(t,2),datelist(t,3),datelist(t,4), &
+                                                                    datelist(t,5)
         Write(6,*) "Reading ",trim(splicename(i,3))," for ",dateout
 
 	! Get list of level positions
